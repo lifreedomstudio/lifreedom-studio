@@ -26,11 +26,13 @@ export default function RootLayout({
           zIndex: 1000,
           background: 'rgba(2, 6, 23, 0.8)',
           backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid rgba(255,255,255,0.05)',
-          padding: '1rem 2rem',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+          padding: '0.8rem 1rem',
           display: 'flex',
+          flexWrap: 'wrap',
           justifyContent: 'space-between',
-          alignItems: 'center'
+          alignItems: 'center',
+          gap: '10px'
         }}>
           {/* 左側 LOGO */}
           <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -40,17 +42,39 @@ export default function RootLayout({
             </span>
           </Link>
 
-          {/* 右側選單 */}
-          <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', fontSize: '0.95rem', fontWeight: 'bold' }}>
-            <Link href="/courses" style={{ color: '#e2e8f0', textDecoration: 'none', transition: 'color 0.2s' }}>📚 建築所大廳</Link>
-            <Link href="/incubator" style={{ color: '#e2e8f0', textDecoration: 'none', transition: 'color 0.2s' }}>🧪 編曲實驗室</Link>
-            <Link href="/glossary" style={{ color: '#e2e8f0', textDecoration: 'none', transition: 'color 0.2s' }}>📖 魔導書</Link>
-            <Link href="/collection" style={{ color: '#fbbf24', textDecoration: 'none', border: '1px solid rgba(251, 191, 36, 0.3)', padding: '6px 12px', borderRadius: '8px', background: 'rgba(251, 191, 36, 0.05)' }}>📜 圖鑑</Link>
-            <Link href="/mix-assistant" style={{ color: '#020617', textDecoration: 'none', background: '#38bdf8', padding: '8px 16px', borderRadius: '50px', boxShadow: '0 0 10px rgba(56, 189, 248, 0.3)' }}>🤖 AI 聽診</Link>
+          {/* 右側選單 (已將 AI 聽診移出) */}
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', fontSize: '0.85rem', fontWeight: 'bold' }}>
+            <Link href="/courses" style={{ color: '#e2e8f0', textDecoration: 'none' }}>📚 建築所</Link>
+            <Link href="/incubator" style={{ color: '#e2e8f0', textDecoration: 'none' }}>🧪 實驗室</Link>
+            <Link href="/glossary" style={{ color: '#e2e8f0', textDecoration: 'none' }}>📖 魔導書</Link>
+            <Link href="/collection" style={{ color: '#fbbf24', textDecoration: 'none', border: '1px solid rgba(251, 191, 36, 0.3)', padding: '4px 8px', borderRadius: '8px', background: 'rgba(251, 191, 36, 0.05)' }}>📜 圖鑑</Link>
           </div>
         </nav>
 
-        {/* 網頁主要內容會被渲染在這裡 */}
+        {/* 🤖 全站懸浮 AI 聽診按鈕 */}
+        <Link href="/mix-assistant" style={{
+          position: 'fixed',
+          bottom: '25px',
+          right: '20px',
+          zIndex: 2000,
+          background: 'linear-gradient(135deg, #38bdf8, #1d4ed8)',
+          width: '64px',
+          height: '64px',
+          borderRadius: '50%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 8px 32px rgba(56, 189, 248, 0.4)',
+          textDecoration: 'none',
+          border: '2px solid rgba(255, 255, 255, 0.1)',
+          transition: 'transform 0.2s active'
+        }}>
+          <span style={{ fontSize: '1.4rem' }}>🤖</span>
+          <span style={{ fontSize: '0.65rem', color: '#fff', fontWeight: 'bold', marginTop: '2px' }}>AI 聽診</span>
+        </Link>
+
+        {/* 網頁主要內容 */}
         <main>
           {children}
         </main>
