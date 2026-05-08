@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 // 🎓 混音大師綜合實戰題庫 (10 題完全體)
@@ -23,7 +23,7 @@ const MASTER_QUIZ = [
         answer: 1, feedback: "🎯 沒錯！這時只要按下一個『相位反轉 (Phase Flip)』鈕，低頻就會瞬間炸出來了。"
     },
     {
-        id: 4, topic: "飽和度與諧波 (Harmonics)",
+        id: 4, topic: "飽全面與諧波 (Harmonics)",
         question: "【實戰】你覺得數位錄音的人聲太『乾扁、冰冷』，想增加一點暖意與厚度，你會優先使用哪種效果？",
         options: ["強力的 Reverb", "Saturation (飽和度) 或 Analog 模擬插件", "極高的 High Pass Filter", "Noise Gate"],
         answer: 1, feedback: "🎯 正確！諧波 (Harmonics) 產生的微量失真會為數位聲音加上類比設備特有的溫暖感。"
@@ -71,6 +71,14 @@ export default function CertificationPage() {
     const [selected, setSelected] = useState<number | null>(null);
     const [showResult, setShowResult] = useState(false);
     const [score, setScore] = useState(0);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const handleOptionClick = (idx: number) => {
         if (showResult) return;
@@ -88,11 +96,11 @@ export default function CertificationPage() {
     };
 
     return (
-        <div style={{ minHeight: '100vh', background: '#020617', color: '#fff', padding: '4rem 2rem', fontFamily: 'sans-serif' }}>
+        <div style={{ minHeight: '100vh', background: '#020617', color: '#fff', padding: isMobile ? '2rem 1rem' : '4rem 2rem', fontFamily: 'sans-serif' }}>
             <div style={{ maxWidth: '800px', margin: '0 auto' }}>
                 {currentStep < MASTER_QUIZ.length ? (
                     <div style={{ animation: 'fadeIn 0.5s ease' }}>
-                        <div style={{ marginBottom: '3rem' }}>
+                        <div style={{ marginBottom: isMobile ? '2rem' : '3rem' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '0.9rem', color: '#38bdf8' }}>
                                 <span>混音戰力評測中...</span>
                                 <span>{currentStep + 1} / {MASTER_QUIZ.length}</span>
@@ -102,19 +110,28 @@ export default function CertificationPage() {
                             </div>
                         </div>
 
-                        <div style={{ background: 'rgba(30,41,59,0.5)', padding: '2.5rem', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)' }}>
+                        <div style={{ background: 'rgba(30,41,59,0.5)', padding: isMobile ? '1.5rem' : '2.5rem', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)' }}>
                             <span style={{ background: '#1e3a8a', color: '#93c5fd', padding: '4px 12px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>{MASTER_QUIZ[currentStep].topic}</span>
-                            <h2 style={{ fontSize: '1.8rem', lineHeight: '1.4', margin: '1.5rem 0 2.5rem 0', fontWeight: 'bold' }}>{MASTER_QUIZ[currentStep].question}</h2>
+
+                            {/* 👇 關鍵：手機版縮小題目字體，避免詭異換行 */}
+                            <h2 style={{ fontSize: isMobile ? '1.3rem' : '1.8rem', lineHeight: '1.5', margin: '1.5rem 0', fontWeight: 'bold' }}>
+                                {MASTER_QUIZ[currentStep].question}
+                            </h2>
+
                             <div style={{ display: 'grid', gap: '1rem' }}>
                                 {MASTER_QUIZ[currentStep].options.map((opt, i) => (
                                     <button
                                         key={i}
                                         onClick={() => handleOptionClick(i)}
                                         style={{
-                                            textAlign: 'left', padding: '1.5rem', borderRadius: '16px', border: '1px solid',
+                                            textAlign: 'left',
+                                            padding: isMobile ? '1.2rem 1rem' : '1.5rem', // 手機版調整選項按鈕 padding
+                                            borderRadius: '16px', border: '1px solid',
                                             borderColor: showResult ? (i === MASTER_QUIZ[currentStep].answer ? '#10b981' : i === selected ? '#ef4444' : '#334155') : '#334155',
                                             background: showResult ? (i === MASTER_QUIZ[currentStep].answer ? 'rgba(16, 185, 129, 0.1)' : i === selected ? 'rgba(239, 68, 68, 0.1)' : '#0f172a') : '#0f172a',
-                                            color: '#fff', cursor: showResult ? 'default' : 'pointer', transition: 'all 0.2s', fontSize: '1.1rem'
+                                            color: '#fff', cursor: showResult ? 'default' : 'pointer', transition: 'all 0.2s',
+                                            fontSize: isMobile ? '0.95rem' : '1.1rem', // 手機版字體略縮
+                                            lineHeight: '1.4'
                                         }}
                                     >
                                         {opt}
@@ -122,10 +139,10 @@ export default function CertificationPage() {
                                 ))}
                             </div>
                             {showResult && (
-                                <div style={{ marginTop: '2.5rem', padding: '1.5rem', background: '#1e293b', borderRadius: '16px', borderLeft: '6px solid #fbbf24' }}>
+                                <div style={{ marginTop: isMobile ? '1.5rem' : '2.5rem', padding: isMobile ? '1rem' : '1.5rem', background: '#1e293b', borderRadius: '16px', borderLeft: '6px solid #fbbf24' }}>
                                     <p style={{ margin: 0, color: '#fcd34d', fontWeight: 'bold', marginBottom: '8px' }}>💡 專業教官評析：</p>
-                                    <p style={{ margin: 0, color: '#cbd5e1', lineHeight: '1.6' }}>{MASTER_QUIZ[currentStep].feedback}</p>
-                                    <button onClick={nextQuestion} style={{ marginTop: '1.5rem', padding: '12px 32px', background: '#38bdf8', border: 'none', borderRadius: '8px', color: '#000', fontWeight: 'bold', cursor: 'pointer', fontSize: '1rem' }}>
+                                    <p style={{ margin: 0, color: '#cbd5e1', lineHeight: '1.6', fontSize: isMobile ? '0.9rem' : '1rem' }}>{MASTER_QUIZ[currentStep].feedback}</p>
+                                    <button onClick={nextQuestion} style={{ marginTop: '1.5rem', padding: '12px 32px', background: '#38bdf8', border: 'none', borderRadius: '8px', color: '#020617', fontWeight: 'bold', cursor: 'pointer', fontSize: '1rem', width: isMobile ? '100%' : 'auto' }}>
                                         {currentStep === MASTER_QUIZ.length - 1 ? '查看認證結果' : '下一題 ➡️'}
                                     </button>
                                 </div>
@@ -133,16 +150,16 @@ export default function CertificationPage() {
                         </div>
                     </div>
                 ) : (
-                    <div style={{ textAlign: 'center', background: 'rgba(30,41,59,0.8)', padding: '5rem 2rem', borderRadius: '32px', border: '2px solid #38bdf8', boxShadow: '0 0 50px rgba(56, 189, 248, 0.2)' }}>
-                        <h1 style={{ fontSize: '5rem', margin: 0 }}>{score >= 80 ? '🏆' : '🎓'}</h1>
-                        <h2 style={{ fontSize: '3rem', margin: '1rem 0', color: '#fff' }}>認證得分：{score}</h2>
-                        <p style={{ fontSize: '1.3rem', color: '#94a3b8', marginBottom: '3rem', maxWidth: '500px', margin: '0 auto 3rem auto' }}>
+                    <div style={{ textAlign: 'center', background: 'rgba(30,41,59,0.8)', padding: isMobile ? '3rem 1.5rem' : '5rem 2rem', borderRadius: '32px', border: '2px solid #38bdf8', boxShadow: '0 0 50px rgba(56, 189, 248, 0.2)' }}>
+                        <h1 style={{ fontSize: isMobile ? '4rem' : '5rem', margin: 0 }}>{score >= 80 ? '🏆' : '🎓'}</h1>
+                        <h2 style={{ fontSize: isMobile ? '2.2rem' : '3rem', margin: '1rem 0', color: '#fff' }}>認證得分：{score}</h2>
+                        <p style={{ fontSize: isMobile ? '1.1rem' : '1.3rem', color: '#94a3b8', marginBottom: '3rem', maxWidth: '500px', margin: '0 auto 3rem auto', lineHeight: '1.6' }}>
                             {score === 100 ? '完美！你已經掌握了 Lifreedom Studio 的核心心法，具備成為大師的潛力！' :
                                 score >= 60 ? '表現優秀！你對混音流程已有清晰認知，多去聽覺道場實踐吧。' :
                                     '還差一點點！建議再回魔導書翻閱「混音神技」分類。'}
                         </p>
-                        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                            <Link href="/courses" style={{ padding: '1rem 2.5rem', background: '#38bdf8', color: '#000', borderRadius: '50px', textDecoration: 'none', fontWeight: 'bold' }}>返回學院大廳</Link>
+                        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexDirection: isMobile ? 'column' : 'row' }}>
+                            <Link href="/courses" style={{ padding: '1rem 2.5rem', background: '#38bdf8', color: '#020617', borderRadius: '50px', textDecoration: 'none', fontWeight: 'bold' }}>返回學院大廳</Link>
                             <button onClick={() => window.location.reload()} style={{ padding: '1rem 2.5rem', background: 'transparent', color: '#38bdf8', borderRadius: '50px', border: '1px solid #38bdf8', fontWeight: 'bold', cursor: 'pointer' }}>再挑戰一次</button>
                         </div>
                     </div>

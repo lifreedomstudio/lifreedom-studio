@@ -5,7 +5,14 @@ export default function CompressorTrainingRoom() {
     const [gameState, setGameState] = useState<'playing' | 'answer'>('playing');
     const [isPlaying, setIsPlaying] = useState(false);
     const [grValue, setGrValue] = useState(0);
+    const [isMobile, setIsMobile] = useState(false);
 
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
     // 🎚️ 參數狀態
     const [userSettings, setUserSettings] = useState({ threshold: -20, ratio: 4, attack: 15, release: 150 });
     const [targetSettings, setTargetSettings] = useState({ threshold: -35, ratio: 8, attack: 5, release: 100 });
@@ -56,7 +63,6 @@ export default function CompressorTrainingRoom() {
 
     const updateAnimation = () => {
         if (compRef.current) {
-            // 使用原生的 reduction 值，最穩定
             const reduction = compRef.current.reduction;
             const currentGR = typeof reduction === 'number' ? reduction : (reduction as any).value;
             setGrValue(currentGR || 0);
@@ -87,21 +93,22 @@ export default function CompressorTrainingRoom() {
     );
 
     return (
-        <div style={{ minHeight: '100vh', background: '#020617', color: '#fff', padding: '2rem' }}>
+        <div style={{ minHeight: '100vh', background: '#020617', color: '#fff', padding: isMobile ? '1.5rem 1rem' : '2rem' }}>
             <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-                <h1 style={{ textAlign: 'center', color: '#fbbf24', marginBottom: '2rem' }}>⚔️ 壓縮器道場</h1>
+                <h1 style={{ textAlign: 'center', color: '#fbbf24', marginBottom: '2rem', fontSize: isMobile ? '1.8rem' : '2.5rem', whiteSpace: 'nowrap' }}>⚔️ 壓縮器道場</h1>
 
                 {gameState === 'playing' ? (
-                    <div style={{ background: '#0f172a', padding: '2rem', borderRadius: '24px' }}>
+                    <div style={{ background: '#0f172a', padding: isMobile ? '1.5rem' : '2rem', borderRadius: '24px' }}>
                         <div style={{ background: '#020617', height: '60px', borderRadius: '12px', marginBottom: '2rem', position: 'relative', overflow: 'hidden', border: '1px solid #334155' }}>
                             <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: `${Math.min(100, Math.abs(grValue) * 5)}%`, background: '#10b981' }}></div>
-                            <div style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 1.5rem', fontWeight: 'bold' }}>
-                                <span style={{ color: '#38bdf8' }}>GAIN REDUCTION</span>
+                            <div style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 1rem', fontWeight: 'bold' }}>
+                                <span style={{ color: '#38bdf8', fontSize: isMobile ? '0.85rem' : '1rem' }}>GAIN REDUCTION</span>
                                 <span>{grValue.toFixed(1)} dB</span>
                             </div>
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
+                        {/* 👇 這裡加上 isMobile 的判斷，手機版單行，電腦版雙行 */}
+                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? '1rem' : '2rem', marginBottom: '2rem' }}>
                             <div>
                                 <label style={{ color: '#94a3b8', fontSize: '0.8rem' }}>THRESHOLD ({userSettings.threshold} dB)</label>
                                 <input type="range" min="-60" max="0" value={userSettings.threshold} onChange={e => setUserSettings({ ...userSettings, threshold: +e.target.value })} style={{ width: '100%' }} />
@@ -116,17 +123,41 @@ export default function CompressorTrainingRoom() {
                             </div>
                         </div>
 
-                        <div style={{ display: 'flex', gap: '1rem' }}>
-                            <button onClick={togglePlay} style={{ flex: 1, padding: '1rem', borderRadius: '12px', background: isPlaying ? '#ef4444' : '#10b981', color: '#fff', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: isMobile ? 'column' : 'row',
+                            gap: '1rem'
+                        }}>
+                            <button onClick={togglePlay} style={{
+                                flex: 1,
+                                padding: '1rem',
+                                borderRadius: '12px',
+                                background: isPlaying ? '#ef4444' : '#10b981',
+                                color: '#fff',
+                                border: 'none',
+                                fontWeight: 'bold',
+                                cursor: 'pointer',
+                                whiteSpace: 'nowrap'
+                            }}>
                                 {isPlaying ? '停止播放' : '🔊 播放測試音'}
                             </button>
-                            <button onClick={() => { setIsPlaying(false); audioRef.current?.pause(); setGameState('answer'); }} style={{ flex: 1, padding: '1rem', borderRadius: '12px', border: '2px solid #fbbf24', color: '#fbbf24', background: 'transparent', fontWeight: 'bold', cursor: 'pointer' }}>
+                            <button onClick={() => { setIsPlaying(false); audioRef.current?.pause(); setGameState('answer'); }} style={{
+                                flex: 1,
+                                padding: '1rem',
+                                borderRadius: '12px',
+                                border: '2px solid #fbbf24',
+                                color: '#fbbf24',
+                                background: 'transparent',
+                                fontWeight: 'bold',
+                                cursor: 'pointer',
+                                whiteSpace: 'nowrap'
+                            }}>
                                 ⚔️ 提交解答
                             </button>
                         </div>
                     </div>
                 ) : (
-                    <div style={{ background: '#0f172a', padding: '2rem', borderRadius: '24px', border: '2px solid #fbbf24' }}>
+                    <div style={{ background: '#0f172a', padding: isMobile ? '1.5rem' : '2rem', borderRadius: '24px', border: '2px solid #fbbf24' }}>
                         <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>大師鑑定報告</h2>
                         <CompareRow label="Threshold" user={userSettings.threshold} target={targetSettings.threshold} unit="dB" color="#fbbf24" min={-60} max={0} />
                         <CompareRow label="Ratio" user={userSettings.ratio} target={targetSettings.ratio} unit=":1" color="#38bdf8" min={1} max={20} />

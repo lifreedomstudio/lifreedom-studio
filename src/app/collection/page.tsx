@@ -1,6 +1,6 @@
 "use client";
 import Link from 'next/link';
-
+import { useState, useEffect } from 'react';
 // 📚 魔法圖鑑資料庫 (包含隱藏的未來擴充包)
 const COLLECTION_DATA = [
     {
@@ -66,19 +66,55 @@ const COLLECTION_DATA = [
 ];
 
 export default function CollectionPage() {
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     return (
-        <div style={{ minHeight: '100vh', background: '#020617', color: '#fff', padding: '4rem 2rem', fontFamily: 'sans-serif' }}>
+        <div style={{ minHeight: '100vh', background: '#020617', color: '#fff', padding: isMobile ? '2rem 1rem' : '4rem 2rem', fontFamily: 'sans-serif' }}>
             <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
 
-                {/* 🔝 頂部導航 */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4rem', flexWrap: 'wrap', gap: '1rem' }}>
+                {/* 🔝 頂部導航 (修復主標題換行與按鈕擠壓) */}
+                <div style={{
+                    display: 'flex',
+                    flexDirection: isMobile ? 'column' : 'row', // 手機版改為上下排
+                    justifyContent: 'space-between',
+                    alignItems: isMobile ? 'flex-start' : 'center',
+                    marginBottom: isMobile ? '2rem' : '4rem',
+                    gap: '1.5rem'
+                }}>
                     <div>
-                        <h1 style={{ fontSize: '2.5rem', margin: '0 0 0.5rem 0', background: 'linear-gradient(to right, #fbbf24, #f59e0b)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                        <h1 style={{
+                            fontSize: isMobile ? '1.8rem' : '2.5rem', // 手機版字體縮小
+                            margin: '0 0 0.5rem 0',
+                            background: 'linear-gradient(to right, #fbbf24, #f59e0b)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            lineHeight: '1.2'
+                        }}>
                             📜 Lifreedom 魔法圖鑑
                         </h1>
-                        <p style={{ color: '#64748b', margin: 0 }}>解鎖並收集傳說級技巧，從基礎元件建立你的專屬兵器庫。</p>
+                        <p style={{ color: '#64748b', margin: 0, fontSize: isMobile ? '0.9rem' : '1rem' }}>
+                            解鎖並收集傳說級技巧，從基礎元件建立你的專屬兵器庫。
+                        </p>
                     </div>
-                    <Link href="/courses" style={{ padding: '0.8rem 1.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', textDecoration: 'none', color: '#e2e8f0', border: '1px solid #1e293b', fontWeight: 'bold', transition: 'all 0.2s' }}>
+                    <Link href="/courses" style={{
+                        padding: '0.8rem 1.5rem',
+                        background: 'rgba(255,255,255,0.05)',
+                        borderRadius: '12px',
+                        textDecoration: 'none',
+                        color: '#e2e8f0',
+                        border: '1px solid #1e293b',
+                        fontWeight: 'bold',
+                        transition: 'all 0.2s',
+                        width: isMobile ? '100%' : 'auto', // 手機版按鈕撐滿寬度
+                        textAlign: 'center'
+                    }}>
                         ⬅️ 返回大廳
                     </Link>
                 </div>
@@ -86,15 +122,29 @@ export default function CollectionPage() {
                 {/* 🗂️ 動態渲染套牌 */}
                 {COLLECTION_DATA.map((section, secIdx) => (
                     <div key={secIdx} style={{
-                        marginBottom: '6rem',
-                        // 🟢 控制是否隱藏此區塊的開關 
+                        marginBottom: isMobile ? '4rem' : '6rem',
                         display: section.isHidden ? 'none' : 'block'
                     }}>
-                        <div style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem', marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                            <h2 style={{ fontSize: '2rem', color: '#f8fafc', margin: 0 }}>{section.sectionTitle}</h2>
-                            <p style={{ color: '#94a3b8', margin: 0, fontSize: '1rem', fontWeight: 'bold' }}>{section.progress}</p>
+                        {/* 📛 區塊標題 (修復成就進度撞車問題) */}
+                        <div style={{
+                            borderBottom: '1px solid rgba(255,255,255,0.1)',
+                            paddingBottom: '1rem',
+                            marginBottom: '2rem',
+                            display: 'flex',
+                            flexDirection: isMobile ? 'column' : 'row', // 手機版上下分層
+                            justifyContent: 'space-between',
+                            alignItems: isMobile ? 'flex-start' : 'flex-end',
+                            gap: isMobile ? '0.5rem' : '0' // 手機版給一點上下間距
+                        }}>
+                            <h2 style={{ fontSize: isMobile ? '1.5rem' : '2rem', color: '#f8fafc', margin: 0 }}>
+                                {section.sectionTitle}
+                            </h2>
+                            <p style={{ color: '#94a3b8', margin: 0, fontSize: isMobile ? '0.85rem' : '1rem', fontWeight: 'bold' }}>
+                                {section.progress}
+                            </p>
                         </div>
 
+                        {/* 卡片網格 (原本的 auto-fit 已經很完美，無需大改) */}
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
                             {section.cards.map((card, idx) => (
                                 <div key={idx} style={{
@@ -137,22 +187,22 @@ export default function CollectionPage() {
                 ))}
 
                 {/* ⚔️ 行動呼籲 (Call to Action) */}
-                <div style={{ marginTop: '5rem', padding: '4rem 2rem', background: 'linear-gradient(145deg, #0f172a, #020617)', borderRadius: '24px', border: '1px solid #1e293b', textAlign: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
-                    <h2 style={{ fontSize: '2.2rem', color: '#f8fafc', marginBottom: '1rem' }}>渴望解鎖更多傳說級魔法嗎？</h2>
-                    <p style={{ color: '#94a3b8', fontSize: '1.1rem', marginBottom: '3rem', maxWidth: '650px', margin: '0 auto 3rem', lineHeight: '1.6' }}>
+                <div style={{ marginTop: isMobile ? '3rem' : '5rem', padding: isMobile ? '2.5rem 1.5rem' : '4rem 2rem', background: 'linear-gradient(145deg, #0f172a, #020617)', borderRadius: '24px', border: '1px solid #1e293b', textAlign: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+                    <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.2rem', color: '#f8fafc', marginBottom: '1rem' }}>渴望解鎖更多傳說級魔法嗎？</h2>
+                    <p style={{ color: '#94a3b8', fontSize: isMobile ? '1rem' : '1.1rem', marginBottom: '3rem', maxWidth: '650px', margin: '0 auto 3rem', lineHeight: '1.6' }}>
                         高階魔法卡片無法用金錢購買，唯有透過實戰與頓悟才能獲得。現在就前往建築所大廳完成每日修煉，或讓 AI 助理為你的專案進行深度聽診，獲取隨機卡片掉落！
                     </p>
-                    <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-                        <Link href="/courses" style={{ padding: '1rem 3rem', background: '#38bdf8', color: '#020617', fontSize: '1.1rem', fontWeight: 'bold', borderRadius: '50px', textDecoration: 'none', boxShadow: '0 0 20px rgba(56, 189, 248, 0.4)', transition: 'transform 0.2s' }}>
+                    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '1rem', justifyContent: 'center' }}>
+                        <Link href="/courses" style={{ padding: '1rem 3rem', background: '#38bdf8', color: '#020617', fontSize: '1.1rem', fontWeight: 'bold', borderRadius: '50px', textDecoration: 'none', boxShadow: '0 0 20px rgba(56, 189, 248, 0.4)', transition: 'transform 0.2s', width: isMobile ? '100%' : 'auto' }}>
                             前往大廳修煉 ⚔️
                         </Link>
-                        <Link href="/mix-assistant" style={{ padding: '1rem 3rem', background: 'transparent', color: '#38bdf8', fontSize: '1.1rem', fontWeight: 'bold', borderRadius: '50px', textDecoration: 'none', border: '2px solid #38bdf8', transition: 'transform 0.2s' }}>
+                        <Link href="/mix-assistant" style={{ padding: '1rem 3rem', background: 'transparent', color: '#38bdf8', fontSize: '1.1rem', fontWeight: 'bold', borderRadius: '50px', textDecoration: 'none', border: '2px solid #38bdf8', transition: 'transform 0.2s', width: isMobile ? '100%' : 'auto' }}>
                             呼叫 AI 聽診 🤖
                         </Link>
                     </div>
                 </div>
 
-                {/* 🔮 未來擴充預告 (永遠顯示在最下方) */}
+                {/* 🔮 未來擴充預告 */}
                 <div style={{ textAlign: 'center', marginTop: '3rem', padding: '2rem', background: 'rgba(255,255,255,0.02)', borderRadius: '24px', border: '1px dashed rgba(255,255,255,0.1)' }}>
                     <h3 style={{ color: '#94a3b8', fontSize: '1.2rem', margin: '0 0 0.5rem 0' }}>🔮 魔法卡池持續擴充中...</h3>
                     <p style={{ color: '#64748b', fontSize: '0.9rem', margin: 0 }}>第二彈「動態與情緒」擴充包正在鑄造中，敬請期待。</p>

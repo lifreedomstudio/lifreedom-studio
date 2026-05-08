@@ -17,8 +17,12 @@ export default function HomePage() {
 
       {/* 🌟 1. 英雄視覺區 (Hero Section) */}
       <div style={{
-        minHeight: '90vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center',
-        background: 'radial-gradient(circle at 50% 30%, rgba(56, 189, 248, 0.15) 0%, #020617 60%)', padding: isMobile ? '2rem 1rem' : '2rem'
+        // 手機版高度縮減為 65vh，讓內容稍微往上提
+        minHeight: isMobile ? '65vh' : '90vh',
+        display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center',
+        background: 'radial-gradient(circle at 50% 30%, rgba(56, 189, 248, 0.15) 0%, #020617 60%)',
+        // 手機版的上方 padding 稍微加大，避免跟 Navbar 黏在一起，但下方縮減
+        padding: isMobile ? '4rem 1.5rem 2rem 1.5rem' : '2rem'
       }}>
         <p style={{ color: '#38bdf8', letterSpacing: '4px', fontWeight: 'bold', marginBottom: '1rem', fontSize: isMobile ? '0.8rem' : '1rem' }}>LIFREEDOM STUDIO</p>
         <h1 style={{ fontSize: 'clamp(2.5rem, 8vw, 5rem)', fontWeight: '900', margin: '0 0 1.5rem 0', background: 'linear-gradient(to right, #38bdf8, #fca311)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>

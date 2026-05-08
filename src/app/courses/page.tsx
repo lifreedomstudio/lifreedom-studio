@@ -1,9 +1,19 @@
 "use client";
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react'; // 加入 React Hook
 
 export default function CoursesPage() {
     const router = useRouter();
+
+    // 加入手機版偵測邏輯
+    const [isMobile, setIsMobile] = useState(false);
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     // 🎨 統一卡片樣式設定
     const cardStyle = {
@@ -24,9 +34,9 @@ export default function CoursesPage() {
         <Link
             href={`/mix-assistant?query=${encodeURIComponent(question)}`}
             style={{
-                marginTop: '1rem', padding: '8px 12px', background: 'rgba(56, 189, 248, 0.1)',
-                border: '1px solid rgba(56, 189, 248, 0.3)', borderRadius: '6px',
-                color: '#38bdf8', fontSize: '0.8rem', textDecoration: 'none',
+                marginTop: '1rem', padding: '10px 12px', background: 'rgba(56, 189, 248, 0.1)',
+                border: '1px solid rgba(56, 189, 248, 0.3)', borderRadius: '8px',
+                color: '#38bdf8', fontSize: '0.85rem', textDecoration: 'none',
                 textAlign: 'center', fontWeight: 'bold', transition: 'all 0.2s'
             }}
             onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(56, 189, 248, 0.2)'}
@@ -37,34 +47,66 @@ export default function CoursesPage() {
     );
 
     return (
-        <div style={{ minHeight: '100vh', background: '#020617', color: '#fff', padding: '2rem', maxWidth: '900px', margin: '0 auto', fontFamily: 'sans-serif' }}>
+        <div style={{ minHeight: '100vh', background: '#020617', color: '#fff', padding: isMobile ? '1rem' : '2rem', maxWidth: '900px', margin: '0 auto', fontFamily: 'sans-serif' }}>
 
-            {/* 🔝 1. 頂部導覽列 (包含最新加入的圖鑑按鈕) */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem' }}>
-                <h1 style={{ fontSize: '1.8rem', color: '#fca311' }}>📚 Lifreedom Studio 修煉道場</h1>
-                <div style={{ display: 'flex', gap: '12px' }}>
+            {/* 🔝 1. 頂部導覽列 (修復擠壓與換行問題) */}
+            <div style={{
+                display: 'flex',
+                flexDirection: isMobile ? 'column' : 'row', // 手機版改為上下排列
+                justifyContent: 'space-between',
+                alignItems: isMobile ? 'flex-start' : 'center',
+                gap: isMobile ? '1.5rem' : '1rem', // 手機版增加上下間距
+                marginBottom: '2rem',
+                borderBottom: '1px solid rgba(255,255,255,0.1)',
+                paddingBottom: '1.5rem'
+            }}>
+                <h1 style={{
+                    fontSize: isMobile ? '1.6rem' : '1.8rem',
+                    color: '#fca311',
+                    margin: 0,
+                    lineHeight: '1.4'
+                }}>
+                    📚 Lifreedom Studio <br style={{ display: isMobile ? 'block' : 'none' }} /> 修煉道場
+                </h1>
+
+                <div style={{
+                    display: 'flex',
+                    flexDirection: isMobile ? 'column' : 'row', // 手機版讓按鈕也變成上下排
+                    gap: '12px',
+                    width: isMobile ? '100%' : 'auto' // 手機版撐滿寬度
+                }}>
                     <Link href="/collection" style={{
-                        padding: '0.6rem 1.2rem',
+                        padding: '0.8rem 1.2rem',
                         background: 'rgba(251, 191, 36, 0.1)',
                         border: '1px solid #fbbf24',
                         borderRadius: '8px',
                         textDecoration: 'none',
                         color: '#fbbf24',
-                        fontWeight: 'bold'
+                        fontWeight: 'bold',
+                        textAlign: 'center'
                     }}>
                         📜 魔法圖鑑
                     </Link>
-                    <button onClick={() => router.push('/mix-assistant')} style={{ padding: '0.6rem 1.2rem', background: '#3c096c', color: 'white', border: '1px solid #9d4edd', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+                    <button onClick={() => router.push('/mix-assistant')} style={{
+                        padding: '0.8rem 1.2rem',
+                        background: '#3c096c',
+                        color: 'white',
+                        border: '1px solid #9d4edd',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        textAlign: 'center'
+                    }}>
                         🤖 找混音助理協助
                     </button>
                 </div>
             </div>
 
-            {/* 📖 2. 混音魔導書傳送門 (就是這個！把它補回來了) */}
-            <div style={{ textAlign: 'center', marginBottom: '4rem', padding: '2.5rem', background: 'linear-gradient(145deg, #0f172a, #1e1b4b)', borderRadius: '20px', border: '1px solid #4f46e5', boxShadow: '0 0 30px rgba(79, 70, 229, 0.2)' }}>
-                <h2 style={{ color: '#a78bfa', margin: '0 0 1rem 0', fontSize: '1.6rem' }}>碰到看不懂的專有名詞？</h2>
-                <p style={{ color: '#94a3b8', marginBottom: '1.5rem', fontSize: '1.1rem' }}>點擊查閱專屬字彙庫，包含 40+ 混音神技與硬體圖鑑。</p>
-                <Link href="/glossary" style={{ display: 'inline-block', padding: '14px 32px', background: '#3b82f6', color: '#fff', textDecoration: 'none', borderRadius: '30px', fontWeight: 'bold', fontSize: '1.1rem', boxShadow: '0 4px 15px rgba(59, 130, 246, 0.4)' }}>
+            {/* 📖 2. 混音魔導書傳送門 */}
+            <div style={{ textAlign: 'center', marginBottom: '4rem', padding: isMobile ? '1.5rem' : '2.5rem', background: 'linear-gradient(145deg, #0f172a, #1e1b4b)', borderRadius: '20px', border: '1px solid #4f46e5', boxShadow: '0 0 30px rgba(79, 70, 229, 0.2)' }}>
+                <h2 style={{ color: '#a78bfa', margin: '0 0 1rem 0', fontSize: isMobile ? '1.3rem' : '1.6rem' }}>碰到看不懂的專有名詞？</h2>
+                <p style={{ color: '#94a3b8', marginBottom: '1.5rem', fontSize: isMobile ? '0.95rem' : '1.1rem' }}>點擊查閱專屬字彙庫，包含 40+ 混音神技與硬體圖鑑。</p>
+                <Link href="/glossary" style={{ display: 'inline-block', padding: '12px 24px', background: '#3b82f6', color: '#fff', textDecoration: 'none', borderRadius: '30px', fontWeight: 'bold', fontSize: '1rem', boxShadow: '0 4px 15px rgba(59, 130, 246, 0.4)' }}>
                     📖 翻閱混音魔導書
                 </Link>
             </div>
@@ -147,28 +189,28 @@ export default function CoursesPage() {
 
             {/* ⚔️ 5. 聽覺極限道場 */}
             <div style={{
-                margin: '4rem 0', padding: '4rem 2rem', textAlign: 'center',
+                margin: '4rem 0', padding: isMobile ? '2.5rem 1.5rem' : '4rem 2rem', textAlign: 'center',
                 background: 'rgba(234, 88, 12, 0.03)', borderRadius: '24px',
                 border: '2px solid #ea580c', boxShadow: '0 0 40px rgba(234, 88, 12, 0.1)'
             }}>
                 <span style={{ fontSize: '0.8rem', color: '#ea580c', fontWeight: 'bold', letterSpacing: '4px' }}>TRAINING DOJO</span>
-                <h2 style={{ color: '#fff', fontSize: '2.2rem', margin: '1rem 0' }}>聽覺試煉場</h2>
-                <p style={{ color: '#fed7aa', marginBottom: '2.5rem' }}>親自轉動旋鈕，訓練你的耳朵捕捉頻率的微小變化。</p>
-                <Link href="/training" style={{ display: 'inline-block', padding: '1rem 3.5rem', background: '#ea580c', color: '#fff', textDecoration: 'none', fontSize: '1.2rem', fontWeight: 'bold', borderRadius: '4px' }}>
-                    🔥 進入道場自主練習 🔥
+                <h2 style={{ color: '#fff', fontSize: isMobile ? '1.8rem' : '2.2rem', margin: '1rem 0' }}>聽覺試煉場</h2>
+                <p style={{ color: '#fed7aa', marginBottom: '2.5rem', fontSize: isMobile ? '0.95rem' : '1rem' }}>親自轉動旋鈕，訓練你的耳朵捕捉頻率的微小變化。</p>
+                <Link href="/training" style={{ display: 'inline-block', padding: '1rem 2rem', background: '#ea580c', color: '#fff', textDecoration: 'none', fontSize: isMobile ? '1rem' : '1.2rem', fontWeight: 'bold', borderRadius: '8px' }}>
+                    🔥 進入道場自主練習
                 </Link>
             </div>
 
             {/* 🎓 6. 混音大師綜合認證 */}
             <div style={{
-                margin: '4rem 0', padding: '4rem 2rem', textAlign: 'center',
+                margin: '4rem 0', padding: isMobile ? '2.5rem 1.5rem' : '4rem 2rem', textAlign: 'center',
                 background: 'rgba(56, 189, 248, 0.03)', borderRadius: '24px',
                 border: '2px solid #38bdf8', boxShadow: '0 0 40px rgba(56, 189, 248, 0.1)'
             }}>
                 <span style={{ fontSize: '0.8rem', color: '#38bdf8', fontWeight: 'bold', letterSpacing: '4px' }}>FINAL EXAM</span>
-                <h2 style={{ color: '#fff', fontSize: '2.2rem', margin: '1rem 0' }}>大師綜合認證</h2>
-                <p style={{ color: '#94a3b8', marginBottom: '2.5rem' }}>挑戰 10 題實戰模擬。拿取 Lifreedom Studio 結業證書。</p>
-                <Link href="/certification" style={{ display: 'inline-block', padding: '1.2rem 4rem', background: '#38bdf8', color: '#020617', textDecoration: 'none', fontSize: '1.3rem', fontWeight: '900', borderRadius: '50px' }}>
+                <h2 style={{ color: '#fff', fontSize: isMobile ? '1.8rem' : '2.2rem', margin: '1rem 0' }}>大師綜合認證</h2>
+                <p style={{ color: '#94a3b8', marginBottom: '2.5rem', fontSize: isMobile ? '0.95rem' : '1rem' }}>挑戰 10 題實戰模擬。拿取 Lifreedom Studio 結業證書。</p>
+                <Link href="/certification" style={{ display: 'inline-block', padding: '1rem 2rem', background: '#38bdf8', color: '#020617', textDecoration: 'none', fontSize: isMobile ? '1rem' : '1.3rem', fontWeight: '900', borderRadius: '50px' }}>
                     🎯 開始專業認證考試
                 </Link>
             </div>
