@@ -23,7 +23,21 @@ export default function RootLayout({
   return (
     <html lang="zh-TW">
       <body className={inter.className} style={{ margin: 0, padding: 0, backgroundColor: '#020617', color: '#f8fafc' }}>
-
+        {/* 🚨 偵測如果是 LINE 或 FB 內建瀏覽器，強制跳出警告 */}
+        {typeof window !== 'undefined' && /Line|FBAN|FBAV/i.test(navigator.userAgent) && (
+          <div style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999,
+            background: '#020617', display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center', padding: '2rem', textAlign: 'center'
+          }}>
+            <span style={{ fontSize: '3rem' }}>⚠️</span>
+            <h2 style={{ color: '#fbbf24', margin: '1.5rem 0' }}>請使用系統瀏覽器開啟</h2>
+            <p style={{ color: '#94a3b8', lineHeight: '1.6' }}>
+              為了確保 Google 登入安全，請點擊右上角的 <b style={{ color: '#fff' }}>「三個點 ··· 」</b> <br />
+              並選擇 <b style={{ color: '#38bdf8' }}>「在瀏覽器中（Chrome/Safari）開啟」</b>
+            </p>
+          </div>
+        )}
         {/* 🗺️ 全站置頂導覽列 (Navbar) */}
         <nav style={{
           position: 'sticky',
