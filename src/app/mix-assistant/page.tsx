@@ -2,47 +2,9 @@
 import { useState, useRef, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-  <h1 style={{ fontSize: '2rem' }}>AI 混音助理</h1>
-  <div style={{ display: 'flex', gap: '10px' }}>
-    <Link href="/collection" style={{ padding: '0.6rem 1.2rem', background: 'rgba(251, 191, 36, 0.1)', border: '1px solid #fbbf24', borderRadius: '8px', textDecoration: 'none', color: '#fbbf24', fontWeight: 'bold' }}>📜 我的圖鑑</Link>
-    <Link href="/courses" style={{ padding: '0.6rem 1.2rem', background: 'rgba(255,255,255,0.1)', borderRadius: '8px', textDecoration: 'none', color: '#fff' }}>📚 返回道場</Link>
-  </div>
-  {/* 🔝 助理頁面頂部導航 */}
-  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-    <h1 style={{ fontSize: '2rem' }}>AI 混音助理</h1>
-    <div style={{ display: 'flex', gap: '12px' }}>
-      {/* 📜 新增的圖鑑入口 */}
-      <Link href="/collection" style={{
-        padding: '0.6rem 1.2rem',
-        background: 'rgba(251, 191, 36, 0.1)',
-        border: '1px solid #fbbf24',
-        borderRadius: '8px',
-        textDecoration: 'none',
-        color: '#fbbf24',
-        fontWeight: 'bold',
-        transition: 'all 0.2s'
-      }}
-        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(251, 191, 36, 0.2)'}
-        onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(251, 191, 36, 0.1)'}
-      >
-        📜 魔法圖鑑
-      </Link>
+import { supabase } from '@/lib/supabase'; // 👈 確保導線接通
 
-      <Link href="/courses" style={{
-        padding: '0.6rem 1.2rem',
-        background: 'rgba(255,255,255,0.1)',
-        borderRadius: '8px',
-        textDecoration: 'none',
-        color: '#fff',
-        fontWeight: 'bold'
-      }}>
-        📚 返回修煉道場
-      </Link>
-    </div>
-  </div>
-</div>
-// 🃏 傳說級卡牌資料庫
+// 🃏 傳說級卡牌資料庫 (放在組件外，節省運算資源)
 const MAGIC_CARDS = [
   {
     id: 'pingpong',
@@ -109,6 +71,17 @@ function AssistantContent() {
 
   const searchParams = useSearchParams();
   const queryParam = searchParams.get('query');
+
+  // 🛡️ 守門員邏輯：進入包廂前先驗票
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.push('/login');
+      }
+    };
+    checkUser();
+  }, [router]);
 
   useEffect(() => {
     if (queryParam) {
@@ -202,9 +175,24 @@ function AssistantContent() {
 
   return (
     <div className="container" style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto', color: '#fff' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2rem' }}>AI 混音助理</h1>
-        <Link href="/courses" style={{ padding: '0.6rem 1.2rem', background: 'rgba(255,255,255,0.1)', borderRadius: '8px', textDecoration: 'none', color: '#fff' }}>📚 返回修煉道場</Link>
+
+      {/* 🔝 助理頁面頂部導航 - 修正結構後的單一版本 */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
+        <h1 style={{ fontSize: '2rem', margin: 0 }}>AI 混音助理</h1>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <Link href="/collection" style={{
+            padding: '0.6rem 1.2rem', background: 'rgba(251, 191, 36, 0.1)', border: '1px solid #fbbf24',
+            borderRadius: '8px', textDecoration: 'none', color: '#fbbf24', fontWeight: 'bold', fontSize: '0.9rem'
+          }}>
+            📜 魔法圖鑑
+          </Link>
+          <Link href="/courses" style={{
+            padding: '0.6rem 1.2rem', background: 'rgba(255,255,255,0.1)', borderRadius: '8px',
+            textDecoration: 'none', color: '#fff', fontWeight: 'bold', fontSize: '0.9rem'
+          }}>
+            📚 返回道場
+          </Link>
+        </div>
       </div>
 
       <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexDirection: 'column' }}>
@@ -227,28 +215,23 @@ function AssistantContent() {
         </div>
       </div>
 
-      {/* ✨ 補全後的靈感標籤區 */}
       <div style={{ marginBottom: '1.5rem', background: 'rgba(20,20,30,0.6)', padding: '1.5rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.1)' }}>
         <h3 style={{ marginBottom: '1rem', color: '#fca311', fontSize: '1.1rem' }}>✨ 今天混音卡在哪裡？讓我給你一點靈感</h3>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
           <button style={pillStyle} onClick={() => setPrompt('🎛️ 想問 Plugin 的具體功能與推薦設定：')}>🎛️ Plugin 功能與設定</button>
           <button style={pillStyle} onClick={() => setPrompt('🌫️ 為什麼聲音聽起來很糊？這是我目前的設定：')}>🌫️ 為什麼聲音聽起來很糊？</button>
           <button style={pillStyle} onClick={() => setPrompt('🥁 鼓組的打擊感出不來怎麼調？')}>🥁 鼓組打擊感優化</button>
-
-          {/* 補回選項 */}
           <button style={pillStyle} onClick={() => setPrompt('💡 我目前的 Project 裡有一軌音軌，我不知道該對它做什麼處理比較好，請幫我分析：')}>💡 我有一軌不知道該對它做什麼</button>
           <button style={pillStyle} onClick={() => setPrompt('🤖 我上傳了一個 AI 生成的音檔，請針對數位雜訊與頻率分佈提供優化建議：')}>🤖 AI 音檔音質優化</button>
-
-          {/* 📂 導師引導模式 */}
           <button style={goldenPillStyle} onClick={() => setPrompt('📂 我現在面對一整個混音專案，完全不知道該從何下手。請擔任我的「混音導師」，從 Gain Staging 開始一步步引導我，並在每個階段詢問我的進度與問題：')}>🎯 一整個專案不知從何下手？</button>
-
           <button style={specialPillStyle} onClick={() => router.push('/courses')}>📚 我想瞭解更多理論</button>
         </div>
       </div>
 
       <div style={{ marginBottom: '2rem' }}>
-        <textarea rows={4} value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="輸入問題..." style={{ width: '100%', padding: '1rem', borderRadius: '0.5rem', background: '#111', color: '#fff', border: '1px solid #333' }} />
+        <textarea rows={4} value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="輸入問題..." style={{ width: '100%', padding: '1rem', borderRadius: '0.5rem', background: '#111', color: '#fff', border: '1px solid #333', fontSize: '1rem' }} />
       </div>
+
       <div style={{ display: 'flex', gap: '1rem' }}>
         <button onClick={handleAnalyze} disabled={loading} style={{ flex: 3, padding: '1.2rem', fontSize: '1.2rem', fontWeight: 'bold', background: '#d90429', border: 'none', borderRadius: '0.5rem', color: 'white', cursor: 'pointer' }}>
           {loading ? 'AI 聽診中...' : '發送診斷 🚀'}
@@ -296,6 +279,7 @@ function AssistantContent() {
   );
 }
 
+// 🏆 最終導出頁面：使用 Suspense 包裹以支援 useSearchParams
 export default function MixAssistantPage() {
   return (
     <Suspense fallback={<div style={{ color: 'white', textAlign: 'center', paddingTop: '5rem' }}>混音助理載入中...</div>}>

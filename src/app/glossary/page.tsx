@@ -1,7 +1,8 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 // 📖 混音魔導書：終極字彙庫 (全 42 條)
 const DICTIONARY = [
     // --- 第一卷：DAW 基礎與錄音 ---
@@ -70,6 +71,18 @@ const DICTIONARY = [
 const CATEGORIES = ["全部", "基礎與錄音", "物理與聲學", "外掛法器", "壓縮器派系", "鼓組解剖", "混音神技", "系統與母帶"];
 
 export default function GlossaryPage() {
+    const router = useRouter();
+
+    // 👇 佈署守門員
+    useEffect(() => {
+        const checkUser = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                router.push('/login');
+            }
+        };
+        checkUser();
+    }, [router]);
     const [activeTab, setActiveTab] = useState("全部");
     const [searchTerm, setSearchTerm] = useState("");
 

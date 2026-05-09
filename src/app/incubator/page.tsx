@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from 'react';
-
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 // 定義樂器配置與檔案路徑
 const INSTRUMENTS = [
     { id: 'vocal', name: '🎤 主唱 (Vocal)', color: '#fff', file: '/audio/vocal.mp3' },
@@ -31,6 +32,18 @@ const PRESETS = {
 type PanState = Record<string, number>;
 
 export default function IncubatorPage() {
+    const router = useRouter();
+
+    // 👇 佈署守門員：頁面一載入就檢查有沒有入場券
+    useEffect(() => {
+        const checkUser = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                router.push('/login'); // 沒票就踢去登入頁面
+            }
+        };
+        checkUser();
+    }, [router]);
     const [panVals, setPanVals] = useState<PanState>(PRESETS.mono.pan);
     const [activePreset, setActivePreset] = useState<string>('mono');
     const [infoText, setInfoText] = useState(PRESETS.mono.desc);

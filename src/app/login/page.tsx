@@ -1,54 +1,71 @@
 "use client";
-import { login } from '@/app/auth/actions';
-import Link from 'next/link';
-import { use, useTransition } from 'react';
+import { useState } from 'react';
+// 記得確認這行的路徑是不是對應到你的 supabase 檔案
+import { supabase } from '@/lib/supabase';
 
-export default function LoginPage({ searchParams }: { searchParams: Promise<{ message?: string }> }) {
-  const resolvedSearchParams = use(searchParams);
-  const [isPending, startTransition] = useTransition();
+export default function LoginPage() {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
 
-  // 這是我們的「緩衝處理器」，確保動作能安全執行
-  const handleSubmit = async (formData: FormData) => {
-    startTransition(async () => {
-      await login(formData);
+  const handleMagicLinkLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage('');
+
+    // 這裡呼叫 Supabase 的 Magic Link 功能
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        // 設定登入成功後要跳轉回哪裡（自動抓取當前網址）
+        emailRedirectTo: window.location.origin,
+      },
     });
+
+    if (error) {
+      setMessage('❌ 發生錯誤，請稍後再試：' + error.message);
+    } else {
+      setMessage('✨ 魔法連結已發送！請去信箱點擊連結登入。');
+    }
+    setLoading(false);
   };
 
   return (
-    <div className="container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-      <div className="glass-panel" style={{ width: '100%', maxWidth: '400px', padding: '2rem' }}>
-        <h2 style={{ fontSize: '1.5rem', marginBottom: '2rem', textAlign: 'center' }}>Log In</h2>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#020617', padding: '2rem' }}>
+      <div style={{ background: '#0f172a', padding: '3rem 2rem', borderRadius: '24px', border: '1px solid #1e293b', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
+        <h2 style={{ color: '#fff', marginBottom: '1.5rem', fontSize: '1.8rem' }}>進入聲學建築所</h2>
+        <p style={{ color: '#94a3b8', marginBottom: '2rem', fontSize: '0.95rem', lineHeight: '1.6' }}>
+          無須記憶密碼。<br />輸入 Email，我們將發送專屬的魔法入場券給您。
+        </p>
 
-        <form action={handleSubmit}>
-          <div className="form-group">
-            <label className="label" htmlFor="email">Email</label>
-            <input className="input-field" id="email" name="email" type="email" required />
-          </div>
-
-          <div className="form-group">
-            <label className="label" htmlFor="password">Password</label>
-            <input className="input-field" id="password" name="password" type="password" required />
-          </div>
-
-          {resolvedSearchParams?.message && (
-            <div style={{ color: 'red', marginBottom: '1rem', fontSize: '0.9rem' }}>
-              {resolvedSearchParams.message}
-            </div>
-          )}
-
+        <form onSubmit={handleMagicLinkLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <input
+            type="email"
+            placeholder="請輸入您的 Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            style={{
+              padding: '1rem', borderRadius: '12px', border: '1px solid #334155', background: '#020617', color: '#fff', fontSize: '1rem', outline: 'none'
+            }}
+          />
           <button
             type="submit"
-            className="btn-primary"
-            disabled={isPending}
-            style={{ width: '100%', marginTop: '1rem' }}
+            disabled={loading}
+            style={{
+              padding: '1rem', borderRadius: '12px', background: loading ? '#475569' : '#38bdf8', color: '#020617', fontWeight: 'bold', fontSize: '1.1rem', border: 'none', cursor: loading ? 'not-allowed' : 'pointer', transition: 'background 0.2s'
+            }}
           >
-            {isPending ? 'Logging in...' : 'Log In'}
+            {loading ? '發送中...' : '✨ 獲取魔法連結'}
           </button>
         </form>
 
-        <div style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.9rem' }}>
-          Don't have an account? <Link href="/register" style={{ color: 'var(--primary-color)' }}>Sign Up</Link>
-        </div>
+        {/* 顯示成功或失敗的訊息 */}
+        {message && (
+          <div style={{ marginTop: '1.5rem', padding: '1rem', borderRadius: '12px', background: message.includes('✨') ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)', color: message.includes('✨') ? '#10b981' : '#ef4444', fontSize: '0.9rem', lineHeight: '1.5' }}>
+            {message}
+          </div>
+        )}
       </div>
     </div>
   );

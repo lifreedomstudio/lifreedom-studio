@@ -1,6 +1,8 @@
 "use client";
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 // 📚 魔法圖鑑資料庫 (包含隱藏的未來擴充包)
 const COLLECTION_DATA = [
     {
@@ -66,6 +68,18 @@ const COLLECTION_DATA = [
 ];
 
 export default function CollectionPage() {
+    const router = useRouter();
+
+    // 👇 佈署守門員
+    useEffect(() => {
+        const checkUser = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                router.push('/login');
+            }
+        };
+        checkUser();
+    }, [router]);
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {

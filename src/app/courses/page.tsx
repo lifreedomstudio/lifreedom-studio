@@ -1,12 +1,24 @@
 "use client";
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react'; // 加入 React Hook
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase'; // 👈 1. 補上這行：叫出驗票機器
 
 export default function CoursesPage() {
-    const router = useRouter();
+    const router = useRouter(); // 👈 2. 啟動司機
 
-    // 加入手機版偵測邏輯
+    // 👇 3. 佈署守門員：頁面一載入就檢查有沒有入場券
+    useEffect(() => {
+        const checkUser = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                router.push('/login'); // 沒票就踢去登入頁面
+            }
+        };
+        checkUser();
+    }, [router]);
+
+    // 👇 4. 這是你原本偵測手機版的邏輯
     const [isMobile, setIsMobile] = useState(false);
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -14,6 +26,8 @@ export default function CoursesPage() {
         window.addEventListener('resize', checkMobile);
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
+
+    // --- 下面的 cardStyle 跟其他東西都保留你原本的，不要動！ ---
 
     // 🎨 統一卡片樣式設定
     const cardStyle = {
