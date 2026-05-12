@@ -19,7 +19,7 @@ export default function LoginPage() {
       options: {
         // 🚨 終極解法：使用 window.location.origin 
         // 這樣不管是 localhost 還是 Vercel，它都會自動抓取「當下最正確、且沒有多餘斜線」的主網址
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: 'https://lifreedom-studio.vercel.app',
       },
     });
 
