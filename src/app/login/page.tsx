@@ -16,8 +16,10 @@ export default function LoginPage() {
     // 這裡呼叫 Supabase 的 Magic Link 功能
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      // 🚨 終極拆彈：把 options 和 emailRedirectTo 徹！底！刪！除！
-      // 不帶任何參數，Supabase 就會無腦跳回你後台設定好的 Site URL。
+      options: {
+        // 🚨 把人送到這個不會踢人的過渡頁面解析 Token
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
     });
     if (error) {
       setMessage('❌ 發生錯誤，請稍後再試：' + error.message);
