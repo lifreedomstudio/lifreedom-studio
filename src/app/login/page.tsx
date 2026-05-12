@@ -13,12 +13,11 @@ export default function LoginPage() {
     setLoading(true);
     setMessage('');
 
+    // 這裡呼叫 Supabase 的 Magic Link 功能
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: {
-        // 聰明解法：抓取當下網址，並指定登入後直接去 /courses 大廳
-        emailRedirectTo: `${window.location.origin}/courses`,
-      },
+      // 🚨 終極拆彈：把 options 和 emailRedirectTo 徹！底！刪！除！
+      // 不帶任何參數，Supabase 就會無腦跳回你後台設定好的 Site URL。
     });
     if (error) {
       setMessage('❌ 發生錯誤，請稍後再試：' + error.message);

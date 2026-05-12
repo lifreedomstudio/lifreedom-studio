@@ -8,25 +8,36 @@ export default function CoursesPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(true); // 👈 1. 新增驗票讀取狀態
 
-    // 👇 2. 佈署守門員：耐力加強版（給 Magic Link 緩衝時間）
     useEffect(() => {
+        // 1. 啟動自動感應門：監聽有沒有人剛拿著魔法連結進來
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN') {
+                setLoading(false); // 驗票成功，放行！
+            }
+        });
+
         const checkUser = async () => {
             const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                // 如果第一時間沒看到 session，再深度檢查一次 user
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user) {
-                    router.push('/login'); // 真的沒票，才踢回登入頁
-                } else {
-                    setLoading(false); // 有票，放行
-                }
-            } else {
-                setLoading(false); // 有票，放行
+
+            // 🚨 關鍵防護：檢查網址列有沒有帶著 Token (?code= 或 #access_token=)
+            // 如果網址上有這些東西，代表他是剛從信箱點過來的，絕對不能踢他！要等系統處理！
+            const hasAuthToken = window.location.hash.includes('access_token') || window.location.search.includes('code=');
+
+            if (!session && !hasAuthToken) {
+                // 真的沒票，而且身上也沒帶信箱連結，才踢回登入頁
+                router.push('/login');
+            } else if (session) {
+                setLoading(false);
             }
         };
-        checkUser();
-    }, [router]);
 
+        checkUser();
+
+        // 關閉頁面時把感應門關掉
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, [router]);
     // 👇 3. 這是你原本偵測手機版的邏輯 (保持不變)
     const [isMobile, setIsMobile] = useState(false);
     useEffect(() => {
