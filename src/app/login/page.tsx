@@ -17,12 +17,10 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        // 🚨 終極解法：使用 window.location.origin 
-        // 這樣不管是 localhost 還是 Vercel，它都會自動抓取「當下最正確、且沒有多餘斜線」的主網址
+        // 🚨 核彈解法：直接寫死最乾淨的正式網址，一字不差！
         emailRedirectTo: 'https://lifreedom-studio.vercel.app',
       },
     });
-
     if (error) {
       setMessage('❌ 發生錯誤，請稍後再試：' + error.message);
     } else {
