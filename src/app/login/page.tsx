@@ -13,12 +13,11 @@ export default function LoginPage() {
     setLoading(true);
     setMessage('');
 
-    // 這裡呼叫 Supabase 的 Magic Link 功能
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        // 🚨 核彈解法：直接寫死最乾淨的正式網址，一字不差！
-        emailRedirectTo: 'https://lifreedom-studio.vercel.app',
+        // 聰明解法：抓取當下網址，並指定登入後直接去 /courses 大廳
+        emailRedirectTo: `${window.location.origin}/courses`,
       },
     });
     if (error) {
