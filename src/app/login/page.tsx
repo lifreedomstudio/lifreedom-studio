@@ -17,7 +17,8 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        // 設定登入成功後要跳轉回哪裡（自動抓取當前網址）
+        // 🚨 終極解法：使用 window.location.origin 
+        // 這樣不管是 localhost 還是 Vercel，它都會自動抓取「當下最正確、且沒有多餘斜線」的主網址
         emailRedirectTo: window.location.origin,
       },
     });

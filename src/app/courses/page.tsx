@@ -5,20 +5,29 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase'; // 👈 1. 補上這行：叫出驗票機器
 
 export default function CoursesPage() {
-    const router = useRouter(); // 👈 2. 啟動司機
+    const router = useRouter();
+    const [loading, setLoading] = useState(true); // 👈 1. 新增驗票讀取狀態
 
-    // 👇 3. 佈署守門員：頁面一載入就檢查有沒有入場券
+    // 👇 2. 佈署守門員：耐力加強版（給 Magic Link 緩衝時間）
     useEffect(() => {
         const checkUser = async () => {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) {
-                router.push('/login'); // 沒票就踢去登入頁面
+                // 如果第一時間沒看到 session，再深度檢查一次 user
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    router.push('/login'); // 真的沒票，才踢回登入頁
+                } else {
+                    setLoading(false); // 有票，放行
+                }
+            } else {
+                setLoading(false); // 有票，放行
             }
         };
         checkUser();
     }, [router]);
 
-    // 👇 4. 這是你原本偵測手機版的邏輯
+    // 👇 3. 這是你原本偵測手機版的邏輯 (保持不變)
     const [isMobile, setIsMobile] = useState(false);
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -26,6 +35,18 @@ export default function CoursesPage() {
         window.addEventListener('resize', checkMobile);
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
+
+    // 👇 4. 攔截器：如果還在驗票中，顯示帥氣的過場畫面
+    if (loading) {
+        return (
+            <div style={{ minHeight: '100vh', background: '#020617', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ textAlign: 'center', color: '#38bdf8' }}>
+                    <h2 style={{ letterSpacing: '4px', marginBottom: '1rem' }}>正在驗證聲學通行證...</h2>
+                    <p style={{ color: '#94a3b8' }}>Lifreedom Studio 載入中 🎧</p>
+                </div>
+            </div>
+        );
+    }
 
     // --- 下面的 cardStyle 跟其他東西都保留你原本的，不要動！ ---
 
