@@ -128,9 +128,9 @@ export default function CompressorTrainingRoom() {
                                     <>
                                         <p>把 Compressor 想像成一個<b>正在教訓你的老爸</b>：</p>
                                         <ul style={{ paddingLeft: '1.5rem', marginBottom: 0 }}>
-                                            <li style={{ marginBottom: '0.5rem' }}><b>Threshold (爸爸的容忍度)：</b> 超過這條底線，爸爸就發火開扁。</li>
-                                            <li style={{ marginBottom: '0.5rem' }}><b>Ratio (教訓的武器)：</b> 2:1 是徒手，4:1 是愛的小手，無限大 (Limiter) 就是直接休學。數值越大壓越扁。</li>
-                                            <li style={{ marginBottom: '0.5rem' }}><b>Knee (爸爸的脾氣)：</b> 硬膝 (0) 代表瞬間暴怒開扁；軟膝 (40) 代表會先碎碎念警告，慢慢增加力道。</li>
+                                            <li style={{ marginBottom: '0.5rem' }}><b>Threshold (爸爸的容忍度)：</b> 你犯的錯超過這條底線，爸爸就發火開扁。</li>
+                                            <li style={{ marginBottom: '0.5rem' }}><b>Ratio (教訓的武器)：</b> 2:1 是原子筆，4:1 是愛的小手，無限大 (Limiter) 就是平底鍋。數值越大壓越扁。</li>
+                                            <li style={{ marginBottom: '0.5rem' }}><b>Knee (爸爸的脾氣)：</b>  (0) 代表瞬間暴怒開扁； (40) 代表會先碎碎念警告，慢慢增加力道。</li>
                                             <li style={{ marginBottom: '0.5rem' }}><b>Attack (衝過來的速度)：</b> 衝得慢，你還能先逃跑偷打一下 (保留 Punch)；衝得快，你一出聲就被瞬間按在地上。</li>
                                             <li><b>Release (多久放過你)：</b> 放太快，你又會開始作怪 (抽吸效應)；放太慢，你整天都被壓抑著。</li>
                                         </ul>
