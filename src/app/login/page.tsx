@@ -53,6 +53,12 @@ export default function LoginPage() {
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#020617', padding: '2rem' }}>
       <div style={{ background: '#0f172a', padding: '3rem 2rem', borderRadius: '24px', border: '1px solid #1e293b', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
         <h2 style={{ color: '#fff', marginBottom: '1.5rem', fontSize: '1.8rem' }}>進入聲學建築所</h2>
+
+        {/* 🚨 照妖鏡：用中括號包起來，抓出任何看不見的空白或斜線 */}
+        <p style={{ color: 'yellow', marginBottom: '1rem', fontSize: '0.8rem', wordBreak: 'break-all' }}>
+          Debug 網址: [{process.env.NEXT_PUBLIC_SUPABASE_URL}]
+        </p>
+
         <p style={{ color: '#94a3b8', marginBottom: '2rem', fontSize: '0.95rem', lineHeight: '1.6' }}>
           請設定您的專屬帳號與密碼。
         </p>
