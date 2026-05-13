@@ -1,25 +1,25 @@
 "use client";
 import React, { useState, useRef, useEffect } from 'react';
 
-// 🎯 定義頻率熱區與一體兩面理論
+// 🎯 定義頻率熱區與一體兩面理論 (木吉他版)
 const FREQ_ZONES = [
     {
-        name: '低頻厚度區',
-        range: [200, 350],
-        tags: ['溫暖 ☕️', '厚實 🧱', '鼻音 👃', '混濁 泥濘 🌧️'],
-        theory: '【製作人筆記：溫暖還是泥濘？】\n這就是混音最迷人的矛盾！對單薄的男聲來說，稍微 Boost 這裡能帶來迷人的「胸腔共鳴」與「溫度」；但如果這首歌樂器很多，這裡也是最容易跟 Bass、吉他打架的「混濁區 (Mud)」。\n👉 思考點：你要讓他溫暖，還是要讓整體乾淨？'
+        name: '低頻共鳴區 (Boominess)',
+        range: [100, 250],
+        tags: ['轟轟聲 💣', '溫暖 ☕️', '模糊 🌫️'],
+        theory: '【製作人筆記：溫暖還是轟炸？】\n木吉他的琴身共鳴集中在這裡。適當保留會讓吉他聽起來很大把、很溫暖；但如果這首歌還有貝斯或大鼓，這裡通常是第一個要被 Cut (衰減) 掉的地方，以免低頻大塞車。'
     },
     {
-        name: '中頻穿透區',
-        range: [800, 1500],
-        tags: ['廉價喇叭 📻', '電話聲 ☎️', '咬字清晰 🗣️', '硬朗 🔨'],
-        theory: '【製作人筆記：存在感與大聲公】\n這個頻段像是一個「大聲公」。Boost 它可以讓人聲的咬字瞬間跳到聽眾面前，非常適合在吵雜的搖滾樂中使用；但在抒情歌裡如果太多，聽起來就會很像用「大賣場廣播」或「便宜耳機」在唱歌。\n👉 思考點：這首歌需要攻擊性，還是需要柔和？'
+        name: '紙箱悶音區 (Boxiness)',
+        range: [300, 500],
+        tags: ['紙箱味 📦', '悶悶的 🕳️', '木頭敲擊 🪵'],
+        theory: '【製作人筆記：傳說中的紙箱聲】\n這就是你之前找的「紙箱悶音」！許多在沒有聲學裝潢的房間裡錄製的木吉他，在這個頻段會特別肥大。適度挖空 (Cut) 這裡，可以瞬間讓吉他的聲音變得清脆、有現代流行樂的透明感。'
     },
     {
-        name: '高頻空氣區',
-        range: [3000, 6000],
-        tags: ['刺耳 🔪', '唇齒音 (嘶嘶) 🐍', '明亮 🌟', '親密感 💋'],
-        theory: '【製作人筆記：親密感還是刮黑板？】\n這裡是人類耳朵最敏感的區域！適當的存在能讓人聲聽起來非常「昂貴、有空氣感」，彷彿歌手就在你耳邊唱歌；但如果過多，那些「嘶 (S)」、「ㄘ (T)」的氣音就會像指甲刮黑板一樣讓人煩躁。\n👉 思考點：距離感要拉多近？'
+        name: '清脆撥弦區 (Presence)',
+        range: [2000, 5000],
+        tags: ['清脆 💎', '金屬弦聲 🎸', '刺耳 刮耳 🔪'],
+        theory: '【製作人筆記：清脆還是刺耳？】\n這裡是木吉他「鋼弦」摩擦與彈撥的聲音。Boost (放大) 這裡會讓刷扣的聲音非常明亮、有穿透力，在密集的編曲中很容易跳出來；但如果推太多，聽久了耳朵會非常容易疲勞。'
     }
 ];
 
@@ -50,8 +50,8 @@ export default function EQDictionaryRoom() {
             audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
         }
         try {
-            // 🚨 這裡記得放你準備好的人聲檔案路徑
-            const response = await fetch('/audio/vocal-dry.mp3');
+            // 🚨 這裡改回你原本的木吉他路徑
+            const response = await fetch('/guitar-loop.mp3');
             const arrayBuffer = await response.arrayBuffer();
             bufferRef.current = await audioCtxRef.current.decodeAudioData(arrayBuffer);
         } catch (e) {
