@@ -1,14 +1,50 @@
 "use client";
 import { useState, useRef, useEffect } from 'react';
 
+// 🎯 定義壓縮器情境關卡
+const MISSIONS = [
+    {
+        id: 'drum_punch',
+        title: '第一關：找回大鼓的重拳 (Punch)',
+        desc: '這組全套鼓聽起來軟趴趴的。請設定「慢一點的 Attack」讓大鼓的開頭溜過去，並加上適當的 Ratio 把尾音壓下去，讓聲音變結實！',
+        target: { threshold: -20, ratio: 4, attack: 30, release: 50, knee: 10 },
+        file: '/drum-loop.mp3'
+    },
+    {
+        id: 'drum_glue',
+        title: '第二關：全套鼓的膠水 (Glue)',
+        desc: '鼓組裡面的各個樂器聽起來像是各打各的。試著把 Threshold 壓深一點，Attack 調快，Release 放慢，讓所有鼓聲被「黏」在一起。',
+        target: { threshold: -30, ratio: 8, attack: 5, release: 250, knee: 30 },
+        file: '/drum-loop.mp3'
+    },
+    {
+        id: 'vocal_leveling',
+        title: '第三關：馴服失控的主唱 (Vocal Leveling)',
+        desc: '主唱的動態太大了！副歌突然爆發的音量會刺傷耳朵。請設定「極快的 Attack」瞬間抓住那些突發的音量，並用「軟膝 (Soft Knee)」讓壓縮聽起來平滑自然。',
+        target: { threshold: -25, ratio: 4, attack: 3, release: 150, knee: 35 },
+        file: '/vocal-dry.mp3'
+    },
+    {
+        id: 'guitar_strum',
+        title: '第四關：木吉他的平穩刷扣 (Acoustic Strumming)',
+        desc: '木吉他的刷扣 (Pick) 聲音太突兀了，會干擾到主唱。請適度壓低 Threshold 並用中等的 Attack，把那些太刺耳的金屬撞擊聲給撫平。',
+        target: { threshold: -22, ratio: 3, attack: 15, release: 100, knee: 20 },
+        file: '/guitar-loop.mp3'
+    }
+];
+
 export default function CompressorTrainingRoom() {
+    const [missionIdx, setMissionIdx] = useState(0);
+    const currentMission = MISSIONS[missionIdx];
+
     const [gameState, setGameState] = useState<'playing' | 'answer'>('playing');
     const [isPlaying, setIsPlaying] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [showTips, setShowTips] = useState(false);
     const [tipTab, setTipTab] = useState<'dad' | 'wiwi'>('dad');
 
-    // 🚨 新增：避開 React 渲染地獄，專門用來跑 60fps 動畫的 Refs
+    const [isHearingMaster, setIsHearingMaster] = useState(false);
+
     const isPlayingRef = useRef(false);
     const grBarRef = useRef<HTMLDivElement>(null);
     const grTextRef = useRef<HTMLSpanElement>(null);
@@ -20,31 +56,26 @@ export default function CompressorTrainingRoom() {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    // 🎚️ 參數狀態
-    const [userSettings, setUserSettings] = useState({ threshold: -20, ratio: 4, attack: 15, release: 150, knee: 15 });
-    const [targetSettings, setTargetSettings] = useState({ threshold: -35, ratio: 8, attack: 5, release: 100, knee: 30 });
+    const [userSettings, setUserSettings] = useState({ threshold: -10, ratio: 2, attack: 50, release: 300, knee: 20 });
 
     const audioCtxRef = useRef<AudioContext | null>(null);
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const compRef = useRef<DynamicsCompressorNode | null>(null);
     const animationRef = useRef<number>(0);
 
-    const generateChallenge = () => {
-        setTargetSettings({
-            threshold: Math.floor(Math.random() * -30) - 15,
-            ratio: Math.floor(Math.random() * 10) + 2,
-            attack: Math.floor(Math.random() * 40) + 5,
-            release: Math.floor(Math.random() * 300) + 50,
-            knee: Math.floor(Math.random() * 40)
-        });
-    };
+    // 🚨 修復邏輯炸彈：當關卡改變時，自動更換錄音帶
+    useEffect(() => {
+        if (audioRef.current) {
+            audioRef.current.src = currentMission.file;
+            audioRef.current.load();
+        }
+    }, [currentMission.file]);
 
     const togglePlay = () => {
         if (!audioCtxRef.current) {
             const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
             audioCtxRef.current = ctx;
-            // 🚨 這裡已經幫你換成 drum-loop.mp3 了
-            const audio = new Audio('/drum-loop.mp3');
+            const audio = new Audio(currentMission.file);
             audio.loop = true;
             audioRef.current = audio;
 
@@ -54,40 +85,31 @@ export default function CompressorTrainingRoom() {
 
             source.connect(compressor);
             compressor.connect(ctx.destination);
-            generateChallenge();
+            // 🐛 移除了舊版的 generateChallenge()
         }
 
         if (isPlaying) {
             audioRef.current?.pause();
-            isPlayingRef.current = false; // 同步關閉動畫鎖
+            isPlayingRef.current = false;
             cancelAnimationFrame(animationRef.current);
-            // 停止時，直接把紅色條歸零
             if (grBarRef.current) grBarRef.current.style.width = '0%';
             if (grTextRef.current) grTextRef.current.innerText = '0.0 dB';
         } else {
             audioCtxRef.current?.resume();
-            audioRef.current?.play();
-            isPlayingRef.current = true; // 開啟動畫鎖
+            audioRef.current?.play().catch(e => console.error("播放失敗", e));
+            isPlayingRef.current = true;
             updateAnimation();
         }
         setIsPlaying(!isPlaying);
     };
 
-    // 🚨 全新升級的 60fps 動畫引擎
     const updateAnimation = () => {
-        if (!isPlayingRef.current) return; // 如果已經按暫停，就立刻停止迴圈
-
+        if (!isPlayingRef.current) return;
         if (compRef.current) {
             const reduction = compRef.current.reduction;
             const currentGR = typeof reduction === 'number' ? reduction : (reduction as any).value;
-
-            // 🔥 直接操控 DOM 元素，不觸發 React 重新渲染！
-            if (grBarRef.current) {
-                grBarRef.current.style.width = `${Math.min(100, Math.abs(currentGR || 0) * 5)}%`;
-            }
-            if (grTextRef.current) {
-                grTextRef.current.innerText = `${(currentGR || 0).toFixed(1)} dB`;
-            }
+            if (grBarRef.current) grBarRef.current.style.width = `${Math.min(100, Math.abs(currentGR || 0) * 5)}%`;
+            if (grTextRef.current) grTextRef.current.innerText = `${(currentGR || 0).toFixed(1)} dB`;
         }
         animationRef.current = requestAnimationFrame(updateAnimation);
     };
@@ -95,15 +117,22 @@ export default function CompressorTrainingRoom() {
     useEffect(() => {
         if (!compRef.current || !audioCtxRef.current) return;
         const ctx = audioCtxRef.current;
-        compRef.current.threshold.setTargetAtTime(userSettings.threshold, ctx.currentTime, 0.05);
-        compRef.current.ratio.setTargetAtTime(userSettings.ratio, ctx.currentTime, 0.05);
-        compRef.current.attack.setTargetAtTime(userSettings.attack / 1000, ctx.currentTime, 0.05);
-        compRef.current.release.setTargetAtTime(userSettings.release / 1000, ctx.currentTime, 0.05);
-        compRef.current.knee.setTargetAtTime(userSettings.knee, ctx.currentTime, 0.05);
-    }, [userSettings]);
+        const activeSettings = isHearingMaster ? currentMission.target : userSettings;
+
+        compRef.current.threshold.setTargetAtTime(activeSettings.threshold, ctx.currentTime, 0.05);
+        compRef.current.ratio.setTargetAtTime(activeSettings.ratio, ctx.currentTime, 0.05);
+        compRef.current.attack.setTargetAtTime(activeSettings.attack / 1000, ctx.currentTime, 0.05);
+        compRef.current.release.setTargetAtTime(activeSettings.release / 1000, ctx.currentTime, 0.05);
+        compRef.current.knee.setTargetAtTime(activeSettings.knee, ctx.currentTime, 0.05);
+    }, [userSettings, isHearingMaster, currentMission]);
+
+    const nextMission = () => {
+        setMissionIdx((prev) => (prev + 1) % MISSIONS.length);
+        setGameState('playing');
+        setUserSettings({ threshold: -10, ratio: 2, attack: 50, release: 300, knee: 20 });
+    };
 
     const CompareRow = ({ label, user, target, unit, color, min, max }: any) => (
-        /* ...這部分維持原樣，不需要動... */
         <div style={{ marginBottom: '1.5rem', background: '#0f172a', padding: '1rem', borderRadius: '12px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
                 <span style={{ fontWeight: 'bold' }}>{label}</span>
@@ -116,14 +145,14 @@ export default function CompressorTrainingRoom() {
         </div>
     );
 
-    // 下面就是 return (...) 了
-
     return (
         <div style={{ minHeight: '100vh', background: '#020617', color: '#fff', padding: isMobile ? '1.5rem 1rem' : '2rem' }}>
             <div style={{ maxWidth: '800px', margin: '0 auto' }}>
                 <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                     <h1 style={{ color: '#fbbf24', fontSize: isMobile ? '1.8rem' : '2.5rem', margin: '0 0 0.5rem 0' }}>⚔️ 壓縮器道場</h1>
-                    <p style={{ color: '#94a3b8', fontSize: '0.95rem' }}>聽出大師的設定！觀察 Gain Reduction (GR) 表，找出隱藏的參數。</p>
+                    <span style={{ color: '#38bdf8', fontWeight: 'bold', fontSize: '0.9rem', letterSpacing: '2px' }}>MISSION {missionIdx + 1} / {MISSIONS.length}</span>
+                    <h2 style={{ fontSize: '1.5rem', margin: '0.5rem 0' }}>{currentMission.title}</h2>
+                    <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.5' }}>{currentMission.desc}</p>
                 </div>
 
                 {/* 📖 知識補帖：道場秘笈 */}
@@ -175,11 +204,9 @@ export default function CompressorTrainingRoom() {
 
                         {/* GR 儀表板 */}
                         <div style={{ background: '#020617', height: '60px', borderRadius: '12px', marginBottom: '2.5rem', position: 'relative', overflow: 'hidden', border: '1px solid #334155', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.8)' }}>
-                            {/* 🚨 這裡加上了 ref={grBarRef}，並且把 width 初始值設為 0% */}
                             <div ref={grBarRef} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0%', background: '#ef4444', transition: 'width 0.05s linear' }}></div>
                             <div style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 1.5rem', fontWeight: 'bold' }}>
                                 <span style={{ color: '#fca311', fontSize: isMobile ? '0.85rem' : '1rem', letterSpacing: '1px' }}>GAIN REDUCTION</span>
-                                {/* 🚨 這裡加上了 ref={grTextRef} */}
                                 <span ref={grTextRef} style={{ color: '#fff', textShadow: '0 0 5px #000' }}>0.0 dB</span>
                             </div>
                         </div>
@@ -237,14 +264,29 @@ export default function CompressorTrainingRoom() {
                                 </div>
                             </div>
                         </div>
-
                         {/* 動作按鈕 */}
-                        <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '1rem' }}>
-                            <button onClick={togglePlay} style={{ flex: 1, padding: '1.2rem', borderRadius: '12px', background: isPlaying ? '#ef4444' : '#10b981', color: '#fff', border: 'none', fontSize: '1.1rem', fontWeight: '900', cursor: 'pointer' }}>
-                                {isPlaying ? '⏹️ 停止播放' : '🔊 播放測試大鼓'}
-                            </button>
-                            <button onClick={() => { if (isPlaying) { setIsPlaying(false); audioRef.current?.pause(); } setGameState('answer'); }} style={{ flex: 1, padding: '1.2rem', borderRadius: '12px', border: '2px solid #fbbf24', color: '#fbbf24', background: 'transparent', fontSize: '1.1rem', fontWeight: '900', cursor: 'pointer' }}>
-                                ⚔️ 提交解答，對決大師
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <div style={{ display: 'flex', gap: '1rem', flexDirection: isMobile ? 'column' : 'row' }}>
+                                <button onClick={togglePlay} style={{ flex: 1, padding: '1.2rem', borderRadius: '12px', background: isPlaying ? '#ef4444' : '#10b981', color: '#fff', border: 'none', fontSize: '1.1rem', fontWeight: '900', cursor: 'pointer' }}>
+                                    {isPlaying ? '⏹️ 停止播放' : '🔊 播放測試音軌'}
+                                </button>
+
+                                {/* 🚨 神級功能：按住聽大師 A/B Test */}
+                                <button
+                                    onMouseDown={() => setIsHearingMaster(true)}
+                                    onMouseUp={() => setIsHearingMaster(false)}
+                                    onMouseLeave={() => setIsHearingMaster(false)}
+                                    onTouchStart={() => setIsHearingMaster(true)}
+                                    onTouchEnd={() => setIsHearingMaster(false)}
+                                    disabled={!isPlaying}
+                                    style={{ flex: 1, padding: '1.2rem', borderRadius: '12px', background: isHearingMaster ? '#38bdf8' : '#1e293b', color: isHearingMaster ? '#020617' : '#38bdf8', border: '2px solid #38bdf8', fontSize: '1.1rem', fontWeight: '900', cursor: isPlaying ? 'pointer' : 'not-allowed', transition: 'all 0.1s' }}
+                                >
+                                    {isHearingMaster ? '🎧 這是大師的聲音' : '👆 長按試聽大師設定'}
+                                </button>
+                            </div>
+
+                            <button onClick={() => { if (isPlaying) { setIsPlaying(false); audioRef.current?.pause(); } setGameState('answer'); }} style={{ width: '100%', padding: '1.2rem', borderRadius: '12px', border: '2px solid #fbbf24', color: '#fbbf24', background: 'transparent', fontSize: '1.1rem', fontWeight: '900', cursor: 'pointer' }}>
+                                ⚔️ 提交解答，看參數落差
                             </button>
                         </div>
                     </div>
@@ -253,14 +295,15 @@ export default function CompressorTrainingRoom() {
                         <h2 style={{ textAlign: 'center', marginBottom: '0.5rem', color: '#fbbf24' }}>大師鑑定報告</h2>
                         <p style={{ textAlign: 'center', color: '#94a3b8', marginBottom: '2rem' }}>來看看你的耳朵有多銳利！</p>
 
-                        <CompareRow label="THRESHOLD (容忍度)" user={userSettings.threshold} target={targetSettings.threshold} unit="dB" color="#fbbf24" min={-60} max={0} />
-                        <CompareRow label="RATIO (武器)" user={userSettings.ratio} target={targetSettings.ratio} unit=":1" color="#38bdf8" min={1} max={20} />
-                        <CompareRow label="KNEE (脾氣)" user={userSettings.knee} target={targetSettings.knee} unit="" color="#ec4899" min={0} max={40} />
-                        <CompareRow label="ATTACK (打擊感)" user={userSettings.attack} target={targetSettings.attack} unit="ms" color="#fca311" min={1} max={100} />
-                        <CompareRow label="RELEASE (呼吸感)" user={userSettings.release} target={targetSettings.release} unit="ms" color="#a78bfa" min={10} max={1000} />
+                        {/* 🐛 修改：全部替換為 currentMission.target 以對接關卡數據 */}
+                        <CompareRow label="THRESHOLD (容忍度)" user={userSettings.threshold} target={currentMission.target.threshold} unit="dB" color="#fbbf24" min={-60} max={0} />
+                        <CompareRow label="RATIO (武器)" user={userSettings.ratio} target={currentMission.target.ratio} unit=":1" color="#38bdf8" min={1} max={20} />
+                        <CompareRow label="KNEE (脾氣)" user={userSettings.knee} target={currentMission.target.knee} unit="" color="#ec4899" min={0} max={40} />
+                        <CompareRow label="ATTACK (打擊感)" user={userSettings.attack} target={currentMission.target.attack} unit="ms" color="#fca311" min={1} max={100} />
+                        <CompareRow label="RELEASE (呼吸感)" user={userSettings.release} target={currentMission.target.release} unit="ms" color="#a78bfa" min={10} max={1000} />
 
-                        <button onClick={() => { setGameState('playing'); generateChallenge(); }} style={{ width: '100%', padding: '1.2rem', borderRadius: '12px', background: '#fbbf24', color: '#020617', border: 'none', fontSize: '1.1rem', fontWeight: '900', cursor: 'pointer', marginTop: '1.5rem' }}>
-                            🔥 挑戰下一回合
+                        <button onClick={nextMission} style={{ width: '100%', padding: '1.2rem', borderRadius: '12px', background: '#fbbf24', color: '#020617', border: 'none', fontSize: '1.1rem', fontWeight: '900', cursor: 'pointer', marginTop: '1.5rem' }}>
+                            🔥 進入下一關
                         </button>
                     </div>
                 )}
