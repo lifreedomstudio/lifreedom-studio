@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from 'react';
 const MISSIONS = [
     {
         id: 'drum_punch',
+        shortName: '🥁 大鼓 Punch', // 🚨 新增這個簡短名稱
         title: '第一關：找回大鼓的重拳 (Punch)',
         desc: '這組全套鼓聽起來軟趴趴的。請設定「慢一點的 Attack」讓大鼓的開頭溜過去，並加上適當的 Ratio 把尾音壓下去，讓聲音變結實！',
         target: { threshold: -20, ratio: 4, attack: 30, release: 50, knee: 10 },
@@ -12,6 +13,7 @@ const MISSIONS = [
     },
     {
         id: 'drum_glue',
+        shortName: '🥁 鼓組 Glue', // 🚨 新增
         title: '第二關：全套鼓的膠水 (Glue)',
         desc: '鼓組裡面的各個樂器聽起來像是各打各的。試著把 Threshold 壓深一點，Attack 調快，Release 放慢，讓所有鼓聲被「黏」在一起。',
         target: { threshold: -30, ratio: 8, attack: 5, release: 250, knee: 30 },
@@ -19,6 +21,7 @@ const MISSIONS = [
     },
     {
         id: 'vocal_leveling',
+        shortName: '🎤 主唱 Leveling', // 🚨 新增
         title: '第三關：馴服失控的主唱 (Vocal Leveling)',
         desc: '主唱的動態太大了！副歌突然爆發的音量會刺傷耳朵。請設定「極快的 Attack」瞬間抓住那些突發的音量，並用「軟膝 (Soft Knee)」讓壓縮聽起來平滑自然。',
         target: { threshold: -25, ratio: 4, attack: 3, release: 150, knee: 35 },
@@ -26,13 +29,13 @@ const MISSIONS = [
     },
     {
         id: 'guitar_strum',
+        shortName: '🎸 吉他 Strum', // 🚨 新增
         title: '第四關：木吉他的平穩刷扣 (Acoustic Strumming)',
         desc: '木吉他的刷扣 (Pick) 聲音太突兀了，會干擾到主唱。請適度壓低 Threshold 並用中等的 Attack，把那些太刺耳的金屬撞擊聲給撫平。',
         target: { threshold: -22, ratio: 3, attack: 15, release: 100, knee: 20 },
         file: '/guitar-loop.mp3'
     }
 ];
-
 export default function CompressorTrainingRoom() {
     const [missionIdx, setMissionIdx] = useState(0);
     const currentMission = MISSIONS[missionIdx];
@@ -131,6 +134,21 @@ export default function CompressorTrainingRoom() {
         setGameState('playing');
         setUserSettings({ threshold: -10, ratio: 2, attack: 50, release: 300, knee: 20 });
     };
+    // 🚨 新增：手動點擊標籤直接跳關
+    const selectMission = (index: number) => {
+        if (isPlaying) {
+            audioRef.current?.pause();
+            isPlayingRef.current = false;
+            setIsPlaying(false);
+            cancelAnimationFrame(animationRef.current);
+        }
+        setMissionIdx(index);
+        setGameState('playing');
+        setUserSettings({ threshold: -10, ratio: 2, attack: 50, release: 300, knee: 20 });
+        // 清空 GR 儀表板
+        if (grBarRef.current) grBarRef.current.style.width = '0%';
+        if (grTextRef.current) grTextRef.current.innerText = '0.0 dB';
+    };
 
     const CompareRow = ({ label, user, target, unit, color, min, max }: any) => (
         <div style={{ marginBottom: '1.5rem', background: '#0f172a', padding: '1rem', borderRadius: '12px' }}>
@@ -149,6 +167,24 @@ export default function CompressorTrainingRoom() {
         <div style={{ minHeight: '100vh', background: '#020617', color: '#fff', padding: isMobile ? '1.5rem 1rem' : '2rem' }}>
             <div style={{ maxWidth: '800px', margin: '0 auto' }}>
                 <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                    {/* 🎵 關卡快速切換 Tabs */}
+                    <div style={{ display: 'flex', gap: '0.8rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '2rem' }}>
+                        {MISSIONS.map((mission, idx) => (
+                            <button
+                                key={mission.id}
+                                onClick={() => selectMission(idx)}
+                                style={{
+                                    padding: '0.6rem 1.2rem', borderRadius: '50px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.3s', fontSize: '0.85rem',
+                                    background: missionIdx === idx ? '#fca311' : '#1e293b',
+                                    color: missionIdx === idx ? '#020617' : '#94a3b8',
+                                    border: `1px solid ${missionIdx === idx ? '#fca311' : '#334155'}`,
+                                    boxShadow: missionIdx === idx ? '0 0 15px rgba(252, 163, 17, 0.4)' : 'none'
+                                }}
+                            >
+                                {mission.shortName}
+                            </button>
+                        ))}
+                    </div>
                     <h1 style={{ color: '#fbbf24', fontSize: isMobile ? '1.8rem' : '2.5rem', margin: '0 0 0.5rem 0' }}>⚔️ 壓縮器道場</h1>
                     <span style={{ color: '#38bdf8', fontWeight: 'bold', fontSize: '0.9rem', letterSpacing: '2px' }}>MISSION {missionIdx + 1} / {MISSIONS.length}</span>
                     <h2 style={{ fontSize: '1.5rem', margin: '0.5rem 0' }}>{currentMission.title}</h2>
