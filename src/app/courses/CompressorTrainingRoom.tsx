@@ -15,16 +15,18 @@ const MISSIONS = [
         id: 'vocal_leveling',
         shortName: '🎤 主唱 Leveling',
         title: '第二關：馴服失控的主唱 (Vocal Leveling)',
-        desc: '主唱的動態太大了！副歌突然爆發的音量會刺傷耳朵。請設定「極快的 Attack」瞬間抓住那些突發的音量，並用「軟膝 (Soft Knee)」讓壓縮聽起來平滑自然。',
-        target: { threshold: -25, ratio: 4, attack: 3, release: 150, knee: 35 },
+        desc: '主唱的動態太大了！副歌突然爆發的音量會刺傷耳朵。請設定「極快的 Attack」瞬間抓住突發音量，並把 Threshold 壓深，強迫壓縮器積極工作！',
+        // 🚨 暴君模式：Threshold 降到 -45，Ratio 拉到 10，Attack 極快，Knee 變硬
+        target: { threshold: -45, ratio: 10, attack: 1, release: 100, knee: 10 },
         file: '/vocal-dry.mp3'
     },
     {
         id: 'guitar_strum',
         shortName: '🎸 吉他 Strum',
         title: '第三關：木吉他的平穩刷扣 (Acoustic Strumming)',
-        desc: '木吉他的刷扣 (Pick) 聲音太突兀了，會干擾到主唱。請適度壓低 Threshold 並用中等的 Attack，把那些太刺耳的金屬撞擊聲給撫平。',
-        target: { threshold: -22, ratio: 3, attack: 15, release: 100, knee: 20 },
+        desc: '木吉他的刷扣 (Pick) 聲音太突兀了，會干擾到主唱。請把 Threshold 壓深，並加快 Attack 的速度，強迫壓縮器把那些太刺耳的金屬撞擊聲給「削平」。',
+        // 🚨 重手塑形模式：Threshold 壓深到 -35，Attack 變快 (5ms) 來抓住 Pick 聲，Ratio 提高到 8
+        target: { threshold: -35, ratio: 8, attack: 5, release: 80, knee: 10 },
         file: '/guitar-loop.mp3'
     }
 ];
