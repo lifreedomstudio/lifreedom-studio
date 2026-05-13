@@ -4,10 +4,14 @@ import { useState, useRef, useEffect } from 'react';
 export default function CompressorTrainingRoom() {
     const [gameState, setGameState] = useState<'playing' | 'answer'>('playing');
     const [isPlaying, setIsPlaying] = useState(false);
-    const [grValue, setGrValue] = useState(0);
     const [isMobile, setIsMobile] = useState(false);
     const [showTips, setShowTips] = useState(false);
-    const [tipTab, setTipTab] = useState<'dad' | 'wiwi'>('dad'); // 秘笈分頁狀態
+    const [tipTab, setTipTab] = useState<'dad' | 'wiwi'>('dad');
+
+    // 🚨 新增：避開 React 渲染地獄，專門用來跑 60fps 動畫的 Refs
+    const isPlayingRef = useRef(false);
+    const grBarRef = useRef<HTMLDivElement>(null);
+    const grTextRef = useRef<HTMLSpanElement>(null);
 
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -16,7 +20,7 @@ export default function CompressorTrainingRoom() {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    // 🎚️ 參數狀態 (新增了 Knee)
+    // 🎚️ 參數狀態
     const [userSettings, setUserSettings] = useState({ threshold: -20, ratio: 4, attack: 15, release: 150, knee: 15 });
     const [targetSettings, setTargetSettings] = useState({ threshold: -35, ratio: 8, attack: 5, release: 100, knee: 30 });
 
@@ -25,14 +29,13 @@ export default function CompressorTrainingRoom() {
     const compRef = useRef<DynamicsCompressorNode | null>(null);
     const animationRef = useRef<number>(0);
 
-    // 隨機出題邏輯
     const generateChallenge = () => {
         setTargetSettings({
             threshold: Math.floor(Math.random() * -30) - 15,
             ratio: Math.floor(Math.random() * 10) + 2,
             attack: Math.floor(Math.random() * 40) + 5,
             release: Math.floor(Math.random() * 300) + 50,
-            knee: Math.floor(Math.random() * 40) // Web Audio API Knee 範圍 0~40
+            knee: Math.floor(Math.random() * 40)
         });
     };
 
@@ -40,7 +43,8 @@ export default function CompressorTrainingRoom() {
         if (!audioCtxRef.current) {
             const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
             audioCtxRef.current = ctx;
-            const audio = new Audio('/drum-loop.mp3'); // 🚨 確保你有大鼓音檔
+            // 🚨 這裡已經幫你換成 drum-loop.mp3 了
+            const audio = new Audio('/drum-loop.mp3');
             audio.loop = true;
             audioRef.current = audio;
 
@@ -55,26 +59,39 @@ export default function CompressorTrainingRoom() {
 
         if (isPlaying) {
             audioRef.current?.pause();
+            isPlayingRef.current = false; // 同步關閉動畫鎖
             cancelAnimationFrame(animationRef.current);
-            setGrValue(0);
+            // 停止時，直接把紅色條歸零
+            if (grBarRef.current) grBarRef.current.style.width = '0%';
+            if (grTextRef.current) grTextRef.current.innerText = '0.0 dB';
         } else {
             audioCtxRef.current?.resume();
             audioRef.current?.play();
+            isPlayingRef.current = true; // 開啟動畫鎖
             updateAnimation();
         }
         setIsPlaying(!isPlaying);
     };
 
+    // 🚨 全新升級的 60fps 動畫引擎
     const updateAnimation = () => {
+        if (!isPlayingRef.current) return; // 如果已經按暫停，就立刻停止迴圈
+
         if (compRef.current) {
             const reduction = compRef.current.reduction;
             const currentGR = typeof reduction === 'number' ? reduction : (reduction as any).value;
-            setGrValue(currentGR || 0);
+
+            // 🔥 直接操控 DOM 元素，不觸發 React 重新渲染！
+            if (grBarRef.current) {
+                grBarRef.current.style.width = `${Math.min(100, Math.abs(currentGR || 0) * 5)}%`;
+            }
+            if (grTextRef.current) {
+                grTextRef.current.innerText = `${(currentGR || 0).toFixed(1)} dB`;
+            }
         }
         animationRef.current = requestAnimationFrame(updateAnimation);
     };
 
-    // 參數即時更新到 Web Audio API
     useEffect(() => {
         if (!compRef.current || !audioCtxRef.current) return;
         const ctx = audioCtxRef.current;
@@ -86,6 +103,7 @@ export default function CompressorTrainingRoom() {
     }, [userSettings]);
 
     const CompareRow = ({ label, user, target, unit, color, min, max }: any) => (
+        /* ...這部分維持原樣，不需要動... */
         <div style={{ marginBottom: '1.5rem', background: '#0f172a', padding: '1rem', borderRadius: '12px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
                 <span style={{ fontWeight: 'bold' }}>{label}</span>
@@ -97,6 +115,8 @@ export default function CompressorTrainingRoom() {
             </div>
         </div>
     );
+
+    // 下面就是 return (...) 了
 
     return (
         <div style={{ minHeight: '100vh', background: '#020617', color: '#fff', padding: isMobile ? '1.5rem 1rem' : '2rem' }}>
@@ -155,10 +175,12 @@ export default function CompressorTrainingRoom() {
 
                         {/* GR 儀表板 */}
                         <div style={{ background: '#020617', height: '60px', borderRadius: '12px', marginBottom: '2.5rem', position: 'relative', overflow: 'hidden', border: '1px solid #334155', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.8)' }}>
-                            <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: `${Math.min(100, Math.abs(grValue) * 5)}%`, background: '#ef4444', transition: 'width 0.05s linear' }}></div>
+                            {/* 🚨 這裡加上了 ref={grBarRef}，並且把 width 初始值設為 0% */}
+                            <div ref={grBarRef} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '0%', background: '#ef4444', transition: 'width 0.05s linear' }}></div>
                             <div style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 1.5rem', fontWeight: 'bold' }}>
                                 <span style={{ color: '#fca311', fontSize: isMobile ? '0.85rem' : '1rem', letterSpacing: '1px' }}>GAIN REDUCTION</span>
-                                <span style={{ color: '#fff', textShadow: '0 0 5px #000' }}>{grValue.toFixed(1)} dB</span>
+                                {/* 🚨 這裡加上了 ref={grTextRef} */}
+                                <span ref={grTextRef} style={{ color: '#fff', textShadow: '0 0 5px #000' }}>0.0 dB</span>
                             </div>
                         </div>
 
