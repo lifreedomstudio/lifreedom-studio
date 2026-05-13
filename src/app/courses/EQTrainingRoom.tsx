@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 // 🎯 定義樂器庫與對應的檔案路徑
 const TRACKS = {
     guitar: { id: 'guitar', name: '🎸 木吉他', file: '/guitar-loop.mp3' },
-    kick: { id: 'kick', name: '🥁 大鼓', file: '/kick-loop.mp3' },
+    drum: { id: 'drum', name: '🥁 大鼓', file: '/drum-loop.mp3' },
     vocal: { id: 'vocal', name: '🎤 主唱', file: '/vocal-dry.mp3' }
 };
 
@@ -21,7 +21,7 @@ const DICTIONARIES = {
         { range: [4501, 9000], name: '6kHz：清脆撥弦區', tags: ['清脆 ✨', '金屬弦 🎸'], theory: '【製作人筆記：決定的亮點】\n這是鋼弦摩擦與 Pick 彈撥的聲音。想要清脆明亮的吉他，稍微 Boost 這裡！' },
         { range: [9001, 20000], name: '12kHz：空氣感 (Air)', tags: ['空氣感 🌬️', '昂貴感 💎'], theory: '【製作人筆記：百萬錄音室秘密】\n提升這裡會讓聲音充滿呼吸感與細節，賦予吉他一種「昂貴」的質感。' }
     ],
-    kick: [
+    drum: [
         { range: [20, 60], name: '50Hz：超低頻下潛', tags: ['褲管震動 👖', '深沉 🌊'], theory: '【製作人筆記：舞池的靈魂】\n讓地板震動的頻率！EDM 必備；但流行搖滾推太多會變混濁且吃掉動態。' },
         { range: [61, 150], name: '100Hz：衝擊力 (Punch)', tags: ['拳拳到肉 🥊', '胸腔震擊 🫁'], theory: '【製作人筆記：胸口碎大石】\n力量來源。Boost 會讓大鼓結實有力；注意不要跟貝斯 (Bass) 打架。' },
         { range: [151, 350], name: '250Hz：混濁泥濘區 (Mud)', tags: ['糊糊的 💩', '轟鳴 🌪️'], theory: '【製作人筆記：大鼓清道夫】\n大鼓最容易聽起來「髒」的地方。專業混音師常做 Cut，讓貝斯有呼吸空間。' },
@@ -43,7 +43,7 @@ const DICTIONARIES = {
 };
 
 export default function EQDictionaryRoom() {
-    const [activeTrack, setActiveTrack] = useState<'guitar' | 'kick' | 'vocal'>('guitar');
+    const [activeTrack, setActiveTrack] = useState<'guitar' | 'drum' | 'vocal'>('guitar');
     const [sliderValue, setSliderValue] = useState(420);
     const [isPlaying, setIsPlaying] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -63,7 +63,7 @@ export default function EQDictionaryRoom() {
     const currentDictionary = DICTIONARIES[activeTrack];
     const currentZone = currentDictionary.find(z => frequency >= z.range[0] && frequency <= z.range[1]);
 
-    const loadAudio = async (trackId: 'guitar' | 'kick' | 'vocal') => {
+    const loadAudio = async (trackId: 'guitar' | 'drum' | 'vocal') => {
         if (isPlaying) {
             sourceRef.current?.stop();
             setIsPlaying(false);
