@@ -1,173 +1,217 @@
 "use client";
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
-export default function EQTrainingRoom() {
-    // 💡 改用 0~1000 的線性滑桿值，在後台轉換成對數頻率
+// 🎯 定義頻率熱區與一體兩面理論
+const FREQ_ZONES = [
+    {
+        name: '低頻厚度區',
+        range: [200, 350],
+        tags: ['溫暖 ☕️', '厚實 🧱', '鼻音 👃', '混濁 泥濘 🌧️'],
+        theory: '【製作人筆記：溫暖還是泥濘？】\n這就是混音最迷人的矛盾！對單薄的男聲來說，稍微 Boost 這裡能帶來迷人的「胸腔共鳴」與「溫度」；但如果這首歌樂器很多，這裡也是最容易跟 Bass、吉他打架的「混濁區 (Mud)」。\n👉 思考點：你要讓他溫暖，還是要讓整體乾淨？'
+    },
+    {
+        name: '中頻穿透區',
+        range: [800, 1500],
+        tags: ['廉價喇叭 📻', '電話聲 ☎️', '咬字清晰 🗣️', '硬朗 🔨'],
+        theory: '【製作人筆記：存在感與大聲公】\n這個頻段像是一個「大聲公」。Boost 它可以讓人聲的咬字瞬間跳到聽眾面前，非常適合在吵雜的搖滾樂中使用；但在抒情歌裡如果太多，聽起來就會很像用「大賣場廣播」或「便宜耳機」在唱歌。\n👉 思考點：這首歌需要攻擊性，還是需要柔和？'
+    },
+    {
+        name: '高頻空氣區',
+        range: [3000, 6000],
+        tags: ['刺耳 🔪', '唇齒音 (嘶嘶) 🐍', '明亮 🌟', '親密感 💋'],
+        theory: '【製作人筆記：親密感還是刮黑板？】\n這裡是人類耳朵最敏感的區域！適當的存在能讓人聲聽起來非常「昂貴、有空氣感」，彷彿歌手就在你耳邊唱歌；但如果過多，那些「嘶 (S)」、「ㄘ (T)」的氣音就會像指甲刮黑板一樣讓人煩躁。\n👉 思考點：距離感要拉多近？'
+    }
+];
+
+export default function EQDictionaryRoom() {
     const [sliderValue, setSliderValue] = useState(420);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [isSubmitted, setIsSubmitted] = useState(false);
-    const [score, setScore] = useState<null | { diff: number, title: string, color: string }>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [eqMode, setEqMode] = useState<'boost' | 'cut' | 'flat'>('boost'); // 新增 EQ 模式切換
 
-    const audioContext = useRef<AudioContext | null>(null);
-    const audioBuffer = useRef<AudioBuffer | null>(null);
-    const sourceNode = useRef<AudioBufferSourceNode | null>(null);
-    const filterNode = useRef<BiquadFilterNode | null>(null);
+    const audioCtxRef = useRef<AudioContext | null>(null);
+    const bufferRef = useRef<AudioBuffer | null>(null);
+    const sourceRef = useRef<AudioBufferSourceNode | null>(null);
+    const filterRef = useRef<BiquadFilterNode | null>(null);
 
-    const TARGET_FREQ = 350;
-
-    // 🎛️ 真實 DAW 的對數運算邏輯 (20Hz - 20000Hz)
+    // 頻率對數換算
     const minFreq = 20;
     const maxFreq = 20000;
     const minLog = Math.log10(minFreq);
     const maxLog = Math.log10(maxFreq);
-
-    // 根據滑桿位置，計算出對應的真實頻率
     const frequency = Math.round(Math.pow(10, minLog + ((maxLog - minLog) * (sliderValue / 1000))));
 
-    useEffect(() => {
-        const initAudio = async () => {
-            audioContext.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-            const response = await fetch('/guitar-loop.mp3');
-            const arrayBuffer = await response.arrayBuffer();
-            audioBuffer.current = await audioContext.current.decodeAudioData(arrayBuffer);
-        };
-        initAudio();
+    // 找出目前滑桿落在哪個熱區
+    const currentZone = FREQ_ZONES.find(z => frequency >= z.range[0] && frequency <= z.range[1]);
 
-        return () => {
-            if (sourceNode.current) sourceNode.current.stop();
-            if (audioContext.current) audioContext.current.close();
-        };
+    const loadAudio = async () => {
+        setIsLoading(true);
+        if (!audioCtxRef.current) {
+            audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+        }
+        try {
+            // 🚨 這裡記得放你準備好的人聲檔案路徑
+            const response = await fetch('/audio/vocal-dry.mp3');
+            const arrayBuffer = await response.arrayBuffer();
+            bufferRef.current = await audioCtxRef.current.decodeAudioData(arrayBuffer);
+        } catch (e) {
+            console.error("音檔載入失敗", e);
+        }
+        setIsLoading(false);
+    };
+
+    useEffect(() => {
+        loadAudio();
     }, []);
 
+    // 監聽滑桿與模式變化
     useEffect(() => {
-        if (filterNode.current) {
-            filterNode.current.frequency.value = frequency;
+        if (!filterRef.current) return;
+
+        filterRef.current.frequency.value = frequency;
+
+        // 根據模式切換 Gain 與 Q 值
+        if (eqMode === 'boost') {
+            filterRef.current.gain.setTargetAtTime(15, audioCtxRef.current!.currentTime, 0.1);
+            filterRef.current.Q.value = 6.0; // 窄 Q 抓蟲
+        } else if (eqMode === 'cut') {
+            filterRef.current.gain.setTargetAtTime(-12, audioCtxRef.current!.currentTime, 0.1);
+            filterRef.current.Q.value = 3.0; // 稍微寬一點的 Cut
+        } else {
+            filterRef.current.gain.setTargetAtTime(0, audioCtxRef.current!.currentTime, 0.1);
         }
-    }, [frequency]);
+    }, [frequency, eqMode]);
 
     const togglePlay = () => {
-        if (!audioContext.current || !audioBuffer.current) return;
+        if (!audioCtxRef.current || !bufferRef.current) return;
 
         if (isPlaying) {
-            sourceNode.current?.stop();
+            sourceRef.current?.stop();
             setIsPlaying(false);
         } else {
-            sourceNode.current = audioContext.current.createBufferSource();
-            sourceNode.current.buffer = audioBuffer.current;
-            sourceNode.current.loop = true;
+            const ctx = audioCtxRef.current;
+            sourceRef.current = ctx.createBufferSource();
+            sourceRef.current.buffer = bufferRef.current;
+            sourceRef.current.loop = true;
 
-            filterNode.current = audioContext.current.createBiquadFilter();
-            filterNode.current.type = 'peaking';
-            filterNode.current.frequency.value = frequency;
-            filterNode.current.Q.value = 5.0;
-            filterNode.current.gain.value = 15;
+            filterRef.current = ctx.createBiquadFilter();
+            filterRef.current.type = 'peaking'; // 鐘型曲線
+            filterRef.current.frequency.value = frequency;
+            filterRef.current.Q.value = eqMode === 'cut' ? 3.0 : 6.0;
+            filterRef.current.gain.value = eqMode === 'flat' ? 0 : (eqMode === 'boost' ? 15 : -12);
 
-            sourceNode.current.connect(filterNode.current);
-            filterNode.current.connect(audioContext.current.destination);
+            sourceRef.current.connect(filterRef.current);
+            filterRef.current.connect(ctx.destination);
 
-            sourceNode.current.start();
+            sourceRef.current.start();
             setIsPlaying(true);
         }
     };
 
-    const handleSubmit = () => {
-        setIsSubmitted(true);
-        const diff = Math.abs(frequency - TARGET_FREQ);
-        if (diff <= 50) {
-            setScore({ diff, title: '🏆 絕對音感！(金耳朵學徒)', color: '#10b981' });
-        } else if (diff <= 200) {
-            setScore({ diff, title: '👍 差一點點！(方向是對的)', color: '#fbbf24' });
-        } else {
-            setScore({ diff, title: '❌ 偏離目標！(再聽仔細一點)', color: '#ef4444' });
-        }
-    };
-
-    const handleReset = () => {
-        setIsSubmitted(false);
-        setScore(null);
-        setSliderValue(420); // 重置回 1000Hz 左右的位置
-    };
-
-    // 📺 視覺化：讓 X 座標也照著對數比例走
-    const mapFreqToX = (freq: number) => {
-        return ((Math.log10(freq) - minLog) / (maxLog - minLog)) * 1000;
-    };
+    const mapFreqToX = (f: number) => ((Math.log10(f) - minLog) / (maxLog - minLog)) * 1000;
     const peakX = mapFreqToX(frequency);
-    const qWidth = 80; // 配合 20k 寬度稍微收窄一點 Q 值視覺
-    const eqPath = `M 0,150 L ${Math.max(0, peakX - qWidth)},150 C ${peakX - qWidth / 2},150 ${peakX - qWidth / 4},40 ${peakX},40 C ${peakX + qWidth / 4},40 ${peakX + qWidth / 2},150 ${peakX + qWidth},150 L 1000,150`;
+
+    // 動態計算 SVG 曲線 (Boost / Cut / Flat)
+    const gainOffset = eqMode === 'boost' ? -110 : (eqMode === 'cut' ? 60 : 0);
+    const qWidth = eqMode === 'cut' ? 100 : 50;
+    const eqPath = eqMode === 'flat'
+        ? `M 0,150 L 1000,150`
+        : `M 0,150 L ${peakX - qWidth},150 C ${peakX - qWidth / 2},150 ${peakX - 10},${150 + gainOffset} ${peakX},${150 + gainOffset} C ${peakX + 10},${150 + gainOffset} ${peakX + qWidth / 2},150 ${peakX + qWidth},150 L 1000,150`;
 
     return (
-        <div style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto', background: '#0f172a', borderRadius: '1rem', color: '#fff', border: '1px solid rgba(56, 189, 248, 0.3)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+        <div style={{ padding: '2rem', maxWidth: '700px', margin: '0 auto', background: '#020617', borderRadius: '24px', color: '#fff', border: '1px solid #1e293b' }}>
 
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                <h2 style={{ color: '#38bdf8', marginBottom: '0.5rem' }}>🎧 第一關：尋找木吉他的「紙箱悶音」</h2>
-                <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>全頻段掃描 (20Hz - 20kHz)，鎖定刺耳目標！</p>
+                <span style={{ color: '#fca311', fontSize: '0.8rem', fontWeight: 'bold', letterSpacing: '2px' }}>FREQUENCY DICTIONARY</span>
+                <h2 style={{ fontSize: '1.8rem', margin: '0.5rem 0' }}>個人聽覺字典：人聲篇</h2>
+                <p style={{ color: '#94a3b8', lineHeight: '1.5', fontSize: '0.95rem' }}>
+                    拋棄「正確答案」，尋找你的感覺。<br />滑動下方 EQ，並切換 Boost (放大) 與 Cut (挖空) 來建立你的頻率記憶。
+                </p>
             </div>
 
-            {/* 📺 擬真 DAW EQ 頻譜顯示器 */}
-            <div style={{ width: '100%', height: '200px', background: '#020617', borderRadius: '8px', border: '2px solid #1e293b', marginBottom: '2rem', position: 'relative', overflow: 'hidden', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.8)' }}>
-
-                {/* 背景格線：改為對數分佈的感覺 */}
-                <div style={{ position: 'absolute', width: '100%', height: '100%', pointerEvents: 'none' }}>
+            {/* EQ 視覺化視窗 */}
+            <div style={{ width: '100%', height: '250px', background: '#0f172a', borderRadius: '16px', border: '1px solid #334155', marginBottom: '1.5rem', position: 'relative', overflow: 'hidden' }}>
+                {/* 背景格線 */}
+                <div style={{ position: 'absolute', width: '100%', height: '100%' }}>
                     {[100, 500, 1000, 5000, 10000].map((f) => (
-                        <div key={f} style={{ position: 'absolute', left: `${mapFreqToX(f) / 10}%`, top: 0, bottom: 0, width: '1px', background: 'rgba(148, 163, 184, 0.2)' }}>
-                            <span style={{ position: 'absolute', bottom: '5px', left: '5px', color: '#64748b', fontSize: '0.7rem' }}>{f >= 1000 ? `${f / 1000}k` : f}</span>
+                        <div key={f} style={{ position: 'absolute', left: `${mapFreqToX(f) / 10}%`, top: 0, bottom: 0, width: '1px', background: 'rgba(56, 189, 248, 0.1)' }}>
+                            <span style={{ position: 'absolute', bottom: '8px', left: '4px', color: '#475569', fontSize: '0.65rem' }}>{f >= 1000 ? `${f / 1000}k` : f}Hz</span>
                         </div>
                     ))}
+                    {/* 中間零基準線 */}
+                    <div style={{ position: 'absolute', top: '150px', width: '100%', borderTop: '1px dashed rgba(255,255,255,0.3)' }}></div>
                 </div>
-
-                <svg viewBox="0 0 1000 200" style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}>
-                    <path d={`${eqPath} L 1000,200 L 0,200 Z`} fill="rgba(2, 132, 199, 0.2)" />
-                    <path d={eqPath} fill="none" stroke="#38bdf8" strokeWidth="4" style={{ filter: 'drop-shadow(0 0 8px rgba(56,189,248,0.8))' }} />
-                    <circle cx={peakX} cy="40" r="8" fill="#fff" stroke="#0284c7" strokeWidth="3" />
+                <svg viewBox="0 0 1000 250" style={{ width: '100%', height: '100%' }}>
+                    <path d={eqPath} fill="none" stroke={eqMode === 'cut' ? '#ef4444' : '#38bdf8'} strokeWidth="4" style={{ transition: 'all 0.3s' }} />
+                    {eqMode !== 'flat' && (
+                        <circle cx={peakX} cy={150 + gainOffset} r="8" fill="#fff" style={{ filter: `drop-shadow(0 0 8px ${eqMode === 'cut' ? '#ef4444' : '#38bdf8'})`, transition: 'all 0.3s' }} />
+                    )}
                 </svg>
 
-                <div style={{ position: 'absolute', top: '10px', left: '15px', color: '#fca311', fontWeight: 'bold', fontFamily: 'monospace', fontSize: '1.2rem', textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
-                    Freq: {frequency} Hz <span style={{ color: '#10b981', fontSize: '0.9rem' }}>(+15dB)</span>
+                <div style={{ position: 'absolute', top: '15px', right: '20px', fontSize: '1.5rem', fontWeight: 'bold', color: '#fff', fontFamily: 'monospace', textShadow: '0 2px 5px rgba(0,0,0,0.8)' }}>
+                    {frequency} Hz <span style={{ fontSize: '1rem', color: eqMode === 'boost' ? '#38bdf8' : (eqMode === 'cut' ? '#ef4444' : '#94a3b8') }}>
+                        {eqMode === 'boost' ? '+15dB' : (eqMode === 'cut' ? '-12dB' : '0dB')}
+                    </span>
                 </div>
             </div>
 
-            <div style={{ background: '#1e293b', padding: '1.5rem', borderRadius: '0.5rem', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+            {/* 核心操作區：播放與模式切換 */}
+            <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
                 <button
-                    onClick={togglePlay}
-                    style={{ width: '60px', height: '60px', borderRadius: '50%', background: isPlaying ? '#ef4444' : '#10b981', border: 'none', color: '#fff', fontSize: '0.9rem', fontWeight: 'bold', cursor: 'pointer', flexShrink: 0, boxShadow: `0 0 15px ${isPlaying ? 'rgba(239, 68, 68, 0.5)' : 'rgba(16, 185, 129, 0.5)'}` }}
+                    onClick={togglePlay} disabled={isLoading}
+                    style={{ flex: 1, padding: '1rem', borderRadius: '12px', background: isPlaying ? '#1e293b' : '#10b981', color: '#fff', fontWeight: '900', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
                 >
-                    {isPlaying ? '停止' : '播放'}
+                    {isLoading ? '載入中...' : isPlaying ? '⏹️ 停止' : '▶️ 播放音檔'}
                 </button>
 
-                <div style={{ flex: 1 }}>
-                    {/* 滑桿改為控制 0~1000 的值 */}
-                    <input
-                        type="range" min="0" max="1000" step="1" value={sliderValue}
-                        onChange={(e) => setSliderValue(Number(e.target.value))} disabled={isSubmitted}
-                        style={{ width: '100%', cursor: isSubmitted ? 'not-allowed' : 'pointer', accentColor: '#38bdf8' }}
-                    />
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.5rem', color: '#64748b', fontSize: '0.8rem', fontWeight: 'bold' }}>
-                        <span>20 Hz</span><span>20k Hz</span>
-                    </div>
+                <div style={{ display: 'flex', background: '#1e293b', borderRadius: '12px', padding: '0.2rem' }}>
+                    <button onClick={() => setEqMode('flat')} style={{ padding: '0.8rem 1.5rem', border: 'none', background: eqMode === 'flat' ? '#334155' : 'transparent', color: eqMode === 'flat' ? '#fff' : '#94a3b8', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Bypass (原聲)</button>
+                    <button onClick={() => setEqMode('boost')} style={{ padding: '0.8rem 1.5rem', border: 'none', background: eqMode === 'boost' ? '#38bdf8' : 'transparent', color: eqMode === 'boost' ? '#020617' : '#94a3b8', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>🔼 放大聽特徵</button>
+                    <button onClick={() => setEqMode('cut')} style={{ padding: '0.8rem 1.5rem', border: 'none', background: eqMode === 'cut' ? '#ef4444' : 'transparent', color: eqMode === 'cut' ? '#fff' : '#94a3b8', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>🔽 挖空聽差異</button>
                 </div>
             </div>
 
-            {!isSubmitted ? (
-                <button
-                    onClick={handleSubmit} disabled={!isPlaying}
-                    style={{ width: '100%', padding: '1rem', background: isPlaying ? '#3b82f6' : '#475569', border: 'none', borderRadius: '0.5rem', color: '#fff', fontSize: '1.1rem', fontWeight: 'bold', cursor: isPlaying ? 'pointer' : 'not-allowed' }}
-                >
-                    {isPlaying ? '🎯 鎖定目標頻率！' : '請先播放音檔'}
-                </button>
-            ) : (
-                <div style={{ textAlign: 'center', animation: 'fadeIn 0.5s ease' }}>
-                    <h3 style={{ color: score?.color, fontSize: '1.5rem', marginBottom: '1rem' }}>{score?.title}</h3>
-                    <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '0.5rem', marginBottom: '1.5rem' }}>
-                        <p style={{ margin: '0 0 0.5rem 0', color: '#e2e8f0' }}>正確答案：<span style={{ color: '#10b981', fontWeight: 'bold' }}>{TARGET_FREQ} Hz</span></p>
-                        <p style={{ margin: 0, color: '#e2e8f0' }}>你的選擇：<span style={{ color: '#fca311', fontWeight: 'bold' }}>{frequency} Hz</span></p>
-                        <p style={{ margin: '0.5rem 0 0 0', color: '#94a3b8', fontSize: '0.9rem' }}>(誤差: {score?.diff} Hz)</p>
-                    </div>
-                    <button onClick={handleReset} style={{ padding: '0.8rem 2rem', background: '#4b5563', border: 'none', borderRadius: '2rem', color: '#fff', cursor: 'pointer', fontWeight: 'bold' }}>
-                        🔄 再試一次
-                    </button>
+            {/* 掃頻滑桿 */}
+            <div style={{ background: '#0f172a', padding: '1.5rem', borderRadius: '16px', marginBottom: '2rem', border: '1px solid #1e293b' }}>
+                <input
+                    type="range" min="0" max="1000" value={sliderValue}
+                    onChange={(e) => setSliderValue(Number(e.target.value))}
+                    style={{ width: '100%', cursor: 'pointer', accentColor: '#fca311' }}
+                />
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.5rem', color: '#475569', fontSize: '0.75rem' }}>
+                    <span>20Hz</span><span>滑動尋找共鳴點</span><span>20kHz</span>
                 </div>
-            )}
+            </div>
+
+            {/* 動態展示：聽覺感受與筆記 (只在熱區顯示) */}
+            <div style={{ minHeight: '200px' }}>
+                {currentZone ? (
+                    <div style={{ animation: 'fadeIn 0.3s ease' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                            <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 10px #10b981' }}></div>
+                            <h3 style={{ margin: 0, color: '#e2e8f0' }}>你進入了：<span style={{ color: '#10b981' }}>{currentZone.name}</span></h3>
+                        </div>
+
+                        {/* 感覺標籤 */}
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.5rem' }}>
+                            <span style={{ color: '#94a3b8', fontSize: '0.9rem', alignSelf: 'center', marginRight: '0.5rem' }}>聽起來像：</span>
+                            {currentZone.tags.map(tag => (
+                                <span key={tag} style={{ background: '#1e293b', border: '1px solid #334155', padding: '0.4rem 0.8rem', borderRadius: '50px', fontSize: '0.85rem', color: '#cbd5e1' }}>{tag}</span>
+                            ))}
+                        </div>
+
+                        {/* 製作人筆記 */}
+                        <div style={{ background: 'rgba(56, 189, 248, 0.05)', borderLeft: '4px solid #38bdf8', padding: '1.2rem', borderRadius: '0 12px 12px 0' }}>
+                            <p style={{ margin: 0, color: '#f8fafc', lineHeight: '1.7', fontSize: '0.95rem', whiteSpace: 'pre-wrap' }}>{currentZone.theory}</p>
+                        </div>
+                    </div>
+                ) : (
+                    <div style={{ textAlign: 'center', color: '#475569', paddingTop: '3rem' }}>
+                        <span style={{ fontSize: '2rem' }}>🎧</span>
+                        <p>持續滑動，尋找下一個頻率熱區...</p>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
