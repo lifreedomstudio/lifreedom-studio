@@ -40,7 +40,7 @@ export default function CompressorTrainingRoom() {
         if (!audioCtxRef.current) {
             const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
             audioCtxRef.current = ctx;
-            const audio = new Audio('/kick-loop.mp3'); // 🚨 確保你有大鼓音檔
+            const audio = new Audio('/drum-loop.mp3'); // 🚨 確保你有大鼓音檔
             audio.loop = true;
             audioRef.current = audio;
 
