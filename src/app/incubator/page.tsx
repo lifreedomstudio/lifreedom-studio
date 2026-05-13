@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+
 // 定義樂器配置與檔案路徑
 const INSTRUMENTS = [
     { id: 'vocal', name: '🎤 主唱 (Vocal)', color: '#fff', file: '/audio/vocal.mp3' },
@@ -34,16 +35,17 @@ type PanState = Record<string, number>;
 export default function IncubatorPage() {
     const router = useRouter();
 
-    // 👇 佈署守門員：頁面一載入就檢查有沒有入場券
+    // 佈署守門員：頁面一載入就檢查有沒有入場券
     useEffect(() => {
         const checkUser = async () => {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) {
-                router.push('/login'); // 沒票就踢去登入頁面
+                router.push('/login');
             }
         };
         checkUser();
     }, [router]);
+
     const [panVals, setPanVals] = useState<PanState>(PRESETS.mono.pan);
     const [activePreset, setActivePreset] = useState<string>('mono');
     const [infoText, setInfoText] = useState(PRESETS.mono.desc);
@@ -51,71 +53,108 @@ export default function IncubatorPage() {
     // Web Audio API 狀態
     const [isPlaying, setIsPlaying] = useState(false);
     const [isAudioReady, setIsAudioReady] = useState(false);
+    const [isLoading, setIsLoading] = useState(false); // 載入中狀態
 
     // 儲存音訊節點的 References
     const audioCtxRef = useRef<AudioContext | null>(null);
     const pannersRef = useRef<Record<string, StereoPannerNode>>({});
-    const audiosRef = useRef<Record<string, HTMLAudioElement>>({});
-    const masterGainRef = useRef<GainNode | null>(null); // 新增：總音量控制器
+    const masterGainRef = useRef<GainNode | null>(null);
 
-    // 初始化音訊 (必須由使用者點擊按鈕觸發)
-    const initAudio = () => {
-        if (audioCtxRef.current) return; // 避免重複初始化
+    // 儲存解碼後的 AudioBuffer
+    const buffersRef = useRef<Record<string, AudioBuffer>>({});
+    // 儲存目前的播放節點 (BufferSource 每次播放都要重新建立)
+    const sourcesRef = useRef<Record<string, AudioBufferSourceNode>>({});
 
-        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-        const ctx = new AudioContext();
+    // 🌟 初始化與下載音軌 (非同步)
+    const initAudio = async () => {
+        setIsLoading(true);
+
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        const ctx = new AudioContextClass();
         audioCtxRef.current = ctx;
 
-        // 🌟 建立總音量控制器 (Master Bus)，解決 Pan Law 帶來的破音問題
         const masterGain = ctx.createGain();
         masterGain.gain.value = 0.6; // 降音量拉出 Headroom
-        masterGain.connect(ctx.destination); // 總控連向喇叭
+        masterGain.connect(ctx.destination);
         masterGainRef.current = masterGain;
 
-        INSTRUMENTS.forEach(inst => {
-            const audio = new Audio(inst.file);
-            audio.loop = true; // 讓精華片段無限循環
-            audiosRef.current[inst.id] = audio;
+        // 將所有樂器同時下載並解碼成 Buffer
+        const loadPromises = INSTRUMENTS.map(async (inst) => {
+            try {
+                const response = await fetch(inst.file);
+                const arrayBuffer = await response.arrayBuffer();
+                const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+                buffersRef.current[inst.id] = audioBuffer;
 
-            const source = ctx.createMediaElementSource(audio);
-            const panner = ctx.createStereoPanner();
-
-            // 設定初始 Pan 值 (包含 TypeScript 型別修復)
-            panner.pan.value = (PRESETS.mono.pan as PanState)[inst.id] / 100;
-            pannersRef.current[inst.id] = panner;
-
-            // 路由：音檔 -> Panner -> Master Gain (不再直通喇叭)
-            source.connect(panner);
-            panner.connect(masterGain);
+                const panner = ctx.createStereoPanner();
+                panner.pan.value = (PRESETS.mono.pan as PanState)[inst.id] / 100;
+                pannersRef.current[inst.id] = panner;
+                panner.connect(masterGain);
+            } catch (error) {
+                console.error(`無法載入音軌 ${inst.name}:`, error);
+            }
         });
 
+        // 等待所有樂器都下載、解碼完畢
+        await Promise.all(loadPromises);
+
         setIsAudioReady(true);
+        setIsLoading(false);
+        return ctx;
     };
 
-    // 播放/暫停控制
-    const togglePlay = () => {
-        if (!isAudioReady) initAudio();
+    // 🌟 開始播放的專屬函式
+    const playTracks = (ctx: AudioContext) => {
+        INSTRUMENTS.forEach(inst => {
+            if (!buffersRef.current[inst.id]) return; // 如果沒載入成功就跳過
+
+            const source = ctx.createBufferSource();
+            source.buffer = buffersRef.current[inst.id];
+            source.loop = true; // 無限循環
+
+            source.connect(pannersRef.current[inst.id]);
+            sourcesRef.current[inst.id] = source;
+
+            // 延遲 0.05 秒確保所有軌道同步發車
+            source.start(ctx.currentTime + 0.05);
+        });
+    };
+
+    // 🌟 停止播放的專屬函式
+    const stopTracks = () => {
+        Object.values(sourcesRef.current).forEach(source => {
+            source.stop();
+            source.disconnect();
+        });
+        sourcesRef.current = {}; // 清空節點
+    };
+
+    // 🌟 總控按鈕
+    const togglePlay = async () => {
+        if (!isAudioReady || !audioCtxRef.current) {
+            const ctx = await initAudio();
+            playTracks(ctx);
+            setIsPlaying(true);
+            return;
+        }
 
         const ctx = audioCtxRef.current;
-        if (!ctx) return;
+        if (ctx.state === 'suspended') await ctx.resume();
 
         if (isPlaying) {
-            Object.values(audiosRef.current).forEach(audio => audio.pause());
-            ctx.suspend();
+            stopTracks();
         } else {
-            ctx.resume();
-            Object.values(audiosRef.current).forEach(audio => audio.play());
+            playTracks(ctx);
         }
         setIsPlaying(!isPlaying);
     };
 
     // 當 UI 滑桿改變時，即時更新 Web Audio 的 Panner
     useEffect(() => {
-        if (!isAudioReady) return;
+        if (!isAudioReady || !audioCtxRef.current) return;
         Object.entries(panVals).forEach(([id, val]) => {
             if (pannersRef.current[id]) {
-                // Web Audio API 的 pan 值範圍是 -1.0 到 1.0
-                // 加上一點平滑過渡，避免聲音突然跳動產生爆音
+                // 加上 ! 確保 TypeScript 知道 ctx 存在
                 pannersRef.current[id].pan.setTargetAtTime(val / 100, audioCtxRef.current!.currentTime, 0.1);
             }
         });
@@ -135,7 +174,6 @@ export default function IncubatorPage() {
 
     return (
         <div style={{ padding: '2rem', maxWidth: '1000px', margin: '0 auto', fontFamily: 'sans-serif' }}>
-
             <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
                 <span style={{ color: '#38bdf8', letterSpacing: '4px', fontWeight: 'bold', fontSize: '0.9rem' }}>SONIC ARCHITECTURE LAB</span>
                 <h1 style={{ fontSize: '2.5rem', fontWeight: '900', margin: '0.5rem 0' }}>立體聲場構築實驗室</h1>
@@ -146,16 +184,17 @@ export default function IncubatorPage() {
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                 <button
                     onClick={togglePlay}
+                    disabled={isLoading}
                     style={{
-                        padding: '1rem 3rem', fontSize: '1.5rem', fontWeight: '900', borderRadius: '50px', cursor: 'pointer',
-                        background: isPlaying ? '#ef4444' : '#10b981', color: '#fff', border: 'none',
+                        padding: '1rem 3rem', fontSize: '1.5rem', fontWeight: '900', borderRadius: '50px', cursor: isLoading ? 'not-allowed' : 'pointer',
+                        background: isLoading ? '#475569' : isPlaying ? '#ef4444' : '#10b981', color: '#fff', border: 'none',
                         boxShadow: `0 0 30px ${isPlaying ? 'rgba(239, 68, 68, 0.4)' : 'rgba(16, 185, 129, 0.4)'}`,
                         transition: 'all 0.3s'
                     }}
                 >
-                    {isPlaying ? '⏸️ 暫停實驗' : '▶️ 開始試聽混音'}
+                    {isLoading ? '⏳ 音軌載入解碼中...' : isPlaying ? '⏸️ 暫停實驗' : '▶️ 開始試聽混音'}
                 </button>
-                {!isAudioReady && <p style={{ color: '#94a3b8', fontSize: '0.8rem', marginTop: '10px' }}>點擊開始後將載入音軌，請確保網路順暢</p>}
+                {!isAudioReady && !isLoading && <p style={{ color: '#94a3b8', fontSize: '0.8rem', marginTop: '10px' }}>點擊開始後將載入音軌，請確保網路順暢</p>}
             </div>
 
             {/* 💡 知識提示框 */}
@@ -224,7 +263,7 @@ export default function IncubatorPage() {
                                 type="range"
                                 min="-100" max="100"
                                 value={panVals[inst.id]}
-                                onChange={(e) => handlePanChange(inst.id, parseInt(e.target.value))}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handlePanChange(inst.id, parseInt(e.target.value))}
                                 style={{ width: '100%', cursor: 'pointer', accentColor: inst.color }}
                             />
                         </div>
