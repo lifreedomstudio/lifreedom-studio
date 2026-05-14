@@ -15,33 +15,7 @@ export default function HomePage() {
   return (
     <div style={{ minHeight: '100vh', background: '#020617', color: '#f8fafc', fontFamily: 'sans-serif', overflowX: 'hidden' }}>
 
-      {/* 🚀 導覽列 (Navbar) - Logo 尺寸修正與光暈 */}
-      <nav style={{
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        padding: isMobile ? '0.5rem 1rem' : '0.8rem 2rem', background: 'rgba(2, 6, 23, 0.85)', backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid rgba(56, 189, 248, 0.1)', position: 'fixed', width: '100%', zIndex: 1000
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-          <img
-            src="/lifreedom-logo-removebg-preview.png"
-            alt="Lifreedom Studio Logo"
-            style={{
-              height: isMobile ? '65px' : '90px',
-              objectFit: 'contain',
-              // 🚨 已經去背了，移除 mixBlendMode
-              filter: 'drop-shadow(0 0 12px rgba(252, 163, 17, 0.6))',
-              transition: '0.3s'
-            }}
-          />
-        </div>
-        <div style={{ display: isMobile ? 'none' : 'flex', gap: '2.5rem', fontSize: '0.95rem', fontWeight: 'bold' }}>
-          <Link href="/courses" style={{ color: '#94a3b8', textDecoration: 'none', transition: '0.2s' }}>EQ 實驗室</Link>
-          <Link href="/courses" style={{ color: '#94a3b8', textDecoration: 'none', transition: '0.2s' }}>壓縮器道場</Link>
-          <Link href="#pricing" style={{ color: '#fca311', textDecoration: 'none' }}>⭐ 製作人方案</Link>
-        </div>
-      </nav>
-
-      {/* 🌟 1. 英雄視覺區 (Hero Section) */}
+      {/* 🌟 1. 英雄視覺區 (Hero Section) - Logo 移到這裡霸氣置中！ */}
       <div style={{
         minHeight: isMobile ? '80vh' : '100vh',
         display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center',
@@ -49,6 +23,21 @@ export default function HomePage() {
         backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed',
         padding: isMobile ? '6rem 1.5rem 2rem 1.5rem' : '4rem 2rem'
       }}>
+
+        {/* 🚨 置中的品牌 Logo，剛好在你畫紅框的位置 */}
+        <img
+          src="/lifreedom-logo-removebg-preview.png"
+          alt="Lifreedom Studio Logo"
+          style={{
+            height: isMobile ? '120px' : '160px', // 在中心點可以稍微放大，更有氣勢
+            objectFit: 'contain',
+            marginBottom: '2rem', // 與下方文字拉開舒適的呼吸空間
+            filter: 'drop-shadow(0 0 20px rgba(252, 163, 17, 0.6))', // 金色神聖光暈
+            transition: '0.3s',
+            animation: 'float 3s ease-in-out infinite' // (選用) 微微浮動的質感
+          }}
+        />
+
         <div style={{ color: '#fca311', letterSpacing: '6px', fontWeight: 'bold', marginBottom: '1.5rem', fontSize: isMobile ? '0.7rem' : '0.9rem', opacity: 0.9 }}>
           LIFREEDOM STUDIO PRESENTS
         </div>
@@ -212,10 +201,11 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* 🎯 6. 品牌目標與贊助 */}
+      {/* 🎯 6. 品牌目標與贊助 - 中文化更新 */}
       <div style={{ padding: isMobile ? '5rem 1.5rem' : '8rem 2rem', background: '#020617', textAlign: 'center' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          <span style={{ color: '#fca311', fontWeight: 'bold', letterSpacing: '3px', fontSize: '0.9rem' }}>OUR MISSION</span>
+          {/* 🚨 改成中文的「我們的目標」 */}
+          <span style={{ color: '#fca311', fontWeight: 'bold', letterSpacing: '3px', fontSize: '0.9rem' }}>我們的目標</span>
           <h2 style={{ fontSize: isMobile ? '2rem' : '2.8rem', color: '#fff', margin: '1rem 0 2rem 0' }}>讓你不再需要我們</h2>
           <p style={{ color: '#cbd5e1', fontSize: '1.1rem', lineHeight: '2', marginBottom: '3rem', fontWeight: 'bold' }}>
             我們期望你在一年內，鍛鍊出大師級的直覺，成為獨當一面的專家，最終自信地「徹底畢業」。
@@ -229,7 +219,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* 🚀 底部引導 (Footer CTA) */}
+      {/* 🚀 7. 底部引導 (Footer CTA) */}
       <div style={{
         padding: isMobile ? '5rem 1.5rem' : '8rem 2rem', textAlign: 'center',
         background: 'radial-gradient(circle at 50% 100%, #1e293b 0%, #020617 80%)',
