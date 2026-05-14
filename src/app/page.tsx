@@ -24,7 +24,7 @@ export default function HomePage() {
         <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
           {/* 🚨 這裡呼叫新的透明 PNG Logo */}
           <img
-            src="/lifreedom-logo.png"
+            src="/lifreedom-logo-removebg-preview.png"
             alt="Lifreedom Studio Logo"
             style={{
               height: isMobile ? '50px' : '65px',
@@ -87,7 +87,7 @@ export default function HomePage() {
       }}>
         {/* 🚨 底部大 Logo：使用透明 PNG，加大尺寸，加上更強的光暈 */}
         <img
-          src="/lifreedom-logo.png"
+          src="/lifreedom-logo-removebg-preview.png"
           alt="Lifreedom Studio Logo"
           style={{
             height: isMobile ? '100px' : '140px',
