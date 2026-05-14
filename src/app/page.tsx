@@ -15,22 +15,21 @@ export default function HomePage() {
   return (
     <div style={{ minHeight: '100vh', background: '#020617', color: '#f8fafc', fontFamily: 'sans-serif', overflowX: 'hidden' }}>
 
-      {/* 🚀 導覽列 (Navbar) - 加大 Logo，加上氣氛光暈 */}
+      {/* 🚀 導覽列 (Navbar) - Logo 尺寸修正與光暈 */}
       <nav style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         padding: isMobile ? '0.5rem 1rem' : '0.8rem 2rem', background: 'rgba(2, 6, 23, 0.85)', backdropFilter: 'blur(12px)',
         borderBottom: '1px solid rgba(56, 189, 248, 0.1)', position: 'fixed', width: '100%', zIndex: 1000
       }}>
         <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-          {/* 🚨 這裡呼叫新的透明 PNG Logo */}
           <img
             src="/lifreedom-logo-removebg-preview.png"
             alt="Lifreedom Studio Logo"
             style={{
               height: isMobile ? '65px' : '90px',
               objectFit: 'contain',
-              mixBlendMode: 'screen', // 🚨 黑魔法在這裡！直接去背！
-              filter: 'drop-shadow(0 0 10px rgba(252, 163, 17, 0.5))',
+              // 🚨 已經去背了，移除 mixBlendMode
+              filter: 'drop-shadow(0 0 12px rgba(252, 163, 17, 0.6))',
               transition: '0.3s'
             }}
           />
@@ -76,16 +75,167 @@ export default function HomePage() {
         </Link>
       </div>
 
-      {/* ... (其餘區塊保留上一版代碼：核心優勢、The Truth、Gamification、Pricing、The Mission) ... */}
+      {/* 🛠️ 2. 核心優勢區 (Core Features) */}
+      <div style={{ padding: isMobile ? '4rem 1.5rem' : '6rem 2rem', background: '#020617' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2.5rem' }}>
+          <div style={{ background: '#0f172a', padding: '3rem 2rem', borderRadius: '30px', border: '1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>🎯</div>
+            <h3 style={{ color: '#fca311', fontSize: '1.4rem', marginBottom: '1rem' }}>破解所有介面限制</h3>
+            <p style={{ color: '#94a3b8', lineHeight: '1.7', fontSize: '0.95rem' }}>不需要死背參數。教你最核心的聲學邏輯，無論使用哪款 DAW 或 Plugin 都能無痛接軌。</p>
+          </div>
+          <div style={{ background: '#0f172a', padding: '3rem 2rem', borderRadius: '30px', border: '1px solid rgba(56, 189, 248, 0.2)' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>📸</div>
+            <h3 style={{ color: '#38bdf8', fontSize: '1.4rem', marginBottom: '1rem' }}>專屬 AI 聽診對策</h3>
+            <p style={{ color: '#94a3b8', lineHeight: '1.7', fontSize: '0.95rem' }}>上傳一張截圖或一段音檔，AI 助理就會針對你的真實專案，給出一步步的具體解法。</p>
+          </div>
+          <div style={{ background: '#0f172a', padding: '3rem 2rem', borderRadius: '30px', border: '1px solid rgba(167, 139, 250, 0.2)' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>🎧</div>
+            <h3 style={{ color: '#a78bfa', fontSize: '1.4rem', marginBottom: '1rem' }}>解決你的真實問題</h3>
+            <p style={{ color: '#94a3b8', lineHeight: '1.7', fontSize: '0.95rem' }}>告別拿別人的教材練習卻無法應用的困境。在專屬道場裡，只學實戰中真正需要的技術。</p>
+          </div>
+        </div>
+      </div>
 
-      {/* 🚀 底部引導 (Footer CTA) - 也同步加大並移除黑色拼接感 */}
+      {/* 🏗️ 3. THE TRUTH：製作人靈魂拷問 */}
+      <div style={{ padding: isMobile ? '5rem 1.5rem' : '8rem 2rem', background: 'linear-gradient(180deg, #020617 0%, #0f172a 100%)', borderTop: '1px solid rgba(252, 163, 17, 0.1)' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
+            <span style={{ color: '#ef4444', fontWeight: 'bold', letterSpacing: '3px', fontSize: '0.9rem' }}>THE TRUTH</span>
+            <h2 style={{ fontSize: isMobile ? '2rem' : '3.2rem', color: '#fff', margin: '1rem 0 1.5rem 0' }}>
+              其實，你的混音問題<br />往往出在<span style={{ color: '#38bdf8' }}>「編曲的起點」</span>
+            </h2>
+            <p style={{ color: '#94a3b8', fontSize: isMobile ? '1rem' : '1.2rem', maxWidth: '800px', margin: '0 auto', lineHeight: '1.8' }}>
+              如果樂器的頻段與空間一開始就撞車，再好的 EQ 也救不回來。我們帶你切換製作人視野，從源頭解決混音的無力感。
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
+            {[
+              {
+                q: '【單薄症候群】', title: '主唱跟 Solo 聽起來很虛？',
+                ans: '這通常不是麥克風的問題。從疊軌、微小飽和度染色到哈斯效應 (Haas Effect)，帶你掌握讓聲音從 2D 變 3D 的質感密技。',
+                icon: '🎙️', color: '#fca311'
+              },
+              {
+                q: '【頻率互毆】', title: '鋼琴跟貝斯永遠在泥淖裡打架？',
+                ans: '低頻沒有做好口袋拼圖，EQ 轉到手斷掉依然是糊的。教你如何在編曲階段就規劃好頻率擺位。',
+                icon: '🥊', color: '#ef4444'
+              },
+              {
+                q: '【堆疊迷思】', title: '軌道疊了幾十軌，混音卻是災難？',
+                ans: '你缺的不是更強的 Compressor，而是學會八度音錯位的頻段編排。',
+                icon: '🥞', color: '#38bdf8'
+              },
+              {
+                q: '【預設陷阱】', title: '樂器單獨聽都超神，合在一起卻糊成一團？',
+                ans: '懂得做減法讓出焦點，才是大師的起點。教你如何處理那些「佔空間」的預設音色。',
+                icon: '🎛️', color: '#a78bfa'
+              }
+            ].map((item, idx) => (
+              <div key={idx} style={{ padding: '2.5rem', background: '#020617', borderRadius: '24px', borderLeft: `4px solid ${item.color}` }}>
+                <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>{item.icon}</div>
+                <h4 style={{ color: item.color, fontSize: '0.9rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>{item.q}</h4>
+                <h3 style={{ fontSize: '1.25rem', color: '#fff', marginBottom: '1rem', lineHeight: '1.5' }}>{item.title}</h3>
+                <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.7' }}>{item.ans}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* 🏆 4. 每日挑戰 (Gamification) */}
+      <div style={{ padding: isMobile ? '5rem 1.5rem' : '8rem 2rem', background: '#020617', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '4rem', alignItems: 'center' }}>
+          <div style={{ flex: '1 1 300px' }}>
+            <span style={{ color: '#10b981', fontWeight: 'bold', letterSpacing: '2px', fontSize: '0.9rem' }}>DAILY CHALLENGE</span>
+            <h2 style={{ fontSize: isMobile ? '2rem' : '2.8rem', color: '#fff', margin: '1rem 0' }}>混音界的 Duolingo</h2>
+            <p style={{ color: '#94a3b8', fontSize: '1.1rem', lineHeight: '1.8', marginBottom: '2.5rem' }}>
+              每天 5 分鐘，建立你的聽覺肌肉記憶。透過聽辨頻段與空間深度的挑戰，解鎖傳說級的魔法圖鑑。
+            </p>
+            <div style={{ background: '#0f172a', padding: '1.5rem', borderRadius: '20px', border: '1px solid #10b981' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '1.5rem' }}>
+                <div style={{ fontSize: '2rem' }}>🎯</div>
+                <div>
+                  <h4 style={{ margin: 0, fontSize: '1.1rem', color: '#fff' }}>今日任務：頻率聽診器</h4>
+                  <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.85rem' }}>聽出木吉他中哪個頻率正在打架？</p>
+                </div>
+              </div>
+              <div style={{ height: '8px', background: '#020617', borderRadius: '10px', overflow: 'hidden', marginBottom: '1rem' }}>
+                <div style={{ width: '75%', height: '100%', background: '#10b981' }}></div>
+              </div>
+              <p style={{ color: '#10b981', fontWeight: 'bold', fontSize: '0.85rem', margin: 0 }}>🔥 已連續 5 天！</p>
+            </div>
+          </div>
+          <div style={{ flex: '1 1 300px', display: 'flex', gap: '1.5rem', justifyContent: 'center' }}>
+            <div style={{ width: '220px', background: '#1e293b', borderRadius: '20px', border: '2px solid #38bdf8', padding: '1.2rem', transform: 'rotate(-5deg)' }}>
+              <div style={{ height: '100px', background: '#0f172a', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '3rem' }}>↔️</div>
+              <h4 style={{ color: '#fff', margin: '10px 0 5px' }}>LCR 擺位法則</h4>
+              <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>LEGENDARY CARD</p>
+            </div>
+            <div style={{ width: '220px', background: '#1e293b', borderRadius: '20px', border: '2px solid #fca311', padding: '1.2rem', transform: 'rotate(5deg)' }}>
+              <div style={{ height: '100px', background: '#0f172a', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '3rem' }}>👻</div>
+              <h4 style={{ color: '#fff', margin: '10px 0 5px' }}>哈斯效應</h4>
+              <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>EPIC CARD</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 💰 5. 定價方案區 (Pricing) */}
+      <div id="pricing" style={{ padding: isMobile ? '5rem 1.5rem' : '8rem 2rem', background: 'linear-gradient(180deg, #020617 0%, #0f172a 100%)' }}>
+        <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: isMobile ? '2rem' : '2.8rem', textAlign: 'center', marginBottom: '1rem' }}>選擇您的<span style={{ color: '#fca311' }}>修煉等級</span></h2>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '3rem', marginTop: '4rem' }}>
+            <div style={{ background: '#020617', padding: '3rem 2rem', borderRadius: '32px', border: '1px solid #1e293b' }}>
+              <h3 style={{ color: '#fff', fontSize: '1.6rem', marginBottom: '0.5rem' }}>學徒級 (Basic)</h3>
+              <div style={{ fontSize: '2.8rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>$0 <span style={{ fontSize: '1rem', color: '#64748b' }}>TWD</span></div>
+              <ul style={{ listStyle: 'none', padding: 0, color: '#94a3b8', lineHeight: '2.5', marginBottom: '3rem' }}>
+                <li>✔️ 每日 3 次 AI 聽診對話</li>
+                <li>✔️ 解鎖基礎 EQ & 壓縮器道場</li>
+                <li>✔️ 參與每日聽覺小挑戰</li>
+              </ul>
+              <button style={{ width: '100%', padding: '1.2rem', background: 'transparent', color: '#fff', border: '1px solid #334155', borderRadius: '16px', fontWeight: 'bold' }}>免費開始</button>
+            </div>
+            <div style={{ background: 'linear-gradient(145deg, #1e293b, #020617)', padding: '3rem 2rem', borderRadius: '32px', border: '2px solid #fca311', position: 'relative' }}>
+              <div style={{ position: 'absolute', top: '-18px', left: '50%', transform: 'translateX(-50%)', background: '#fca311', color: '#000', padding: '6px 20px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: '900' }}>RECOMMENDED</div>
+              <h3 style={{ color: '#fca311', fontSize: '1.6rem', marginBottom: '0.5rem' }}>製作人 (Producer)</h3>
+              <div style={{ fontSize: '2.8rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>$599 <span style={{ fontSize: '1rem', color: '#94a3b8' }}>TWD /月</span></div>
+              <ul style={{ listStyle: 'none', padding: 0, color: '#e2e8f0', lineHeight: '2.2', marginBottom: '2.5rem' }}>
+                <li>🚀 <b>無限制</b> AI 聽診助理</li>
+                <li>📤 <b>上傳個人分軌</b> 實戰測試</li>
+                <li>🧪 解鎖 <b>空間、飽和度、母帶</b> 實驗室</li>
+                <li>📑 <b>DAW 參數一鍵打包</b></li>
+              </ul>
+              <button style={{ width: '100%', padding: '1.2rem', background: '#fca311', color: '#000', border: 'none', borderRadius: '16px', fontWeight: '900' }}>立即解鎖</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 🎯 6. 品牌目標與贊助 */}
+      <div style={{ padding: isMobile ? '5rem 1.5rem' : '8rem 2rem', background: '#020617', textAlign: 'center' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <span style={{ color: '#fca311', fontWeight: 'bold', letterSpacing: '3px', fontSize: '0.9rem' }}>OUR MISSION</span>
+          <h2 style={{ fontSize: isMobile ? '2rem' : '2.8rem', color: '#fff', margin: '1rem 0 2rem 0' }}>讓你不再需要我們</h2>
+          <p style={{ color: '#cbd5e1', fontSize: '1.1rem', lineHeight: '2', marginBottom: '3rem', fontWeight: 'bold' }}>
+            我們期望你在一年內，鍛鍊出大師級的直覺，成為獨當一面的專家，最終自信地「徹底畢業」。
+          </p>
+          <div style={{ background: '#0f172a', padding: '2.5rem', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)' }}>
+            <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.7', marginBottom: '2rem' }}>
+              歡迎贊助我們一杯咖啡，讓我們持續提升 AI 品質，幫助更多迷惘的音樂人。
+            </p>
+            <button style={{ padding: '1rem 3rem', background: 'transparent', color: '#fca311', border: '2px solid #fca311', borderRadius: '50px', fontWeight: 'bold' }}>❤️ 贊助支持</button>
+          </div>
+        </div>
+      </div>
+
+      {/* 🚀 底部引導 (Footer CTA) */}
       <div style={{
         padding: isMobile ? '5rem 1.5rem' : '8rem 2rem', textAlign: 'center',
         background: 'radial-gradient(circle at 50% 100%, #1e293b 0%, #020617 80%)',
         borderTop: '1px solid rgba(255,255,255,0.05)',
         display: 'flex', flexDirection: 'column', alignItems: 'center'
       }}>
-        {/* 🚨 底部大 Logo：使用透明 PNG，加大尺寸，加上更強的光暈 */}
         <img
           src="/lifreedom-logo-removebg-preview.png"
           alt="Lifreedom Studio Logo"
@@ -93,16 +243,13 @@ export default function HomePage() {
             height: isMobile ? '160px' : '240px',
             objectFit: 'contain',
             marginBottom: '2rem',
-            mixBlendMode: 'screen', // 🚨 黑魔法加在這裡！
-            filter: 'drop-shadow(0 0 25px rgba(252, 163, 17, 0.4))'
+            filter: 'drop-shadow(0 0 35px rgba(252, 163, 17, 0.5))'
           }}
         />
-
         <p style={{ color: '#94a3b8', marginBottom: '3rem', fontSize: '1.1rem' }}>我們孵化聲音，也孵化創作的自由。</p>
         <Link href="/courses" style={{
           display: 'inline-block', padding: '1.2rem 4rem', background: '#fff', color: '#020617',
-          fontSize: '1.1rem', fontWeight: '900', borderRadius: '50px', textDecoration: 'none',
-          boxShadow: '0 10px 30px rgba(255,255,255,0.1)'
+          fontSize: '1.1rem', fontWeight: '900', borderRadius: '50px', textDecoration: 'none'
         }}>
           進入控制台
         </Link>
@@ -110,7 +257,6 @@ export default function HomePage() {
           © 2026 Lifreedom Studio. All rights reserved.
         </div>
       </div>
-
     </div>
   );
 }
