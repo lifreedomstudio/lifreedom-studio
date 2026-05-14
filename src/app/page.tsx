@@ -15,7 +15,7 @@ export default function HomePage() {
   return (
     <div style={{ minHeight: '100vh', background: '#020617', color: '#f8fafc', fontFamily: 'sans-serif', overflowX: 'hidden' }}>
 
-      {/* 🌟 1. 英雄視覺區 (Hero Section) - Logo 移到這裡霸氣置中！ */}
+      {/* 🌟 1. 英雄視覺區 (Hero Section) - Logo 霸氣置中 */}
       <div style={{
         minHeight: isMobile ? '80vh' : '100vh',
         display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center',
@@ -24,30 +24,34 @@ export default function HomePage() {
         padding: isMobile ? '6rem 1.5rem 2rem 1.5rem' : '4rem 2rem'
       }}>
 
-        {/* 🚨 置中的品牌 Logo，剛好在你畫紅框的位置 */}
+        {/* 置中的品牌 Logo */}
         <img
           src="/lifreedom-logo-removebg-preview.png"
           alt="Lifreedom Studio Logo"
           style={{
-            height: isMobile ? '120px' : '160px', // 在中心點可以稍微放大，更有氣勢
+            height: isMobile ? '120px' : '160px',
             objectFit: 'contain',
-            marginBottom: '2rem', // 與下方文字拉開舒適的呼吸空間
-            filter: 'drop-shadow(0 0 20px rgba(252, 163, 17, 0.6))', // 金色神聖光暈
+            marginBottom: '2rem',
+            filter: 'drop-shadow(0 0 20px rgba(252, 163, 17, 0.6))',
             transition: '0.3s',
-            animation: 'float 3s ease-in-out infinite' // (選用) 微微浮動的質感
+            animation: 'float 3s ease-in-out infinite'
           }}
         />
 
         <div style={{ color: '#fca311', letterSpacing: '6px', fontWeight: 'bold', marginBottom: '1.5rem', fontSize: isMobile ? '0.7rem' : '0.9rem', opacity: 0.9 }}>
           LIFREEDOM STUDIO PRESENTS
         </div>
+
+        {/* 🚨 修正：移除硬性的 <br />，讓文字自然換行，並調整字體大小範圍避免落單字 */}
         <h1 style={{
-          fontSize: 'clamp(2.2rem, 7vw, 4.8rem)', fontWeight: '900', margin: '0 0 1.5rem 0',
-          lineHeight: 1.15, background: 'linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%)',
+          fontSize: 'clamp(2rem, 8vw, 4.8rem)', // 微調最小值，讓手機版字體適中
+          fontWeight: '900', margin: '0 auto 1.5rem auto', maxWidth: '800px', // 限制最大寬度幫助排版
+          lineHeight: 1.2, background: 'linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%)',
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textShadow: '0 10px 30px rgba(0,0,0,0.5)'
         }}>
-          預算有限，也值得擁有<br />大師級的混音腦袋
+          預算有限，也值得擁有大師級的混音腦袋
         </h1>
+
         <p style={{
           fontSize: isMobile ? '1rem' : '1.25rem', color: '#cbd5e1', maxWidth: '750px',
           marginBottom: '3.5rem', lineHeight: '1.8', fontWeight: '400', textShadow: '0 2px 10px rgba(0,0,0,0.8)'
@@ -155,13 +159,15 @@ export default function HomePage() {
               <p style={{ color: '#10b981', fontWeight: 'bold', fontSize: '0.85rem', margin: 0 }}>🔥 已連續 5 天！</p>
             </div>
           </div>
-          <div style={{ flex: '1 1 300px', display: 'flex', gap: '1.5rem', justifyContent: 'center' }}>
-            <div style={{ width: '220px', background: '#1e293b', borderRadius: '20px', border: '2px solid #38bdf8', padding: '1.2rem', transform: 'rotate(-5deg)' }}>
+
+          {/* 🚨 修正：魔法卡排版，手機版時改為上下排列，解決被切掉的問題 */}
+          <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '2rem', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ width: '220px', background: '#1e293b', borderRadius: '20px', border: '2px solid #38bdf8', padding: '1.2rem', transform: isMobile ? 'none' : 'rotate(-5deg)', transition: 'transform 0.3s' }}>
               <div style={{ height: '100px', background: '#0f172a', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '3rem' }}>↔️</div>
               <h4 style={{ color: '#fff', margin: '10px 0 5px' }}>LCR 擺位法則</h4>
               <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>LEGENDARY CARD</p>
             </div>
-            <div style={{ width: '220px', background: '#1e293b', borderRadius: '20px', border: '2px solid #fca311', padding: '1.2rem', transform: 'rotate(5deg)' }}>
+            <div style={{ width: '220px', background: '#1e293b', borderRadius: '20px', border: '2px solid #fca311', padding: '1.2rem', transform: isMobile ? 'none' : 'rotate(5deg)', transition: 'transform 0.3s' }}>
               <div style={{ height: '100px', background: '#0f172a', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '3rem' }}>👻</div>
               <h4 style={{ color: '#fff', margin: '10px 0 5px' }}>哈斯效應</h4>
               <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>EPIC CARD</p>
@@ -177,7 +183,7 @@ export default function HomePage() {
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '3rem', marginTop: '4rem' }}>
             <div style={{ background: '#020617', padding: '3rem 2rem', borderRadius: '32px', border: '1px solid #1e293b' }}>
               <h3 style={{ color: '#fff', fontSize: '1.6rem', marginBottom: '0.5rem' }}>學徒級 (Basic)</h3>
-              <div style={{ fontSize: '2.8rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>$0 <span style={{ fontSize: '1rem', color: '#64748b' }}>TWD</span></div>
+              <div style={{ fontSize: '2.8rem', fontWeight: 'bold', marginBottom: '1.5rem', color: '#fff' }}>$0 <span style={{ fontSize: '1rem', color: '#64748b' }}>TWD</span></div>
               <ul style={{ listStyle: 'none', padding: 0, color: '#94a3b8', lineHeight: '2.5', marginBottom: '3rem' }}>
                 <li>✔️ 每日 3 次 AI 聽診對話</li>
                 <li>✔️ 解鎖基礎 EQ & 壓縮器道場</li>
@@ -188,7 +194,7 @@ export default function HomePage() {
             <div style={{ background: 'linear-gradient(145deg, #1e293b, #020617)', padding: '3rem 2rem', borderRadius: '32px', border: '2px solid #fca311', position: 'relative' }}>
               <div style={{ position: 'absolute', top: '-18px', left: '50%', transform: 'translateX(-50%)', background: '#fca311', color: '#000', padding: '6px 20px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: '900' }}>RECOMMENDED</div>
               <h3 style={{ color: '#fca311', fontSize: '1.6rem', marginBottom: '0.5rem' }}>製作人 (Producer)</h3>
-              <div style={{ fontSize: '2.8rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>$599 <span style={{ fontSize: '1rem', color: '#94a3b8' }}>TWD /月</span></div>
+              <div style={{ fontSize: '2.8rem', fontWeight: 'bold', marginBottom: '1.5rem', color: '#fff' }}>$599 <span style={{ fontSize: '1rem', color: '#94a3b8' }}>TWD /月</span></div>
               <ul style={{ listStyle: 'none', padding: 0, color: '#e2e8f0', lineHeight: '2.2', marginBottom: '2.5rem' }}>
                 <li>🚀 <b>無限制</b> AI 聽診助理</li>
                 <li>📤 <b>上傳個人分軌</b> 實戰測試</li>
@@ -201,10 +207,9 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* 🎯 6. 品牌目標與贊助 - 中文化更新 */}
+      {/* 🎯 6. 品牌目標與贊助 */}
       <div style={{ padding: isMobile ? '5rem 1.5rem' : '8rem 2rem', background: '#020617', textAlign: 'center' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          {/* 🚨 改成中文的「我們的目標」 */}
           <span style={{ color: '#fca311', fontWeight: 'bold', letterSpacing: '3px', fontSize: '0.9rem' }}>我們的目標</span>
           <h2 style={{ fontSize: isMobile ? '2rem' : '2.8rem', color: '#fff', margin: '1rem 0 2rem 0' }}>讓你不再需要我們</h2>
           <p style={{ color: '#cbd5e1', fontSize: '1.1rem', lineHeight: '2', marginBottom: '3rem', fontWeight: 'bold' }}>
