@@ -15,7 +15,7 @@ export default function HomePage() {
   return (
     <div style={{ minHeight: '100vh', background: '#020617', color: '#f8fafc', fontFamily: 'sans-serif', overflowX: 'hidden' }}>
 
-      {/* 🌟 1. 英雄視覺區 (Hero Section) - Logo 霸氣置中 */}
+      {/* 🌟 1. 英雄視覺區 (Hero Section) */}
       <div style={{
         minHeight: isMobile ? '80vh' : '100vh',
         display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center',
@@ -24,12 +24,12 @@ export default function HomePage() {
         padding: isMobile ? '6rem 1.5rem 2rem 1.5rem' : '4rem 2rem'
       }}>
 
-        {/* 置中的品牌 Logo */}
+        {/* 🚨 修正 1：Logo 尺寸大幅調大 */}
         <img
           src="/lifreedom-logo-removebg-preview.png"
           alt="Lifreedom Studio Logo"
           style={{
-            height: isMobile ? '120px' : '160px',
+            height: isMobile ? '160px' : '200px', // 手機版跟電腦版都再放大
             objectFit: 'contain',
             marginBottom: '2rem',
             filter: 'drop-shadow(0 0 20px rgba(252, 163, 17, 0.6))',
@@ -42,23 +42,23 @@ export default function HomePage() {
           LIFREEDOM STUDIO PRESENTS
         </div>
 
-        {/* 🚨 修正：移除硬性的 <br />，讓文字自然換行，並調整字體大小範圍避免落單字 */}
         <h1 style={{
-          fontSize: 'clamp(2rem, 8vw, 4.8rem)', // 微調最小值，讓手機版字體適中
-          fontWeight: '900', margin: '0 auto 1.5rem auto', maxWidth: '800px', // 限制最大寬度幫助排版
+          fontSize: 'clamp(2rem, 8vw, 4.8rem)',
+          fontWeight: '900', margin: '0 auto 1.5rem auto', maxWidth: '800px',
           lineHeight: 1.2, background: 'linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%)',
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textShadow: '0 10px 30px rgba(0,0,0,0.5)'
         }}>
           預算有限，也值得擁有大師級的混音腦袋
         </h1>
 
+        {/* 🚨 修正 2：拔掉任意門後面的換行，並加上 wordBreak: 'keep-all' 讓中文字乖乖排好 */}
         <p style={{
           fontSize: isMobile ? '1rem' : '1.25rem', color: '#cbd5e1', maxWidth: '750px',
-          marginBottom: '3.5rem', lineHeight: '1.8', fontWeight: '400', textShadow: '0 2px 10px rgba(0,0,0,0.8)'
+          marginBottom: '3.5rem', lineHeight: '1.8', fontWeight: '400', textShadow: '0 2px 10px rgba(0,0,0,0.8)',
+          wordBreak: 'keep-all' // 防止中文字在奇怪的地方斷行
         }}>
           找老師怕學不到想要的？看教學怕套用在自己的歌裡沒效？<br />
-          <span style={{ color: '#fca311', fontWeight: 'bold' }}>Lifreedom STUDIO</span> 為你開啟業界標準的任意門，<br />
-          不用所費不貲，立刻掌握混音的絕對領域。
+          <span style={{ color: '#fca311', fontWeight: 'bold' }}>Lifreedom STUDIO</span> 為你開啟業界標準的任意門，不用所費不貲，立刻掌握混音的絕對領域。
         </p>
         <Link href="/courses" style={{
           padding: isMobile ? '1rem 2.5rem' : '1.2rem 4rem', background: '#fca311', color: '#000', fontSize: '1.1rem', fontWeight: '900',
@@ -106,7 +106,7 @@ export default function HomePage() {
             {[
               {
                 q: '【單薄症候群】', title: '主唱跟 Solo 聽起來很虛？',
-                ans: '這通常不是麥克風的問題。從疊軌、微小飽和度染色到哈斯效應 (Haas Effect)，帶你掌握讓聲音從 2D 變 3D 的質感密技。',
+                ans: '這通常不是麥克風的問題。從疊軌、微小飽立度染色到哈斯效應 (Haas Effect)，帶你掌握讓聲音從 2D 變 3D 的質感密技。',
                 icon: '🎙️', color: '#fca311'
               },
               {
@@ -160,7 +160,6 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* 🚨 修正：魔法卡排版，手機版時改為上下排列，解決被切掉的問題 */}
           <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '2rem', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ width: '220px', background: '#1e293b', borderRadius: '20px', border: '2px solid #38bdf8', padding: '1.2rem', transform: isMobile ? 'none' : 'rotate(-5deg)', transition: 'transform 0.3s' }}>
               <div style={{ height: '100px', background: '#0f172a', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '3rem' }}>↔️</div>
