@@ -23,7 +23,7 @@ export default function HomePage() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
           {/* 🚨 這裡呼叫你的實體 Logo 圖片 */}
-          <img src="/lifreedom-logo.jpg" alt="Lifreedom Studio Logo" style={{ height: isMobile ? '35px' : '45px', objectFit: 'contain' }} />
+          <img src="/lifreedom-logo.png" alt="Lifreedom Studio Logo" style={{ height: isMobile ? '35px' : '45px', objectFit: 'contain' }} />
         </div>
         <div style={{ display: isMobile ? 'none' : 'flex', gap: '2.5rem', fontSize: '0.95rem', fontWeight: 'bold' }}>
           <Link href="/courses" style={{ color: '#94a3b8', textDecoration: 'none', transition: '0.2s' }}>EQ 實驗室</Link>
@@ -110,7 +110,7 @@ export default function HomePage() {
         display: 'flex', flexDirection: 'column', alignItems: 'center'
       }}>
         {/* 🚨 底部大 Logo，加上淡淡的光暈效果 */}
-        <img src="/lifreedom-logo.jpg" alt="Lifreedom Studio Logo" style={{ height: '120px', objectFit: 'contain', marginBottom: '2rem', filter: 'drop-shadow(0 0 20px rgba(252, 163, 17, 0.3))' }} />
+        <img src="/lifreedom-logo.png" alt="Lifreedom Studio Logo" style={{ height: '120px', objectFit: 'contain', marginBottom: '2rem', filter: 'drop-shadow(0 0 20px rgba(252, 163, 17, 0.3))' }} />
 
         <p style={{ color: '#94a3b8', marginBottom: '3rem', fontSize: '1.1rem' }}>我們孵化聲音，也孵化創作的自由。</p>
         <Link href="/courses" style={{
