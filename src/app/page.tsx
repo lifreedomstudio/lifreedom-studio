@@ -27,7 +27,7 @@ export default function HomePage() {
             src="/lifreedom-logo-removebg-preview.png"
             alt="Lifreedom Studio Logo"
             style={{
-              height: isMobile ? '50px' : '65px',
+              height: isMobile ? '65px' : '90px',
               objectFit: 'contain',
               mixBlendMode: 'screen', // 🚨 黑魔法在這裡！直接去背！
               filter: 'drop-shadow(0 0 10px rgba(252, 163, 17, 0.5))',
@@ -90,7 +90,7 @@ export default function HomePage() {
           src="/lifreedom-logo-removebg-preview.png"
           alt="Lifreedom Studio Logo"
           style={{
-            height: isMobile ? '100px' : '140px',
+            height: isMobile ? '160px' : '240px',
             objectFit: 'contain',
             marginBottom: '2rem',
             mixBlendMode: 'screen', // 🚨 黑魔法加在這裡！
