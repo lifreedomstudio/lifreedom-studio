@@ -2,17 +2,17 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-// --- 🛠️ 1. 簡易頻譜示意圖 (RWD 修正版) ---
+// --- 🛠️ 1. 簡易頻譜示意圖 (補完色塊範圍) ---
 const SimplifiedSpectrumMap = ({ isMobile }: { isMobile: boolean }) => {
     return (
         <div style={{
             background: 'rgba(15, 23, 42, 0.8)',
-            // 🛠️ 修正：手機版減少內部水平 padding (從 30px 變成 10px)，讓圖案更大
-            padding: isMobile ? '20px 10px' : '30px',
+            // 🛠️ 修正：手機版大幅縮減垂直 padding (20px -> 5px)
+            padding: isMobile ? '5px 5px' : '30px',
             borderRadius: '24px',
             border: '1px solid rgba(255,255,255,0.1)'
         }}>
-            <svg viewBox="0 0 450 250" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
+            <svg viewBox="0 0 450 250" style={{ width: '100%', height: 'auto', overflow: 'visible' }}>
                 <line x1="20" y1="220" x2="430" y2="220" stroke="#334155" strokeWidth="2" />
                 <text x="20" y="240" fill="#64748b" fontSize="14" fontFamily="Urbanist">20Hz</text>
                 <text x="160" y="240" fill="#64748b" fontSize="14" fontFamily="Urbanist">1kHz</text>
@@ -20,29 +20,29 @@ const SimplifiedSpectrumMap = ({ isMobile }: { isMobile: boolean }) => {
                 <text x="430" y="240" fill="#64748b" fontSize="14" fontFamily="Urbanist">20kHz</text>
 
                 <rect x="20" y="20" width="100" height="190" fill="rgba(234, 88, 12, 0.2)" stroke="#ea580c" strokeDasharray="5 5" strokeWidth="2" rx="12" />
-                <text x="70" y="115" textAnchor="middle" fill="#ea580c" fontWeight="bold" fontSize="20">地基層</text>
+                <text x="70" y="115" textAnchor="middle" fill="#ea580c" fontWeight="bold" fontSize="18">地基層</text>
 
                 <rect x="150" y="20" width="180" height="190" fill="rgba(250, 204, 21, 0.15)" stroke="#facc15" strokeDasharray="5 5" strokeWidth="2" rx="12" />
-                <text x="240" y="115" textAnchor="middle" fill="#facc15" fontWeight="bold" fontSize="20">車禍層</text>
+                <text x="240" y="115" textAnchor="middle" fill="#facc15" fontWeight="bold" fontSize="18">車禍層</text>
 
-                <rect x="350" y="20" width="100" height="190" fill="rgba(56, 189, 248, 0.15)" stroke="#38bdf8" strokeDasharray="5 5" strokeWidth="2" rx="12" />
-                <text x="400" y="115" textAnchor="middle" fill="#38bdf8" fontWeight="bold" fontSize="20">空氣層</text>
+                <rect x="350" y="20" width="80" height="190" fill="rgba(56, 189, 248, 0.15)" stroke="#38bdf8" strokeDasharray="5 5" strokeWidth="2" rx="12" />
+                <text x="390" y="115" textAnchor="middle" fill="#38bdf8" fontWeight="bold" fontSize="18">空氣層</text>
             </svg>
         </div>
     );
 };
 
-// --- 🛠️ 2. 中頻車禍與人聲領空 (RWD 修正版) ---
+// --- 🛠️ 2. 中頻車禍與人聲領空 (修正文字分離) ---
 const MidFreqJamVisual = ({ isMobile }: { isMobile: boolean }) => {
     return (
         <div style={{
             background: 'rgba(15, 23, 42, 0.4)',
-            // 🛠️ 修正：手機版減少內部水平 padding (從 25px 變成 10px)，讓圖案更大
-            padding: isMobile ? '20px 10px' : '25px',
+            // 🛠️ 修正：手機版大幅縮減垂直 padding
+            padding: isMobile ? '5px 5px' : '25px',
             borderRadius: '20px',
             border: '1px solid rgba(255,255,255,0.05)'
         }}>
-            <svg viewBox="0 0 1000 380" style={{ width: '100%', height: '360px', overflow: 'visible' }}>
+            <svg viewBox="0 0 1000 380" style={{ width: '100%', height: 'auto', overflow: 'visible' }}>
                 <text x="50" y="350" fill="#64748b" fontSize="14" fontFamily="Urbanist">20Hz</text>
                 <text x="250" y="350" fill="#64748b" fontSize="14" fontFamily="Urbanist">300Hz</text>
                 <text x="500" y="350" fill="#64748b" fontSize="14" fontFamily="Urbanist">1kHz</text>
@@ -67,7 +67,7 @@ const MidFreqJamVisual = ({ isMobile }: { isMobile: boolean }) => {
     );
 };
 
-// --- 🛠️ 3. 檢查流程 Timeline ---
+// --- 🛠️ 3. 檢查流程 Timeline (恢復手機版點線並優化) ---
 const MaskingTimeline = ({ isMobile }: { isMobile: boolean }) => {
     const steps = [
         { title: "1. 選色 (Tone)", desc: "挑選本質就互補的音色，減少後製負擔。", pos: "top" },
@@ -77,28 +77,55 @@ const MaskingTimeline = ({ isMobile }: { isMobile: boolean }) => {
     ];
 
     return (
-        <div style={{ position: 'relative', width: '100%', height: isMobile ? 'auto' : '400px', marginTop: '4rem' }}>
-            {!isMobile && <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '3px', background: 'rgba(16, 185, 129, 0.2)', transform: 'translateY(-1.5px)' }} />}
+        <div style={{ position: 'relative', width: '100%', height: isMobile ? 'auto' : '450px', marginTop: '3rem' }}>
+            {/* 🛠️ 中央軸線：電腦版水平，手機版垂直 */}
+            <div style={{
+                position: 'absolute',
+                top: isMobile ? 0 : '50%',
+                left: isMobile ? '20px' : 0,
+                right: 0,
+                bottom: isMobile ? 0 : 'auto',
+                width: isMobile ? '2px' : '100%',
+                height: isMobile ? '100%' : '3px',
+                background: 'rgba(16, 185, 129, 0.2)',
+                transform: isMobile ? 'none' : 'translateY(-1.5px)',
+                zIndex: 1
+            }} />
 
-            <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', gap: isMobile ? '3rem' : '0' }}>
+            <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', height: '100%', gap: isMobile ? '2rem' : '0' }}>
                 {steps.map((step, i) => (
                     <div key={i} style={{
-                        flex: 1, position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center',
-                        justifyContent: step.pos === 'top' ? 'flex-start' : 'flex-end',
-                        height: isMobile ? 'auto' : '100%'
+                        flex: 1,
+                        position: 'relative',
+                        display: 'flex',
+                        flexDirection: isMobile ? 'row' : 'column',
+                        alignItems: isMobile ? 'center' : 'center',
+                        paddingLeft: isMobile ? '50px' : '0'
                     }}>
-                        {!isMobile && <div style={{ position: 'absolute', top: '50%', transform: 'translate(-50%, -50%)', left: '50%', width: '20px', height: '20px', background: '#10b981', borderRadius: '50%', border: '4px solid #020617', boxShadow: '0 0 15px #10b981', zIndex: 2 }} />}
+
+                        {/* 🛠️ 綠色發光點：恢復手機版顯示 */}
+                        <div style={{
+                            position: 'absolute',
+                            top: isMobile ? '50%' : '50%',
+                            left: isMobile ? '20px' : '50%',
+                            transform: 'translate(-50%, -50%)',
+                            width: '18px', height: '18px',
+                            background: '#10b981', borderRadius: '50%',
+                            border: '3px solid #020617', boxShadow: '0 0 10px #10b981',
+                            zIndex: 10
+                        }} />
 
                         <div style={{
-                            textAlign: 'center', width: isMobile ? '100%' : '200px',
-                            marginBottom: step.pos === 'top' ? '60px' : '0',
-                            marginTop: step.pos === 'bottom' ? '60px' : '0',
-                            background: isMobile ? 'rgba(255,255,255,0.03)' : 'transparent',
-                            padding: isMobile ? '1.5rem' : '0',
-                            borderRadius: '12px'
+                            textAlign: isMobile ? 'left' : 'center',
+                            width: isMobile ? '100%' : '240px',
+                            position: isMobile ? 'static' : 'absolute',
+                            bottom: !isMobile && step.pos === 'top' ? 'calc(50% + 40px)' : 'auto',
+                            top: !isMobile && step.pos === 'bottom' ? 'calc(50% + 40px)' : 'auto',
+                            background: 'transparent',
+                            padding: isMobile ? '0.5rem 0' : '0',
                         }}>
-                            <h4 style={{ color: '#10b981', fontSize: '1.2rem', marginBottom: '10px' }}>{step.title}</h4>
-                            <p style={{ color: '#94a3b8', fontSize: '0.95rem', margin: 0, lineHeight: '1.6' }}>{step.desc}</p>
+                            <h4 style={{ color: '#10b981', fontSize: '1.1rem', marginBottom: '8px', fontWeight: 'bold' }}>{step.title}</h4>
+                            <p style={{ color: '#94a3b8', fontSize: '0.9rem', margin: 0, lineHeight: '1.5' }}>{step.desc}</p>
                         </div>
                     </div>
                 ))}
@@ -122,73 +149,68 @@ export default function MaskingTraining() {
     return (
         <div style={{
             minHeight: '100vh', background: '#020617', color: '#f8fafc',
-            // 🛠️ 修正：整體頁面水平 padding 手機版從 1rem 降為更窄的 0.5rem，釋放空間
-            padding: isMobile ? '1.5rem 0.5rem' : '4rem 2rem',
+            // 🛠️ 修正：手機版邊框再次縮減 (從 1rem 降為 0.3rem)，極大化圖表
+            padding: isMobile ? '1.5rem 0.3rem' : '4rem 2rem',
             fontFamily: 'sans-serif', overflowX: 'hidden'
         }}>
-            <div style={{ maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
+            <div style={{ maxWidth: '1100px', margin: '0 auto', width: '100%' }}>
 
                 {/* Header */}
-                <header style={{ textAlign: 'center', marginBottom: '5rem' }}>
-                    <div style={{ display: 'inline-block', border: '1px solid rgba(16, 185, 129, 0.5)', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', padding: '6px 20px', borderRadius: '30px', fontSize: '0.85rem', letterSpacing: '3px', marginBottom: '1.5rem', fontWeight: 'bold' }}>
+                <header style={{ textAlign: 'center', marginBottom: '4rem' }}>
+                    <div style={{ display: 'inline-block', border: '1px solid rgba(16, 185, 129, 0.5)', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', padding: '6px 20px', borderRadius: '30px', fontSize: '0.8rem', letterSpacing: '3px', marginBottom: '1.5rem', fontWeight: 'bold' }}>
                         PHASE 03 : AIRSPACE MANAGEMENT
                     </div>
-                    <h1 style={{ fontSize: isMobile ? '2.5rem' : '4rem', fontWeight: '900', margin: '0 0 1rem 0', color: '#fff' }}>
+                    <h1 style={{ fontSize: isMobile ? '2.2rem' : '4rem', fontWeight: '900', margin: '0 0 1rem 0', color: '#fff' }}>
                         Masking 頻率遮蔽預防
                     </h1>
-                    <p style={{ color: '#94a3b8', fontSize: '1.2rem', maxWidth: '700px', margin: '0 auto', lineHeight: '1.6' }}>
-                        別讓樂器在窄門前擠成一團。編曲的核心不是加法，而是為每個靈魂找到專屬的領空。
-                    </p>
                 </header>
 
                 {/* 🎬 卡門比喻卡片 */}
-                <section style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: isMobile ? '2rem 1.5rem' : '4rem', borderRadius: '32px', marginBottom: '5rem', textAlign: 'center' }}>
-                    <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.5rem', color: '#10b981', marginBottom: '2rem' }}>別讓樂器「卡門」了！</h2>
-                    <p style={{ fontSize: '1.3rem', color: '#cbd5e1', lineHeight: '1.8', maxWidth: '800px', margin: '0 auto' }}>
+                <section style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: isMobile ? '2rem 1rem' : '4rem', borderRadius: '24px', marginBottom: '4rem', textAlign: 'center' }}>
+                    <h2 style={{ fontSize: isMobile ? '1.5rem' : '2.5rem', color: '#10b981', marginBottom: '1.5rem' }}>別讓樂器「卡門」了！</h2>
+                    <p style={{ fontSize: isMobile ? '1.1rem' : '1.3rem', color: '#cbd5e1', lineHeight: '1.8', maxWidth: '850px', margin: '0 auto' }}>
                         「多個同頻樂器同時彈奏，就像五個人同時要過一個門，最後誰也沒辦法真的過去，觀眾也抓不到重點。」
                     </p>
                 </section>
 
                 {/* 1. 簡易頻譜示意圖 */}
-                <section style={{ marginBottom: '6rem' }}>
-                    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '3rem', alignItems: 'center' }}>
+                <section style={{ marginBottom: '5rem' }}>
+                    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '1.5rem' : '3rem', alignItems: 'center' }}>
                         <div style={{ flex: 1 }}>
-                            <h2 style={{ fontSize: '2rem', color: '#10b981', marginBottom: '1.5rem' }}>1. 簡易頻譜示意圖</h2>
+                            <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.2rem', color: '#10b981', marginBottom: '1.5rem' }}>1. 簡易頻譜示意圖</h2>
                             <ul style={{ listStyle: 'none', padding: 0 }}>
-                                <li style={{ marginBottom: '20px' }}><strong style={{ color: '#ea580c' }}>🟠 地基層 (20-100Hz):</strong> 大鼓與 Bass 的地盤。</li>
-                                <li style={{ marginBottom: '20px' }}><strong style={{ color: '#facc15' }}>🟡 車禍層 (300-2kHz):</strong> 吉他、鋼琴、人聲。</li>
+                                <li style={{ marginBottom: '15px' }}><strong style={{ color: '#ea580c' }}>🟠 地基層 (20-100Hz):</strong> 大鼓與 Bass。</li>
+                                <li style={{ marginBottom: '15px' }}><strong style={{ color: '#facc15' }}>🟡 車禍層 (300-2kHz):</strong> 吉他、鋼琴、人聲。</li>
                                 <li><strong style={{ color: '#38bdf8' }}>🔵 空氣層 (7k-20kHz):</strong> 弦樂高音與銅鈸。</li>
                             </ul>
                         </div>
                         <div style={{ flex: 1.2, width: '100%' }}>
-                            {/* 🛠️ 修正：將 isMobile 傳入圖表元件，使其能 conditionally 調整內部 padding */}
                             <SimplifiedSpectrumMap isMobile={isMobile} />
                         </div>
                     </div>
                 </section>
 
                 {/* 2. 中頻車禍現場 */}
-                <section style={{ marginBottom: '6rem' }}>
-                    <h2 style={{ fontSize: '2rem', color: '#10b981', marginBottom: '1.5rem' }}>2. 中頻車禍現場與人聲領空</h2>
-                    {/* 🛠️ 修正：將 isMobile 傳入圖表元件，使其能 conditionally 調整內部 padding */}
+                <section style={{ marginBottom: '5rem' }}>
+                    <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.2rem', color: '#10b981', marginBottom: '1.5rem' }}>2. 中頻車禍現場與人聲領空</h2>
                     <MidFreqJamVisual isMobile={isMobile} />
-                    <p style={{ marginTop: '2rem', color: '#94a3b8', fontStyle: 'italic', textAlign: 'center' }}>
+                    <p style={{ marginTop: '2rem', color: '#94a3b8', fontStyle: 'italic', textAlign: 'center', fontSize: '1rem' }}>
                         在編曲階段，就要讓樂器換把位 (Voicing) 或留白，把翡翠綠區塊讓給人聲！
                     </p>
                 </section>
 
                 {/* 3. 檢查流程 */}
-                <section style={{ marginBottom: '6rem' }}>
-                    <h2 style={{ fontSize: '2rem', color: '#10b981', textAlign: 'center' }}>Masking 檢查流程</h2>
+                <section style={{ marginBottom: '5rem' }}>
+                    <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.2rem', color: '#10b981', textAlign: 'center' }}>Masking 檢查流程</h2>
                     <MaskingTimeline isMobile={isMobile} />
                 </section>
 
                 {/* 💡 留白的力量 */}
-                <section style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), transparent)', padding: '3rem', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center', marginBottom: '6rem' }}>
-                    <div style={{ fontSize: '4rem', fontWeight: '900', color: '#10b981' }}>30%</div>
+                <section style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), transparent)', padding: isMobile ? '2.5rem 1rem' : '4rem', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center', marginBottom: '5rem' }}>
+                    <div style={{ fontSize: '4rem', fontWeight: '900', color: '#10b981', lineHeight: 1 }}>30%</div>
                     <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>建議留白比例</h3>
-                    <p style={{ color: '#94a3b8', maxWidth: '600px', margin: '0 auto', lineHeight: '1.6' }}>
-                        編曲不是要把空間填滿，而是要把空間留出來。留出呼吸空間，主唱才會顯得高貴。
+                    <p style={{ color: '#94a3b8', maxWidth: '700px', margin: '0 auto', lineHeight: '1.6' }}>
+                        最高級的編曲是「簡化」。讓樂器適時安靜，能讓主唱顯得高貴且充滿能量。
                     </p>
                 </section>
 
@@ -198,7 +220,7 @@ export default function MaskingTraining() {
                         onClick={() => router.push('/courses/arrangement/dynamics-training')}
                         style={{
                             background: 'linear-gradient(135deg, #3b82f6, #2563eb)', color: '#fff', border: 'none',
-                            padding: isMobile ? '1.2rem 1.5rem' : '1.5rem 4rem', fontSize: isMobile ? '1.1rem' : '1.4rem',
+                            padding: isMobile ? '1.2rem 1.5rem' : '1.5rem 4.5rem', fontSize: isMobile ? '1.1rem' : '1.5rem',
                             fontWeight: '900', borderRadius: '50px', cursor: 'pointer', boxShadow: '0 10px 30px rgba(59, 130, 246, 0.3)',
                             transition: 'transform 0.2s', width: isMobile ? '100%' : 'auto'
                         }}
