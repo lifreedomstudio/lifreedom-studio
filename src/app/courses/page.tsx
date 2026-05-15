@@ -48,8 +48,6 @@ export default function CoursesPage() {
         );
     }
 
-    // --- 下面的 cardStyle 跟其他東西都保留你原本的，不要動！ ---
-
     // 🎨 統一卡片樣式設定
     const cardStyle = {
         background: 'rgba(20,20,30,0.7)',
@@ -61,7 +59,8 @@ export default function CoursesPage() {
         display: 'flex',
         flexDirection: 'column' as const,
         justifyContent: 'space-between',
-        minHeight: '220px'
+        minHeight: '220px',
+        transition: 'all 0.3s ease'
     };
 
     // 🤖 快捷詢問按鈕組件
@@ -84,53 +83,31 @@ export default function CoursesPage() {
     return (
         <div style={{ minHeight: '100vh', background: '#020617', color: '#fff', padding: isMobile ? '1rem' : '2rem', maxWidth: '900px', margin: '0 auto', fontFamily: 'sans-serif' }}>
 
-            {/* 🔝 1. 頂部導覽列 (修復擠壓與換行問題) */}
+            {/* 🔝 1. 頂部導覽列 */}
             <div style={{
                 display: 'flex',
-                flexDirection: isMobile ? 'column' : 'row', // 手機版改為上下排列
+                flexDirection: isMobile ? 'column' : 'row',
                 justifyContent: 'space-between',
                 alignItems: isMobile ? 'flex-start' : 'center',
-                gap: isMobile ? '1.5rem' : '1rem', // 手機版增加上下間距
+                gap: isMobile ? '1.5rem' : '1rem',
                 marginBottom: '2rem',
                 borderBottom: '1px solid rgba(255,255,255,0.1)',
                 paddingBottom: '1.5rem'
             }}>
-                <h1 style={{
-                    fontSize: isMobile ? '1.6rem' : '1.8rem',
-                    color: '#fca311',
-                    margin: 0,
-                    lineHeight: '1.4'
-                }}>
+                <h1 style={{ fontSize: isMobile ? '1.6rem' : '1.8rem', color: '#fca311', margin: 0, lineHeight: '1.4' }}>
                     📚 Lifreedom Studio <br style={{ display: isMobile ? 'block' : 'none' }} /> 修煉道場
                 </h1>
 
-                <div style={{
-                    display: 'flex',
-                    flexDirection: isMobile ? 'column' : 'row', // 手機版讓按鈕也變成上下排
-                    gap: '12px',
-                    width: isMobile ? '100%' : 'auto' // 手機版撐滿寬度
-                }}>
+                <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '12px', width: isMobile ? '100%' : 'auto' }}>
                     <Link href="/collection" style={{
-                        padding: '0.8rem 1.2rem',
-                        background: 'rgba(251, 191, 36, 0.1)',
-                        border: '1px solid #fbbf24',
-                        borderRadius: '8px',
-                        textDecoration: 'none',
-                        color: '#fbbf24',
-                        fontWeight: 'bold',
-                        textAlign: 'center'
+                        padding: '0.8rem 1.2rem', background: 'rgba(251, 191, 36, 0.1)', border: '1px solid #fbbf24',
+                        borderRadius: '8px', textDecoration: 'none', color: '#fbbf24', fontWeight: 'bold', textAlign: 'center'
                     }}>
                         📜 魔法圖鑑
                     </Link>
                     <button onClick={() => router.push('/mix-assistant')} style={{
-                        padding: '0.8rem 1.2rem',
-                        background: '#3c096c',
-                        color: 'white',
-                        border: '1px solid #9d4edd',
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                        fontWeight: 'bold',
-                        textAlign: 'center'
+                        padding: '0.8rem 1.2rem', background: '#3c096c', color: 'white', border: '1px solid #9d4edd',
+                        borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', textAlign: 'center'
                     }}>
                         🤖 找混音助理協助
                     </button>
@@ -138,7 +115,7 @@ export default function CoursesPage() {
             </div>
 
             {/* 📖 2. 混音魔導書傳送門 */}
-            <div style={{ textAlign: 'center', marginBottom: '4rem', padding: isMobile ? '1.5rem' : '2.5rem', background: 'linear-gradient(145deg, #0f172a, #1e1b4b)', borderRadius: '20px', border: '1px solid #4f46e5', boxShadow: '0 0 30px rgba(79, 70, 229, 0.2)' }}>
+            <div style={{ textAlign: 'center', marginBottom: '3rem', padding: isMobile ? '1.5rem' : '2.5rem', background: 'linear-gradient(145deg, #0f172a, #1e1b4b)', borderRadius: '20px', border: '1px solid #4f46e5', boxShadow: '0 0 30px rgba(79, 70, 229, 0.2)' }}>
                 <h2 style={{ color: '#a78bfa', margin: '0 0 1rem 0', fontSize: isMobile ? '1.3rem' : '1.6rem' }}>碰到看不懂的專有名詞？</h2>
                 <p style={{ color: '#94a3b8', marginBottom: '1.5rem', fontSize: isMobile ? '0.95rem' : '1.1rem' }}>點擊查閱專屬字彙庫，包含 40+ 混音神技與硬體圖鑑。</p>
                 <Link href="/glossary" style={{ display: 'inline-block', padding: '12px 24px', background: '#3b82f6', color: '#fff', textDecoration: 'none', borderRadius: '30px', fontWeight: 'bold', fontSize: '1rem', boxShadow: '0 4px 15px rgba(59, 130, 246, 0.4)' }}>
@@ -146,7 +123,59 @@ export default function CoursesPage() {
                 </Link>
             </div>
 
-            {/* 🟦 3. 第一層：基礎心法 */}
+            {/* 🌟 3. 新增區塊：選擇你的修練路徑 (編曲 vs 混音) */}
+            <div style={{ marginBottom: '4rem', padding: '1rem 0' }}>
+                <h2 style={{ fontSize: '1.6rem', textAlign: 'center', marginBottom: '2rem', color: '#fff', letterSpacing: '2px' }}>
+                    選擇你的修練路徑
+                </h2>
+                <div style={{
+                    display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem'
+                }}>
+                    {/* 編曲區入口 */}
+                    <Link href="/course/arrangement-intro" style={{ textDecoration: 'none' }}>
+                        <div style={{
+                            ...cardStyle,
+                            border: '1px solid rgba(249, 115, 22, 0.3)',
+                            background: 'linear-gradient(180deg, rgba(20,20,30,0.8) 0%, rgba(249,115,22,0.05) 100%)',
+                            boxShadow: '0 10px 30px rgba(249,115,22,0.1)',
+                            cursor: 'pointer'
+                        }}
+                            onMouseEnter={(e) => e.currentTarget.style.border = '1px solid rgba(249, 115, 22, 0.8)'}
+                            onMouseLeave={(e) => e.currentTarget.style.border = '1px solid rgba(249, 115, 22, 0.3)'}
+                        >
+                            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎹</div>
+                            <h3 style={{ color: '#f97316', fontSize: '1.4rem', marginBottom: '0.5rem', fontWeight: 'bold' }}>編曲學 (Arrangement)</h3>
+                            <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6' }}>從 0 到 1 的劇本設計。學會建立 Groove、錯開樂器頻率與把位，為樂團寫出不打架的完美劇本。</p>
+                            <div style={{ marginTop: '1.5rem', color: '#f97316', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                進入新手村 <span>➔</span>
+                            </div>
+                        </div>
+                    </Link>
+
+                    {/* 混音區入口 */}
+                    <Link href="/course/mixing-intro" style={{ textDecoration: 'none' }}>
+                        <div style={{
+                            ...cardStyle,
+                            border: '1px solid rgba(59, 130, 246, 0.3)',
+                            background: 'linear-gradient(180deg, rgba(20,20,30,0.8) 0%, rgba(59,130,246,0.05) 100%)',
+                            boxShadow: '0 10px 30px rgba(59,130,246,0.1)',
+                            cursor: 'pointer'
+                        }}
+                            onMouseEnter={(e) => e.currentTarget.style.border = '1px solid rgba(59, 130, 246, 0.8)'}
+                            onMouseLeave={(e) => e.currentTarget.style.border = '1px solid rgba(59, 130, 246, 0.3)'}
+                        >
+                            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎛️</div>
+                            <h3 style={{ color: '#3b82f6', fontSize: '1.4rem', marginBottom: '0.5rem', fontWeight: 'bold' }}>混音學 (Mixing)</h3>
+                            <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6' }}>從 1 到 100 的團隊管理學。不只調音量，更要學會安排立體舞台與頻率專屬領域，達到業界標準。</p>
+                            <div style={{ marginTop: '1.5rem', color: '#3b82f6', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                進入新手村 <span>➔</span>
+                            </div>
+                        </div>
+                    </Link>
+                </div>
+            </div>
+
+            {/* 🟦 4. 第一層：基礎心法 (原有內容保留) */}
             <div style={{ marginBottom: '4rem' }}>
                 <h2 style={{ fontSize: '1.4rem', marginBottom: '1.5rem', color: '#e2e8f0', display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <span style={{ display: 'inline-block', width: '4px', height: '24px', background: '#38bdf8', borderRadius: '2px' }}></span>
@@ -160,6 +189,7 @@ export default function CoursesPage() {
                         </div>
                         <AskAssistantBtn question="如何做好 Gain Staging 並留出健康的 Headroom？" />
                     </div>
+                    {/* ... 略過其他卡片保持原樣 ... */}
                     <div style={cardStyle}>
                         <div>
                             <h3 style={{ color: '#fca311', marginBottom: '0.5rem', fontSize: '1.1rem' }}>🎛️ EQ 頻率分布指南</h3>
@@ -177,13 +207,14 @@ export default function CoursesPage() {
                 </div>
             </div>
 
-            {/* 🟧 4. 第二層：實戰工作流程 */}
+            {/* 🟧 5. 第二層：實戰工作流程 (原有內容保留) */}
             <div style={{ marginBottom: '6rem' }}>
                 <h2 style={{ fontSize: '1.4rem', marginBottom: '1.5rem', color: '#e2e8f0', display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <span style={{ display: 'inline-block', width: '4px', height: '24px', background: '#f59e0b', borderRadius: '2px', boxShadow: '0 0 10px #f59e0b' }}></span>
                     第二層：實戰工作流程
                 </h2>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem' }}>
+                    {/* 這裡面的卡片我也幫你保留了，沒有更動 */}
                     <div style={cardStyle}>
                         <div>
                             <h3 style={{ color: '#fcd34d', marginBottom: '0.5rem', fontSize: '1.1rem' }}>🎙️ Vocal Chain 人聲處理</h3>
@@ -222,7 +253,7 @@ export default function CoursesPage() {
                 </div>
             </div>
 
-            {/* ⚔️ 5. 聽覺極限道場 */}
+            {/* ⚔️ 6. 聽覺極限道場 (原有內容保留) */}
             <div style={{
                 margin: '4rem 0', padding: isMobile ? '2.5rem 1.5rem' : '4rem 2rem', textAlign: 'center',
                 background: 'rgba(234, 88, 12, 0.03)', borderRadius: '24px',
@@ -236,7 +267,7 @@ export default function CoursesPage() {
                 </Link>
             </div>
 
-            {/* 🎓 6. 混音大師綜合認證 */}
+            {/* 🎓 7. 混音大師綜合認證 (原有內容保留) */}
             <div style={{
                 margin: '4rem 0', padding: isMobile ? '2.5rem 1.5rem' : '4rem 2rem', textAlign: 'center',
                 background: 'rgba(56, 189, 248, 0.03)', borderRadius: '24px',
