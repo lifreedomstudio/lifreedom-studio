@@ -12,7 +12,7 @@ export default function ProfileForm({ initialDaw, initialInstruments }: { initia
   const [status, setStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle')
 
   const toggleInstrument = (inst: string) => {
-    setInstruments(prev => 
+    setInstruments(prev =>
       prev.includes(inst) ? prev.filter(i => i !== inst) : [...prev, inst]
     )
   }
@@ -24,10 +24,10 @@ export default function ProfileForm({ initialDaw, initialInstruments }: { initia
       const formData = new FormData()
       formData.append('daw', daw)
       formData.append('instruments', JSON.stringify(instruments))
-      
+
       const result = await updateProfile(formData)
       if (result.error) throw new Error(result.error)
-      
+
       setStatus('success')
       setTimeout(() => setStatus('idle'), 3000)
     } catch (err) {
@@ -38,12 +38,12 @@ export default function ProfileForm({ initialDaw, initialInstruments }: { initia
   return (
     <form onSubmit={handleSubmit}>
       <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>Your Studio Setup</h2>
-      
+
       <div className="form-group">
         <label className="label">Primary DAW</label>
-        <select 
-          className="input-field" 
-          value={daw} 
+        <select
+          className="input-field"
+          value={daw}
           onChange={(e) => setDaw(e.target.value)}
           required
         >
@@ -80,9 +80,9 @@ export default function ProfileForm({ initialDaw, initialInstruments }: { initia
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '2rem' }}>
-        <button 
-          type="submit" 
-          className="btn-primary" 
+        <button
+          type="submit"
+          className="btn-primary"
           disabled={status === 'saving'}
         >
           {status === 'saving' ? 'Saving...' : 'Save Settings'}

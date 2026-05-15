@@ -132,7 +132,7 @@ export default function CoursesPage() {
                     display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem'
                 }}>
                     {/* 編曲區入口 */}
-                    <Link href="/courses/arrangement-intro" style={{ textDecoration: 'none' }}>
+                    <Link href="/courses/arrangement/intro" style={{ textDecoration: 'none' }}>
                         <div style={{
                             ...cardStyle,
                             border: '1px solid rgba(249, 115, 22, 0.3)',

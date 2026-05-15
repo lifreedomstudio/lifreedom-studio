@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 
 export async function updateProfile(formData: FormData) {
   const supabase = await createClient()
-  
+
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) {
     return { error: 'Unauthorized' }
