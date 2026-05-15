@@ -132,7 +132,7 @@ export default function CoursesPage() {
                     display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem'
                 }}>
                     {/* 編曲區入口 */}
-                    <Link href="/course/arrangement-intro" style={{ textDecoration: 'none' }}>
+                    <Link href="/courses/arrangement-intro" style={{ textDecoration: 'none' }}>
                         <div style={{
                             ...cardStyle,
                             border: '1px solid rgba(249, 115, 22, 0.3)',
@@ -153,7 +153,7 @@ export default function CoursesPage() {
                     </Link>
 
                     {/* 混音區入口 */}
-                    <Link href="/course/mixing-intro" style={{ textDecoration: 'none' }}>
+                    <Link href="/courses/mixing-intro" style={{ textDecoration: 'none' }}>
                         <div style={{
                             ...cardStyle,
                             border: '1px solid rgba(59, 130, 246, 0.3)',
