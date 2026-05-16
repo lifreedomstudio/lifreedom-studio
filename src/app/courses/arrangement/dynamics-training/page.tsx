@@ -54,10 +54,9 @@ const ListeningLabCard = ({
     </div>
 );
 
-// --- 🛠️ 3. 互動式 Reverse 播放器 ---
-const ReversePanningPlayer = ({ isMobile }: { isMobile: boolean }) => {
+// --- 🛠️ 3. 極簡實戰音檔播放器 ---
+const TransitionAudioPlayer = ({ isMobile }: { isMobile: boolean }) => {
     const [isPlaying, setIsPlaying] = useState(false);
-    const [progress, setProgress] = useState(0);
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
     const togglePlay = () => {
@@ -70,46 +69,34 @@ const ReversePanningPlayer = ({ isMobile }: { isMobile: boolean }) => {
         setIsPlaying(!isPlaying);
     };
 
-    const handleTimeUpdate = () => {
-        if (!audioRef.current) return;
-        const current = audioRef.current.currentTime;
-        const duration = audioRef.current.duration;
-        if (duration) {
-            setProgress((current / duration) * 100);
-        }
-    };
-
-    const handleEnded = () => {
-        setIsPlaying(false);
-        setProgress(0);
-    };
+    const handleEnded = () => setIsPlaying(false);
 
     return (
-        <div style={{ background: '#0f172a', border: '2px solid #334155', borderRadius: '40px', padding: isMobile ? '20px' : '30px 50px', display: 'flex', alignItems: 'center', gap: isMobile ? '15px' : '30px', width: '100%', boxShadow: '0 15px 30px rgba(0,0,0,0.3)', marginTop: '30px' }}>
-
-            {/* 隱藏的真實音樂標籤，請確保檔案放在 public/audio/ 下 */}
+        <div style={{
+            background: '#0f172a', border: '2px solid #334155', borderRadius: '40px',
+            padding: isMobile ? '20px' : '20px 40px', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: '20px', width: '100%', maxWidth: '400px',
+            margin: '30px auto', boxShadow: '0 15px 30px rgba(0,0,0,0.3)'
+        }}>
             <audio
                 ref={audioRef}
                 src="/audio/reverse-sweep.mp3"
-                onTimeUpdate={handleTimeUpdate}
                 onEnded={handleEnded}
+                onPause={() => setIsPlaying(false)}
+                onPlay={() => setIsPlaying(true)}
             />
 
-            <div onClick={togglePlay} style={{ minWidth: '60px', height: '60px', background: '#10b981', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#020617', fontSize: '24px', cursor: 'pointer', boxShadow: isPlaying ? '0 0 20px #10b981' : 'none', transition: 'all 0.2s' }}>
+            <div onClick={togglePlay} style={{
+                minWidth: '60px', height: '60px', background: '#10b981', borderRadius: '50%',
+                display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#020617',
+                fontSize: '24px', cursor: 'pointer', boxShadow: isPlaying ? '0 0 20px #10b981' : 'none',
+                transition: 'all 0.2s'
+            }}>
                 <i className={`fa-solid ${isPlaying ? 'fa-pause' : 'fa-play'}`}></i>
             </div>
 
-            <div style={{ flexGrow: 1 }}>
-                <div style={{ height: '6px', background: '#1e293b', borderRadius: '3px', position: 'relative' }}>
-                    <div style={{ width: '24px', height: '24px', background: '#facc15', borderRadius: '50%', position: 'absolute', top: '50%', left: `${progress}%`, transform: 'translate(-50%, -50%)', boxShadow: '0 0 20px #facc15', transition: 'left 0.1s linear' }}></div>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', color: '#64748b', fontWeight: 'bold', fontSize: '0.8rem', marginTop: '15px', letterSpacing: '1px' }}>
-                    <span>LEFT</span>
-                    <span style={{ color: isPlaying ? '#10b981' : '#64748b', transition: 'color 0.3s' }}>
-                        {isPlaying ? 'SWEEPING...' : 'READY'}
-                    </span>
-                    <span>RIGHT</span>
-                </div>
+            <div style={{ color: '#f8fafc', fontWeight: 'bold', fontSize: '1.2rem', letterSpacing: '2px', width: '120px', textAlign: 'left' }}>
+                {isPlaying ? 'PLAYING...' : 'LISTEN'}
             </div>
         </div>
     );
@@ -200,15 +187,15 @@ export default function DynamicsTraining() {
                     </div>
                 </section>
 
-                {/* 4. 聽覺實驗室：互動播放器 */}
+                {/* 4. 聽覺實驗室：實戰音檔播放器 */}
                 <section style={{ marginBottom: '6rem' }}>
                     <div style={{ background: 'rgba(30, 41, 59, 0.4)', padding: isMobile ? '2rem 1rem' : '4rem', borderRadius: '32px', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
-                        <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.2rem', color: '#fff', marginBottom: '1rem' }}>🎧 轉場魔法：Reverse Sweep</h2>
-                        <p style={{ color: '#94a3b8', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto', lineHeight: '1.6' }}>
-                            戴上耳機點擊播放。聽聽合成器如何從左聲道捲動到右聲道，創造一種把你「吸進副歌」的物理拉扯感。
+                        <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.2rem', color: '#fff', marginBottom: '1rem' }}>🎧 轉場實戰：主歌進副歌</h2>
+                        <p style={{ color: '#94a3b8', fontSize: '1.1rem', maxWidth: '650px', margin: '0 auto', lineHeight: '1.6' }}>
+                            這是一段從主歌進入副歌的實戰音檔。戴上耳機，注意聽進入副歌前，背景的反轉音效（Reverse）是如何從左耳拉扯到右耳，接著瞬間引爆副歌的所有樂器！
                         </p>
 
-                        <ReversePanningPlayer isMobile={isMobile} />
+                        <TransitionAudioPlayer isMobile={isMobile} />
                     </div>
                 </section>
 
