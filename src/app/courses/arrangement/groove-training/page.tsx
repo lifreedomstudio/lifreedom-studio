@@ -174,7 +174,7 @@ export default function GrooveTraining() {
         const drums = [
             { id: 'kick', src: '/audio/kick.mp3' },
             { id: 'snare', src: '/audio/snare.mp3' },
-            { id: 'hihat', src: '/audio/hihat.mp3' },
+            { id: 'hi-hat', src: '/audio/hi-hat.mp3' },
             { id: 'tom', src: '/audio/tom.mp3' },
             { id: 'crash', src: '/audio/crash.mp3' }
         ];
