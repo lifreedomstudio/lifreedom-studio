@@ -87,48 +87,43 @@ const AudioComparer = ({ title, description, badSrc, goodSrc, isMobile }: { titl
     );
 };
 
-// --- 🖼️ 全鼓組標註大圖 ---
+// --- 🖼️ 全鼓組標註大圖 (純靜態標註) ---
 const FullDrumKitVisual = ({ isMobile }: { isMobile: boolean }) => (
     <div style={{ position: 'relative', width: '100%', maxWidth: '850px', margin: '0 auto 2.5rem auto', borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 15px 40px rgba(0,0,0,0.5)' }}>
         <div style={{ width: '100%', paddingBottom: '58%', background: 'linear-gradient(135deg, #1e293b, #0f172a)', position: 'relative' }}>
+            {/* 🚨 已經修正為 .jpg，並確保路徑為 /image/ */}
+            <img src="/image/full drum-kit.png
+            " alt="Full Drum Kit" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
 
-            {/* 🚨 這裡已經修正為你實際的路徑與檔名 /image/full drum-kit.png */}
-            <img src="/image/full drum-kit.png" alt="Full Drum Kit" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.75 }} />
-
-            {/* 各部件標籤位置可依截圖畫面微調 */}
+            {/* 靜態標籤直接覆蓋在圖片上 */}
             <div style={{ position: 'absolute', top: '15%', left: '15%', background: 'rgba(56, 189, 248, 0.95)', color: '#020617', padding: '6px 14px', borderRadius: '20px', fontWeight: '900', fontSize: isMobile ? '0.8rem' : '0.95rem', boxShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>Crash (銅鈸)</div>
-            <div style={{ position: 'absolute', top: '32%', left: '52%', background: 'rgba(168, 85, 247, 0.95)', color: '#fff', padding: '6px 14px', borderRadius: '20px', fontWeight: '900', fontSize: isMobile ? '0.8rem' : '0.95rem', boxShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>Tom Tom (中鼓)</div>
-            <div style={{ position: 'absolute', top: '42%', left: '22%', background: 'rgba(16, 185, 129, 0.95)', color: '#020617', padding: '6px 14px', borderRadius: '20px', fontWeight: '900', fontSize: isMobile ? '0.8rem' : '0.95rem', boxShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>Hi-Hat (踩鈸)</div>
-            <div style={{ position: 'absolute', top: '52%', left: '38%', background: 'rgba(250, 204, 21, 0.95)', color: '#020617', padding: '6px 14px', borderRadius: '20px', fontWeight: '900', fontSize: isMobile ? '0.8rem' : '0.95rem', boxShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>Snare (小鼓)</div>
-            <div style={{ position: 'absolute', bottom: '18%', left: '50%', transform: 'translateX(-50%)', background: 'rgba(234, 88, 12, 0.95)', color: '#fff', padding: '6px 14px', borderRadius: '20px', fontWeight: '900', fontSize: isMobile ? '0.8rem' : '0.95rem', boxShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>Kick (大鼓)</div>
+            <div style={{ position: 'absolute', top: '35%', left: '60%', background: 'rgba(168, 85, 247, 0.95)', color: '#fff', padding: '6px 14px', borderRadius: '20px', fontWeight: '900', fontSize: isMobile ? '0.8rem' : '0.95rem', boxShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>Tom Tom (中鼓)</div>
+            <div style={{ position: 'absolute', top: '45%', left: '25%', background: 'rgba(16, 185, 129, 0.95)', color: '#020617', padding: '6px 14px', borderRadius: '20px', fontWeight: '900', fontSize: isMobile ? '0.8rem' : '0.95rem', boxShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>Hi-Hat (踩鈸)</div>
+            <div style={{ position: 'absolute', top: '50%', left: '40%', background: 'rgba(250, 204, 21, 0.95)', color: '#020617', padding: '6px 14px', borderRadius: '20px', fontWeight: '900', fontSize: isMobile ? '0.8rem' : '0.95rem', boxShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>Snare (小鼓)</div>
+            <div style={{ position: 'absolute', bottom: '15%', left: '50%', transform: 'translateX(-50%)', background: 'rgba(234, 88, 12, 0.95)', color: '#fff', padding: '6px 14px', borderRadius: '20px', fontWeight: '900', fontSize: isMobile ? '0.8rem' : '0.95rem', boxShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>Kick (大鼓)</div>
         </div>
     </div>
 );
 
-// --- 🥁 互動式按鈕 (圖文兼備版，副檔名均改為 .png) ---
-const DrumPad = ({ name, engName, desc, audioSrc, imgSrc, color }: { name: string, engName: string, desc: string, audioSrc: string, imgSrc: string, color: string }) => {
-    const [isPressed, setIsPressed] = useState(false);
-
-    const playSound = () => {
-        setIsPressed(true);
-        const audio = new Audio(audioSrc);
-        audio.play().catch(e => console.log("等待音檔置入"));
-        setTimeout(() => setIsPressed(false), 150);
-    };
-
+// --- 🥁 互動式按鈕 (支援播放/暫停與排他性) ---
+const DrumPad = ({ name, engName, desc, imgSrc, color, isPlaying, onToggle }: { name: string, engName: string, desc: string, imgSrc: string, color: string, isPlaying: boolean, onToggle: () => void }) => {
     return (
         <div
-            onClick={playSound}
+            onClick={onToggle}
             style={{
-                background: 'rgba(30, 30, 40, 0.7)', border: `2px solid ${isPressed ? color : 'rgba(255,255,255,0.1)'}`,
-                borderRadius: '20px', padding: '22px', cursor: 'pointer', transition: 'all 0.1s ease',
-                transform: isPressed ? 'scale(0.96)' : 'scale(1)',
-                boxShadow: isPressed ? `0 0 20px ${color}80` : '0 10px 20px rgba(0,0,0,0.3)',
+                background: 'rgba(30, 30, 40, 0.7)', border: `2px solid ${isPlaying ? color : 'rgba(255,255,255,0.1)'}`,
+                borderRadius: '20px', padding: '22px', cursor: 'pointer', transition: 'all 0.2s ease',
+                transform: isPlaying ? 'scale(0.96)' : 'scale(1)',
+                boxShadow: isPlaying ? `0 0 20px ${color}80` : '0 10px 20px rgba(0,0,0,0.3)',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center'
             }}
         >
-            <div style={{ width: '70px', height: '70px', borderRadius: '50%', background: 'rgba(0,0,0,0.4)', marginBottom: '15px', overflow: 'hidden', border: `2px solid ${color}`, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <img src={imgSrc} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = '<i class="fa-solid fa-drum" style="font-size: 1.8rem; color: #64748b;"></i>'; }} />
+            <div style={{ width: '70px', height: '70px', borderRadius: '50%', background: '#1e293b', marginBottom: '15px', overflow: 'hidden', border: `3px solid ${isPlaying ? color : 'rgba(255,255,255,0.2)'}`, display: 'flex', justifyContent: 'center', alignItems: 'center', transition: 'all 0.2s' }}>
+                {isPlaying ? (
+                    <span style={{ fontSize: '2rem' }}>⏸</span>
+                ) : (
+                    <img src={imgSrc} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = '<i class="fa-solid fa-drum" style="font-size: 1.8rem; color: #64748b;"></i>'; }} />
+                )}
             </div>
             <h4 style={{ color: '#fff', fontSize: '1.2rem', margin: '0 0 8px 0', fontWeight: 'bold' }}>{name} <span style={{ color, fontSize: '0.9rem' }}>{engName}</span></h4>
             <p style={{ color: '#cbd5e1', fontSize: '0.9rem', lineHeight: '1.5', margin: 0 }}>{desc}</p>
@@ -173,12 +168,54 @@ export default function GrooveTraining() {
     const [isMobile, setIsMobile] = useState(false);
     const [showBassAnswer, setShowBassAnswer] = useState(false);
 
+    // 音訊播放狀態管理 (確保一次只播一個)
+    const [playingDrumId, setPlayingDrumId] = useState<string | null>(null);
+    const drumAudioRefs = useRef<{ [key: string]: HTMLAudioElement }>({});
+
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
         checkMobile();
         window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
+
+        // 初始化鼓組音檔
+        const drums = [
+            { id: 'kick', src: '/audio/kick.mp3' },
+            { id: 'snare', src: '/audio/snare.mp3' },
+            { id: 'hihat', src: '/audio/hihat.mp3' },
+            { id: 'tom', src: '/audio/tom.mp3' },
+            { id: 'crash', src: '/audio/crash.mp3' }
+        ];
+        drums.forEach(d => {
+            const audio = new Audio(d.src);
+            audio.addEventListener('ended', () => setPlayingDrumId(null));
+            drumAudioRefs.current[d.id] = audio;
+        });
+
+        return () => {
+            window.removeEventListener('resize', checkMobile);
+            Object.values(drumAudioRefs.current).forEach(a => { a.pause(); a.src = ""; });
+        };
     }, []);
+
+    const toggleDrumPlay = (id: string) => {
+        const currentAudio = drumAudioRefs.current[id];
+        if (!currentAudio) return;
+
+        if (playingDrumId === id) {
+            // 如果點擊正在播放的 -> 暫停並重置時間
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+            setPlayingDrumId(null);
+        } else {
+            // 點擊別的 -> 暫停前一個，播放新的
+            if (playingDrumId && drumAudioRefs.current[playingDrumId]) {
+                drumAudioRefs.current[playingDrumId].pause();
+                drumAudioRefs.current[playingDrumId].currentTime = 0;
+            }
+            currentAudio.play().catch(e => console.log("等待音檔置入"));
+            setPlayingDrumId(id);
+        }
+    };
 
     return (
         <div style={{
@@ -224,29 +261,29 @@ export default function GrooveTraining() {
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
                         <DrumPad
-                            name="大鼓" engName="Kick"
-                            desc="音樂的心臟。提供最低沉的衝擊力，決定了歌曲的重拍位置。"
-                            audioSrc="/audio/kick.mp3" imgSrc="/images/kick.png" color="#ea580c"
+                            name="大鼓" engName="Kick" desc="音樂的心臟。提供最低沉的衝擊力，決定了歌曲的重拍位置。"
+                            imgSrc="/images/kick.png" color="#ea580c"
+                            isPlaying={playingDrumId === 'kick'} onToggle={() => toggleDrumPlay('kick')}
                         />
                         <DrumPad
-                            name="小鼓" engName="Snare"
-                            desc="音樂的巴掌。通常落在第 2、4 拍，是讓人忍不住拍手的清脆聲響。"
-                            audioSrc="/audio/snare.mp3" imgSrc="/images/snare.png" color="#facc15"
+                            name="小鼓" engName="Snare" desc="音樂的巴掌。通常落在第 2、4 拍，是讓人忍不住拍手的清脆聲響。"
+                            imgSrc="/images/snare.png" color="#facc15"
+                            isPlaying={playingDrumId === 'snare'} onToggle={() => toggleDrumPlay('snare')}
                         />
                         <DrumPad
-                            name="踩鈸" engName="Hi-Hat"
-                            desc="音樂的時鐘。負責切分時間（如 8 或 16 分音符），決定歌曲的速度感。"
-                            audioSrc="/audio/hihat.mp3" imgSrc="/images/hihat.png" color="#10b981"
+                            name="踩鈸" engName="Hi-Hat" desc="音樂的時鐘。負責切分時間（如 8 或 16 分音符），決定歌曲的速度感。"
+                            imgSrc="/images/hihat.png" color="#10b981"
+                            isPlaying={playingDrumId === 'hihat'} onToggle={() => toggleDrumPlay('hihat')}
                         />
                         <DrumPad
-                            name="中鼓 / 落地鼓" engName="Tom Tom"
-                            desc="點綴與過門 (Fill-in)。在段落銜接時，提供極具張力的低頻打擊感。"
-                            audioSrc="/audio/tom.mp3" imgSrc="/images/tom.png" color="#a855f7"
+                            name="中鼓 / 落地鼓" engName="Tom Tom" desc="點綴與過門 (Fill-in)。在段落銜接時，提供極具張力的低頻打擊感。"
+                            imgSrc="/images/tom.png" color="#a855f7"
+                            isPlaying={playingDrumId === 'tom'} onToggle={() => toggleDrumPlay('tom')}
                         />
                         <DrumPad
-                            name="銅鈸" engName="Crash"
-                            desc="轉場特效。在段落轉換時（如進入大副歌），用來製造能量爆發的巨響。"
-                            audioSrc="/audio/crash.mp3" imgSrc="/images/crash.png" color="#38bdf8"
+                            name="銅鈸" engName="Crash" desc="轉場特效。在段落轉換時（如進入大副歌），用來製造能量爆發的巨響。"
+                            imgSrc="/images/crash.png" color="#38bdf8"
+                            isPlaying={playingDrumId === 'crash'} onToggle={() => toggleDrumPlay('crash')}
                         />
                     </div>
                 </section>
