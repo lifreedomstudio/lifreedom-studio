@@ -91,7 +91,7 @@ const AudioComparer = ({ title, description, badSrc, goodSrc, isMobile }: { titl
 const FullDrumKitVisual = ({ isMobile }: { isMobile: boolean }) => (
     <div style={{ position: 'relative', width: '100%', maxWidth: '850px', margin: '0 auto 2.5rem auto', borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 15px 40px rgba(0,0,0,0.5)' }}>
         <div style={{ width: '100%', paddingBottom: '58%', background: 'linear-gradient(135deg, #1e293b, #0f172a)', position: 'relative' }}>
-            {/* 🚨 已經修正為 .jpg，並確保路徑為 /image/ */}
+            {/* 🚨 已經修正為 .png，並確保路徑為 /image/ */}
             <img src="/image/full drum-kit.png
             " alt="Full Drum Kit" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
 
