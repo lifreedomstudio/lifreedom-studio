@@ -266,7 +266,7 @@ export default function GrooveTraining() {
                         <DrumPad
                             name="踩鈸" engName="Hi-Hat" desc="音樂的時鐘。負責切分時間（如 8 或 16 分音符），決定歌曲的速度感。"
                             imgSrc="/images/hihat.png" color="#10b981"
-                            isPlaying={playingDrumId === 'hihat'} onToggle={() => toggleDrumPlay('hihat')}
+                            isPlaying={playingDrumId === 'hi-hat'} onToggle={() => toggleDrumPlay('hi-hat')}
                         />
                         <DrumPad
                             name="中鼓 / 落地鼓" engName="Tom Tom" desc="點綴與過門 (Fill-in)。在段落銜接時，提供極具張力的低頻打擊感。"
