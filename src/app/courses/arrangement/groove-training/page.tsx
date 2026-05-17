@@ -91,18 +91,22 @@ const AudioComparer = ({ title, description, badSrc, goodSrc, isMobile }: { titl
 const FullDrumKitVisual = ({ isMobile }: { isMobile: boolean }) => (
     <div style={{ position: 'relative', width: '100%', maxWidth: '850px', margin: '0 auto 2.5rem auto', borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 15px 40px rgba(0,0,0,0.5)' }}>
         <div style={{ width: '100%', paddingBottom: '58%', background: 'linear-gradient(135deg, #1e293b, #0f172a)', position: 'relative' }}>
-            {/* 🚨 修正 1：清除了 .png 後面的換行符號，確保路徑字串乾淨 */}
+            {/* ⚠️ 請確保 full drum-kit.png 存在於 public/image/ 資料夾中 */}
             <img src="/image/full drum-kit.png" alt="Full Drum Kit" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }} />
 
-            {/* 🚨 修正 2：重新校準座標，對齊你上傳的鼓組圖，並加入 translate(-50%, -50%) 讓標籤完美置中 */}
+            {/* 靜態標籤位置：Hi-Hat 和小鼓 (Snare) 移至右側 */}
             <div style={{ position: 'absolute', top: '22%', left: '22%', transform: 'translate(-50%, -50%)', background: 'rgba(56, 189, 248, 0.95)', color: '#020617', padding: '6px 14px', borderRadius: '20px', fontWeight: '900', fontSize: isMobile ? '0.8rem' : '0.95rem', boxShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>Crash (銅鈸)</div>
 
-            <div style={{ position: 'absolute', top: '48%', left: '18%', transform: 'translate(-50%, -50%)', background: 'rgba(16, 185, 129, 0.95)', color: '#020617', padding: '6px 14px', borderRadius: '20px', fontWeight: '900', fontSize: isMobile ? '0.8rem' : '0.95rem', boxShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>Hi-Hat (踩鈸)</div>
+            {/* Hi-Hat (踩鈸) 移至右側中上 */}
+            <div style={{ position: 'absolute', top: '35%', left: '80%', transform: 'translate(-50%, -50%)', background: 'rgba(16, 185, 129, 0.95)', color: '#020617', padding: '6px 14px', borderRadius: '20px', fontWeight: '900', fontSize: isMobile ? '0.8rem' : '0.95rem', boxShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>Hi-Hat (踩鈸)</div>
 
-            <div style={{ position: 'absolute', top: '60%', left: '32%', transform: 'translate(-50%, -50%)', background: 'rgba(250, 204, 21, 0.95)', color: '#020617', padding: '6px 14px', borderRadius: '20px', fontWeight: '900', fontSize: isMobile ? '0.8rem' : '0.95rem', boxShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>Snare (小鼓)</div>
+            {/* Snare (小鼓) 移至右側中下 */}
+            <div style={{ position: 'absolute', top: '55%', left: '72%', transform: 'translate(-50%, -50%)', background: 'rgba(250, 204, 21, 0.95)', color: '#020617', padding: '6px 14px', borderRadius: '20px', fontWeight: '900', fontSize: isMobile ? '0.8rem' : '0.95rem', boxShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>Snare (小鼓)</div>
 
-            <div style={{ position: 'absolute', top: '38%', left: '42%', transform: 'translate(-50%, -50%)', background: 'rgba(168, 85, 247, 0.95)', color: '#fff', padding: '6px 14px', borderRadius: '20px', fontWeight: '900', fontSize: isMobile ? '0.8rem' : '0.95rem', boxShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>Tom Tom (中鼓)</div>
+            {/* Tom Tom (中鼓) 移至左側中間 */}
+            <div style={{ position: 'absolute', top: '40%', left: '30%', transform: 'translate(-50%, -50%)', background: 'rgba(168, 85, 247, 0.95)', color: '#fff', padding: '6px 14px', borderRadius: '20px', fontWeight: '900', fontSize: isMobile ? '0.8rem' : '0.95rem', boxShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>Tom Tom (中鼓)</div>
 
+            {/* Kick (大鼓) 保持下方中央位置 */}
             <div style={{ position: 'absolute', top: '75%', left: '50%', transform: 'translate(-50%, -50%)', background: 'rgba(234, 88, 12, 0.95)', color: '#fff', padding: '6px 14px', borderRadius: '20px', fontWeight: '900', fontSize: isMobile ? '0.8rem' : '0.95rem', boxShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>Kick (大鼓)</div>
         </div>
     </div>
