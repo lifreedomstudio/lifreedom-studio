@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 // 定義樂器配置與檔案路徑
 const INSTRUMENTS = [
     { id: 'vocal', name: '🎤 主唱 (Vocal)', color: '#fff', file: '/audio/vocal.mp3' },
-    { id: 'kick', name: '🥁 鼓組 (Drums)', color: '#ef4444', file: '/audio/kick.mp3' },
+    { id: 'drum', name: '🥁 鼓組 (Drums)', color: '#ef4444', file: '/audio/drum.mp3' },
     { id: 'bass', name: '🎸 貝斯 (Bass)', color: '#3b82f6', file: '/audio/bass.mp3' },
     { id: 'rhythm', name: '🎸 節奏吉他 (Rhythm)', color: '#10b981', file: '/audio/rhythm.mp3' },
     { id: 'lead', name: '🎹 旋律吉他 (Lead)', color: '#a78bfa', file: '/audio/lead.mp3' }
@@ -16,17 +16,17 @@ const PRESETS = {
     mono: {
         name: '📻 實驗單聲道',
         desc: '這就是為什麼你的混音會「糊」！所有樂器擠在正中間，頻率完全打架，親耳聽聽看它們有多擠吧。',
-        pan: { vocal: 0, kick: 0, bass: 0, rhythm: 0, lead: 0 }
+        pan: { vocal: 0, drum: 0, bass: 0, rhythm: 0, lead: 0 }
     },
     jrock: {
         name: '🔥 日系搖滾 (J-Rock)',
         desc: '聽見那個爽感了嗎？節奏與旋律吉他硬分左右 (LCR)，把它們不被閹割的飽滿音色推到兩側，中間完全讓給主唱與節奏組！',
-        pan: { vocal: 0, kick: 0, bass: 0, rhythm: -100, lead: 100 }
+        pan: { vocal: 0, drum: 0, bass: 0, rhythm: -100, lead: 100 }
     },
     pop: {
         name: '🎧 現代流行 (Modern Pop)',
         desc: '安全集中。吉他稍微往中間靠攏，創造溫暖緊密的包覆感，但犧牲了兩側的極致寬廣度。',
-        pan: { vocal: 0, kick: 0, bass: 0, rhythm: -40, lead: 40 }
+        pan: { vocal: 0, drum: 0, bass: 0, rhythm: -40, lead: 40 }
     }
 };
 
