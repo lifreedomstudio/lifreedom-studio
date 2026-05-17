@@ -89,13 +89,12 @@ const AudioComparer = ({ title, description, badSrc, goodSrc, isMobile }: { titl
 
 // --- 🖼️ 全鼓組標註大圖 ---
 const FullDrumKitVisual = ({ isMobile }: { isMobile: boolean }) => (
-    <div style={{ position: 'relative', width: '100%', maxWidth: '850px', margin: '0 auto 2.5rem auto', borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 15px 40px rgba(0,0,0,0.5)' }}>
-        <div style={{ width: '100%', paddingBottom: '58%', background: 'linear-gradient(135deg, #1e293b, #0f172a)', position: 'relative' }}>
-            {/* 🚨 修正：副檔名從代碼中的範例代碼中是用 .png 改為費用是用手機修改好的 JPG，路徑維持在費用是用images資料夾 */}
-            <img src="/images/full drum-kit.jpg" alt="Full Drum Kit" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+    <div style={{ position: 'relative', width: '100%', maxWidth: '850px', margin: '0 auto 2.5rem auto', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 15px 40px rgba(0,0,0,0.5)' }}>
+        {/* 🚨 修正：移除 padding-bottom 固定比例容器，移除 object-fit: 'cover'，
+           直接使用 img 標籤自然展開，確保整張圖（包含上方標籤）都能顯示 */}
+        <img src="/images/full drum-kit.jpg" alt="Full Drum Kit" style={{ width: '100%', height: 'auto', display: 'block', borderRadius: '24px' }} />
 
-            {/* 🚨 移除所有 position: 'absolute' 的部件標籤疊加層，圖片上不應再有點擊事件 */}
-        </div>
+        {/* 🚨 移除所有 position: 'absolute' 的部件標籤疊加層，圖片上不應再有點擊事件 */}
     </div>
 );
 
