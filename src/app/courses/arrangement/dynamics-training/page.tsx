@@ -83,7 +83,7 @@ const ListeningLabCard = ({
     </div>
 );
 
-// --- 🌪️ 4. 過門與推進力音效卡片 (獨立播放器) ---
+// --- 🌪️ 4. 過門與推進力音效卡片 (新加入的獨立播放器) ---
 const TransitionCard = ({ title, subtitle, desc, audioSrc, color, icon }: { title: string, subtitle: string, desc: string, audioSrc: string, color: string, icon: string }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const audioRef = useRef<HTMLAudioElement>(null);
@@ -130,6 +130,54 @@ const TransitionCard = ({ title, subtitle, desc, audioSrc, color, icon }: { titl
                 {desc}
             </p>
             <audio ref={audioRef} src={audioSrc} onEnded={() => setIsPlaying(false)} />
+        </div>
+    );
+};
+
+// --- 🛠️ 5. 極簡實戰音檔播放器 (原本的左右 Pan 示範) ---
+const TransitionAudioPlayer = ({ isMobile }: { isMobile: boolean }) => {
+    const [isPlaying, setIsPlaying] = useState(false);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    const togglePlay = () => {
+        if (!audioRef.current) return;
+        if (isPlaying) {
+            audioRef.current.pause();
+        } else {
+            audioRef.current.play();
+        }
+        setIsPlaying(!isPlaying);
+    };
+
+    const handleEnded = () => setIsPlaying(false);
+
+    return (
+        <div style={{
+            background: '#0f172a', border: '2px solid #334155', borderRadius: '40px',
+            padding: isMobile ? '20px' : '20px 40px', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: '20px', width: '100%', maxWidth: '400px',
+            margin: '30px auto', boxShadow: '0 15px 30px rgba(0,0,0,0.3)'
+        }}>
+            <audio
+                ref={audioRef}
+                src="/audio/reverse-sweep.mp3"
+                onEnded={handleEnded}
+                onPause={() => setIsPlaying(false)}
+                onPlay={() => setIsPlaying(true)}
+            />
+
+            <div onClick={togglePlay} style={{
+                minWidth: '60px', height: '60px', background: '#10b981', borderRadius: '50%',
+                display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#020617',
+                fontSize: '24px', cursor: 'pointer', boxShadow: isPlaying ? '0 0 20px #10b981' : 'none',
+                transition: 'all 0.2s'
+            }}>
+                <i className={`fa-solid ${isPlaying ? 'fa-pause' : 'fa-play'}`}></i>
+            </div>
+
+            <div style={{ color: '#f8fafc', fontWeight: 'bold', fontSize: '1.2rem', letterSpacing: '2px', width: '120px', textAlign: 'left' }}>
+                {isPlaying ? 'PLAYING...' : 'LISTEN'}
+            </div>
         </div>
     );
 };
@@ -285,7 +333,7 @@ export default function DynamicsTraining() {
                     </div>
 
                     {/* 互動音效展示區 */}
-                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '20px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '20px', marginBottom: '3rem' }}>
                         <TransitionCard
                             title="低頻 / 吉他滑弦"
                             subtitle="Bass / Guitar Slide"
@@ -302,6 +350,16 @@ export default function DynamicsTraining() {
                             color="#38bdf8"
                             icon="⏪"
                         />
+                    </div>
+
+                    {/* 🚨 這裡接回你原本的左右耳 Pan 實戰示範區塊！ */}
+                    <div style={{ background: 'rgba(30, 41, 59, 0.4)', padding: isMobile ? '2rem 1rem' : '4rem', borderRadius: '32px', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
+                        <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.2rem', color: '#fff', marginBottom: '1rem' }}>🎧 轉場綜合實戰示範：Pan 的左右拉扯</h2>
+                        <p style={{ color: '#cbd5e1', fontSize: '1.1rem', maxWidth: '650px', margin: '0 auto', lineHeight: '1.6' }}>
+                            這是一段實戰音檔。戴上耳機，注意聽進入副歌前，背景的 Reverse 效果結合了 <strong>Pan (聲道轉向)</strong>，從左耳一路拉扯到右耳，接著瞬間引爆副歌的所有樂器！
+                        </p>
+
+                        <TransitionAudioPlayer isMobile={isMobile} />
                     </div>
                 </section>
 
