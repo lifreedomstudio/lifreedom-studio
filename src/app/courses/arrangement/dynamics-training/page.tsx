@@ -287,9 +287,9 @@ export default function DynamicsTraining() {
                     {/* 互動音效展示區 */}
                     <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '20px' }}>
                         <TransitionCard
-                            title="貝斯滑音"
-                            subtitle="Bass Slide"
-                            desc="在進入重拍的前一刻，讓 Bass 手按住低音弦快速往下滑動 (或往上滑)。這會產生一個深沉的『Wrooooom』低頻轟炸感，將聽眾的情緒直接拋入下一個段落的地基中。"
+                            title="低頻 / 吉他滑弦"
+                            subtitle="Bass / Guitar Slide"
+                            desc="在進入重拍前，讓樂手按住低音弦快速往下滑動，產生深沉的『Wrooooom』轟炸感。💡 實戰密技：其實很多震撼的滑音是用「電吉他」彈奏最低音弦做出來的！搭配破音效果器，下墜的撕裂感一樣生猛！"
                             audioSrc="/audio/bass-slide.mp3"
                             color="#10b981"
                             icon="🎸"
