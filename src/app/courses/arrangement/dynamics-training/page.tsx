@@ -40,9 +40,7 @@ const ReverseWaveformVisual = ({ isMobile }: { isMobile: boolean }) => (
         <div style={{ flex: 1, background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: '16px', padding: '20px', width: '100%' }}>
             <p style={{ color: '#10b981', fontSize: '0.9rem', marginBottom: '10px', textAlign: 'center', fontWeight: 'bold' }}>Reverse 處理後</p>
             <svg viewBox="0 0 200 80" style={{ width: '100%', height: '80px' }}>
-                {/* Reversed pattern (mirror of above) */}
                 <path d="M10,40 L70,42 L100,45 L120,35 L140,50 L150,30 L160,55 L165,25 L170,60 L175,20 L180,65 L185,15 L190,40" fill="none" stroke="#10b981" strokeWidth="3" />
-                {/* Downbeat Line */}
                 <line x1="190" y1="0" x2="190" y2="80" stroke="#facc15" strokeWidth="2" strokeDasharray="4 4" />
                 <text x="135" y="15" fill="#facc15" fontSize="12" fontWeight="bold">對齊重拍</text>
             </svg>
@@ -85,50 +83,53 @@ const ListeningLabCard = ({
     </div>
 );
 
-// --- 🛠️ 4. 極簡實戰音檔播放器 ---
-const TransitionAudioPlayer = ({ isMobile }: { isMobile: boolean }) => {
+// --- 🌪️ 4. 過門與推進力音效卡片 (獨立播放器) ---
+const TransitionCard = ({ title, subtitle, desc, audioSrc, color, icon }: { title: string, subtitle: string, desc: string, audioSrc: string, color: string, icon: string }) => {
     const [isPlaying, setIsPlaying] = useState(false);
-    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const audioRef = useRef<HTMLAudioElement>(null);
 
     const togglePlay = () => {
-        if (!audioRef.current) return;
-        if (isPlaying) {
-            audioRef.current.pause();
-        } else {
-            audioRef.current.play();
+        if (audioRef.current) {
+            if (isPlaying) {
+                audioRef.current.pause();
+                audioRef.current.currentTime = 0;
+            } else {
+                audioRef.current.play().catch(e => console.log("等待音檔置入"));
+            }
+            setIsPlaying(!isPlaying);
         }
-        setIsPlaying(!isPlaying);
     };
-
-    const handleEnded = () => setIsPlaying(false);
 
     return (
         <div style={{
-            background: '#0f172a', border: '2px solid #334155', borderRadius: '40px',
-            padding: isMobile ? '20px' : '20px 40px', display: 'flex', alignItems: 'center',
-            justifyContent: 'center', gap: '20px', width: '100%', maxWidth: '400px',
-            margin: '30px auto', boxShadow: '0 15px 30px rgba(0,0,0,0.3)'
+            background: 'rgba(15, 23, 42, 0.6)', border: `1px solid ${isPlaying ? color : 'rgba(255,255,255,0.05)'}`,
+            borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '15px',
+            boxShadow: isPlaying ? `0 0 20px ${color}40` : 'none', transition: 'all 0.3s ease'
         }}>
-            <audio
-                ref={audioRef}
-                src="/audio/reverse-sweep.mp3"
-                onEnded={handleEnded}
-                onPause={() => setIsPlaying(false)}
-                onPlay={() => setIsPlaying(true)}
-            />
-
-            <div onClick={togglePlay} style={{
-                minWidth: '60px', height: '60px', background: '#10b981', borderRadius: '50%',
-                display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#020617',
-                fontSize: '24px', cursor: 'pointer', boxShadow: isPlaying ? '0 0 20px #10b981' : 'none',
-                transition: 'all 0.2s'
-            }}>
-                <i className={`fa-solid ${isPlaying ? 'fa-pause' : 'fa-play'}`}></i>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <button
+                    onClick={togglePlay}
+                    style={{
+                        width: '50px', height: '50px', borderRadius: '50%', background: isPlaying ? color : 'rgba(255,255,255,0.1)',
+                        color: isPlaying ? '#000' : color, border: `2px solid ${color}`, fontSize: '1.2rem',
+                        cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', transition: 'all 0.2s'
+                    }}
+                >
+                    {isPlaying ? '⏸' : '▶'}
+                </button>
+                <div>
+                    <h4 style={{ color: '#fff', fontSize: '1.2rem', margin: '0 0 4px 0', fontWeight: 'bold' }}>
+                        {icon} {title}
+                    </h4>
+                    <span style={{ color: color, fontSize: '0.85rem', fontWeight: 'bold', background: `${color}20`, padding: '2px 8px', borderRadius: '12px' }}>
+                        {subtitle}
+                    </span>
+                </div>
             </div>
-
-            <div style={{ color: '#f8fafc', fontWeight: 'bold', fontSize: '1.2rem', letterSpacing: '2px', width: '120px', textAlign: 'left' }}>
-                {isPlaying ? 'PLAYING...' : 'LISTEN'}
-            </div>
+            <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>
+                {desc}
+            </p>
+            <audio ref={audioRef} src={audioSrc} onEnded={() => setIsPlaying(false)} />
         </div>
     );
 };
@@ -259,23 +260,18 @@ export default function DynamicsTraining() {
                             </tbody>
                         </table>
                     </div>
-
-                    <div style={{ marginTop: '30px', border: '1px dashed rgba(250, 204, 21, 0.5)', background: 'rgba(250, 204, 21, 0.05)', padding: '20px', borderRadius: '12px', textAlign: 'center' }}>
-                        <p style={{ color: '#facc15', margin: 0, fontSize: isMobile ? '1rem' : '1.1rem' }}>
-                            <i className="fa-solid fa-circle-exclamation"></i> <strong>注意：</strong>以上為利用 Automation 進行空間佈局的觀念。具體 DAW 中如何畫線與操作，<strong>請詳閱後續的《混音實戰篇》課程。</strong>
-                        </p>
-                    </div>
                 </section>
 
-                {/* 4. 轉場魔法：Reverse 原理與實戰 */}
+                {/* 4. 轉場魔法：製造真空吸力 */}
                 <section style={{ marginBottom: '6rem' }}>
-                    <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.5rem', color: '#10b981', marginBottom: '2rem', borderLeft: '8px solid #059669', paddingLeft: '20px' }}>3. 轉場魔法：Reverse (反轉音效)</h2>
+                    <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.5rem', color: '#10b981', marginBottom: '2rem', borderLeft: '8px solid #059669', paddingLeft: '20px' }}>3. 轉場魔法：製造真空吸力</h2>
 
+                    <p style={{ color: '#f8fafc', fontSize: '1.1rem', marginBottom: '2rem', lineHeight: '1.6' }}>
+                        當主歌準備進入副歌時，我們需要給聽眾一種「要爆發了！」的期待感。除了讓鼓手打一串精彩的過門 (Fills) 之外，現代音樂製作最常用的兩個秘密武器就是 <strong>Reverse (反轉音效)</strong> 與 <strong>Bass Slide (貝斯滑音)</strong>。把它們疊加在一起，能創造出如同黑洞般的強大吸力！
+                    </p>
+
+                    {/* Reverse 視覺解說 */}
                     <div style={{ marginBottom: '3rem' }}>
-                        <p style={{ color: '#f8fafc', fontSize: '1.1rem', marginBottom: '1.5rem', lineHeight: '1.6' }}>
-                            在現代流行與電子音樂中，<strong>Reverse (音頻反轉)</strong> 是創造「吸吮感」最常用的技巧。它能強迫聽眾將注意力轉移，將他們物理性地「拉」進下一個段落。
-                        </p>
-
                         <div style={{ background: 'rgba(15,23,42,0.4)', padding: isMobile ? '20px' : '30px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)' }}>
                             <h3 style={{ color: '#10b981', fontSize: '1.3rem', marginBottom: '20px' }}><i className="fa-solid fa-wrench"></i> Reverse 製作三步驟：</h3>
                             <ul style={{ color: '#cbd5e1', lineHeight: '1.8', fontSize: '1.05rem', paddingLeft: '20px', marginBottom: '30px' }}>
@@ -288,13 +284,24 @@ export default function DynamicsTraining() {
                         </div>
                     </div>
 
-                    <div style={{ background: 'rgba(30, 41, 59, 0.4)', padding: isMobile ? '2rem 1rem' : '4rem', borderRadius: '32px', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
-                        <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.2rem', color: '#fff', marginBottom: '1rem' }}>🎧 轉場實戰：主歌進副歌</h2>
-                        <p style={{ color: '#cbd5e1', fontSize: '1.1rem', maxWidth: '650px', margin: '0 auto', lineHeight: '1.6' }}>
-                            這是一段實戰音檔。戴上耳機，注意聽進入副歌前，背景的 Reverse 效果結合了 <strong>Pan (聲道轉向)</strong>，從左耳一路拉扯到右耳，接著瞬間引爆副歌的所有樂器！
-                        </p>
-
-                        <TransitionAudioPlayer isMobile={isMobile} />
+                    {/* 互動音效展示區 */}
+                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '20px' }}>
+                        <TransitionCard
+                            title="貝斯滑音"
+                            subtitle="Bass Slide"
+                            desc="在進入重拍的前一刻，讓 Bass 手按住低音弦快速往下滑動 (或往上滑)。這會產生一個深沉的『Wrooooom』低頻轟炸感，將聽眾的情緒直接拋入下一個段落的地基中。"
+                            audioSrc="/audio/bass-slide.mp3"
+                            color="#10b981"
+                            icon="🎸"
+                        />
+                        <TransitionCard
+                            title="反向碎音鈸"
+                            subtitle="Reverse Crash"
+                            desc="將一般打擊 Crash 的聲音『倒轉』過來播放。聲音會從微弱的嘶嘶聲逐漸放大，形成一個強大的真空吸力，然後在第一拍完美銜接真實的 Crash 爆炸聲。"
+                            audioSrc="/audio/reverse-crash.mp3"
+                            color="#38bdf8"
+                            icon="⏪"
+                        />
                     </div>
                 </section>
 
