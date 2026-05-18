@@ -162,18 +162,18 @@ export default function MixingIntroduction() {
                 {/* 下一章 CTA */}
                 <section style={{ textAlign: 'center', padding: '5rem 0', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
                     <h2 style={{ fontSize: isMobile ? '1.8rem' : '2rem', marginBottom: '1.5rem', fontWeight: 'bold' }}>概念裝備完畢，準備進入實戰！</h2>
-                    <p style={{ color: '#94a3b8', fontSize: '1.1rem', marginBottom: '2.5rem' }}>現在你已經擁有了混音師的腦袋，讓我們打開第一個魔法工具吧。</p>
+                    <p style={{ color: '#94a3b8', fontSize: '1.1rem', marginBottom: '2.5rem' }}>現在你已經擁有了混音師的腦袋，讓我們打好混音的第一塊地基吧。</p>
                     <button
-                        onClick={() => router.push('/courses/mixing/eq-training')}
+                        onClick={() => router.push('/courses/mixing/gain-staging-training')}
                         style={{
-                            background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff', border: 'none',
+                            background: 'linear-gradient(135deg, #3b82f6, #06b6d4)', color: '#fff', border: 'none',
                             padding: '1.2rem 4rem', fontSize: '1.2rem', fontWeight: '900', borderRadius: '50px', cursor: 'pointer',
-                            boxShadow: '0 10px 30px rgba(16, 185, 129, 0.3)', transition: 'transform 0.2s'
+                            boxShadow: '0 10px 30px rgba(59, 130, 246, 0.3)', transition: 'transform 0.2s'
                         }}
                         onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
                         onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
                     >
-                        進入 1. EQ 實戰訓練室 ➔
+                        進入 1. Gain Staging 源頭管理 ➔
                     </button>
                 </section>
 
