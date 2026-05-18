@@ -153,7 +153,7 @@ export default function CoursesPage() {
                     </Link>
 
                     {/* 混音區入口 */}
-                    <Link href="/courses/mixing-intro" style={{ textDecoration: 'none' }}>
+                    <Link href="/courses/mixing/intro" style={{ textDecoration: 'none' }}>
                         <div style={{
                             ...cardStyle,
                             border: '1px solid rgba(59, 130, 246, 0.3)',
