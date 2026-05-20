@@ -16,8 +16,8 @@ const MISSIONS = [
         shortName: '🎤 主唱 Leveling',
         title: '第二關：馴服失控的主唱 (Vocal Leveling)',
         desc: '主唱的動態太大了！副歌突然爆發的音量會刺傷耳朵。請設定「極快的 Attack」瞬間抓住那些突發的音量，並將 Threshold 設在能壓出約 6~8dB 的位置，讓聲音結實又平滑。',
-        // 🎯 絕對領域版：Threshold -24，Ratio 4
-        target: { threshold: -24, ratio: 4, attack: 3, release: 150, knee: 15 },
+        // 🎯 精準狙擊版：Threshold -32，Ratio 6
+        target: { threshold: -32, ratio: 6, attack: 3, release: 150, knee: 15 },
         file: '/vocal-dry.mp3'
     },
     {
@@ -25,8 +25,8 @@ const MISSIONS = [
         shortName: '🎸 吉他 Strum',
         title: '第三關：木吉他的平穩刷扣 (Acoustic Strumming)',
         desc: '木吉他的刷扣 (Pick) 聲音太突兀了，會干擾到主唱。請適度壓低 Threshold，並用偏快的 Attack，把那些太刺耳的金屬撞擊聲給撫平約 6dB 左右。',
-        // 🎯 絕對領域版：Threshold -26，Ratio 4
-        target: { threshold: -26, ratio: 4, attack: 10, release: 100, knee: 15 },
+        // 🎯 精準狙擊版：Threshold -34，Ratio 5
+        target: { threshold: -34, ratio: 5, attack: 10, release: 100, knee: 15 },
         file: '/guitar-loop.mp3'
     }
 ];
