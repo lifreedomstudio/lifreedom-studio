@@ -336,6 +336,32 @@ export default function EQTrainingRoom() {
                 </section>
 
                 <div style={{ textAlign: 'center', margin: '4rem 0 2rem 0' }}>
+                    {/* --- ⚠️ 進入實驗室前的避坑心法 --- */}
+                    <section style={{ marginBottom: '2rem', background: 'rgba(245, 158, 11, 0.05)', border: '1px solid #f59e0b', borderRadius: '24px', padding: isMobile ? '2rem' : '3rem' }}>
+                        <h2 style={{ fontSize: isMobile ? '1.5rem' : '1.8rem', color: '#f59e0b', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <i className="fa-solid fa-triangle-exclamation"></i> 新手必看的避坑心法
+                        </h2>
+                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '20px' }}>
+                            <div>
+                                <h4 style={{ color: '#fff', fontSize: '1.1rem', margin: '0 0 10px 0' }}>📌 窄切、寬提</h4>
+                                <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>
+                                    殺蟲時用高 Q 值精準下刀 (窄切)；要讓聲音變好聽時，用低 Q 值大範圍平滑拉升 (寬提)，才不會產生不自然的塑膠味。
+                                </p>
+                            </div>
+                            <div>
+                                <h4 style={{ color: '#fff', fontSize: '1.1rem', margin: '0 0 10px 0' }}>📌 小心音量的騙局</h4>
+                                <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>
+                                    人耳天生覺得「大聲 = 好聽」。Boost 會讓音量增加，請務必隨時點擊 <strong>Bypass</strong> 交叉比對，確認你是真的把頻率修好聽了，還是只被音量給騙了。
+                                </p>
+                            </div>
+                            <div>
+                                <h4 style={{ color: '#fff', fontSize: '1.1rem', margin: '0 0 10px 0' }}>📌 頻率是個蹺蹺板</h4>
+                                <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>
+                                    覺得人聲太暗？有時不需要 Boost 高頻，只要把 250Hz 的泥濘低頻 Cut 掉，高頻的清脆感自然就會像蹺蹺板一樣浮現出來。
+                                </p>
+                            </div>
+                        </div>
+                    </section>
                     <h2 style={{ fontSize: '2rem', color: '#fff', fontWeight: 'bold' }}>👇 立刻進入聽覺實驗室 👇</h2>
                 </div>
 
