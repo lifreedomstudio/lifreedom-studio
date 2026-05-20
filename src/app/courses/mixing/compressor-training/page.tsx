@@ -10,7 +10,7 @@ const MISSIONS = [
         title: '第一關：全套鼓的膠水 (Glue)',
         desc: '鼓組裡面的各個樂器聽起來像是各打各的。試著把 Threshold 壓深一點，Attack 調快，Release 放慢，讓所有鼓聲被「黏」在一起。',
         target: { threshold: -30, ratio: 8, attack: 5, release: 250, knee: 30 },
-        file: '/audio/drum-loop.mp3' // 🚨 確保路徑有加 /audio/，如果沒有請拿掉
+        file: '/audio/drum-loop.mp3'
     },
     {
         id: 'vocal_leveling',
@@ -79,16 +79,13 @@ export default function CompressorTrainingRoom() {
     const router = useRouter();
     const [isMobile, setIsMobile] = useState(false);
 
-    // 道場遊戲狀態
     const [missionIdx, setMissionIdx] = useState(0);
     const currentMission = MISSIONS[missionIdx];
     const [gameState, setGameState] = useState<'playing' | 'answer'>('playing');
     const [isPlaying, setIsPlaying] = useState(false);
     const [isHearingMaster, setIsHearingMaster] = useState(false);
 
-    // 知識補帖 Tabs
     const [showTips, setShowTips] = useState(false);
-    const [tipTab, setTipTab] = useState<'dad' | 'wiwi'>('dad');
 
     const isPlayingRef = useRef(false);
     const grBarRef = useRef<HTMLDivElement>(null);
@@ -107,7 +104,6 @@ export default function CompressorTrainingRoom() {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    // 當關卡改變時，自動更換錄音帶
     useEffect(() => {
         if (audioRef.current) {
             audioRef.current.src = currentMission.file;
@@ -131,7 +127,6 @@ export default function CompressorTrainingRoom() {
             compressor.connect(ctx.destination);
         }
 
-        // 🚨 解決瀏覽器 Autoplay 限制
         if (audioCtxRef.current.state === 'suspended') {
             await audioCtxRef.current.resume();
         }
@@ -268,7 +263,7 @@ export default function CompressorTrainingRoom() {
                 </section>
 
                 {/* --- 🥷 理論區塊 2：業界三大實戰手法 --- */}
-                <section style={{ marginBottom: '6rem' }}>
+                <section style={{ marginBottom: '5rem' }}>
                     <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.2rem', color: '#fff', marginBottom: '2rem', borderLeft: '6px solid #10b981', paddingLeft: '15px' }}>
                         2. 業界三大實戰手法
                     </h2>
@@ -299,6 +294,72 @@ export default function CompressorTrainingRoom() {
                                 <strong>目標：鼓組 (Drum Bus)、總輸出。</strong><br />
                                 用很低的 Ratio (約 2:1)，輕輕壓過所有的聲音。這會讓原本各唱各調的樂器，聽起來像是在同一個房間裡演奏。
                             </p>
+                        </div>
+                    </div>
+                </section>
+
+                {/* --- 🔌 理論區塊 3：壓縮器的三大門派 (硬體模擬) --- */}
+                <section style={{ marginBottom: '6rem' }}>
+                    <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.2rem', color: '#fff', marginBottom: '2rem', borderLeft: '6px solid #a78bfa', paddingLeft: '15px' }}>
+                        3. 壓縮器的三大門派 (硬體模擬)
+                    </h2>
+                    <p style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.8', marginBottom: '2rem' }}>
+                        你可能注意過，在 DAW（例如 Logic Pro）的壓縮器裡，總是可以切換不同的「型號」或「面板」。這絕對不是只有外觀改變！它們模擬了真實世界中三種不同物理電路的硬體，擁有完全不同的個性與「染色」。選擇對的門派，混音就贏了一半。
+                    </p>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '20px' }}>
+                        {/* VCA */}
+                        <div style={{ background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)', border: '1px solid #38bdf8', padding: '25px', borderRadius: '20px', position: 'relative', overflow: 'hidden' }}>
+                            <div style={{ position: 'absolute', top: '-10px', right: '-10px', fontSize: '5rem', opacity: 0.1 }}>⚡</div>
+                            <h3 style={{ color: '#38bdf8', fontSize: '1.4rem', margin: '0 0 10px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <span>VCA</span> <span style={{ fontSize: '0.9rem', background: '#38bdf8', color: '#000', padding: '2px 8px', borderRadius: '12px' }}>外科醫生</span>
+                            </h3>
+                            <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginBottom: '15px' }}>Voltage Controlled Amplifier</p>
+                            <ul style={{ paddingLeft: '20px', color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.7', margin: '0 0 15px 0' }}>
+                                <li><b>特色：</b> 控制精準、反應極快、音色乾淨不染色。</li>
+                                <li><b>聽感：</b> 收得緊、推得穩，Punch 感十足。</li>
+                                <li><b>最佳用途：</b> 鼓組總線 (Drum Bus)、Master 總輸出。</li>
+                            </ul>
+                            <div style={{ background: 'rgba(56, 189, 248, 0.1)', padding: '10px', borderRadius: '8px', fontSize: '0.85rem', color: '#38bdf8' }}>
+                                <b>經典代表：</b> SSL G-Bus, DBX 160<br />
+                                <b>Logic Pro 對應：</b> Studio VCA, Vintage VCA
+                            </div>
+                        </div>
+
+                        {/* FET */}
+                        <div style={{ background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)', border: '1px solid #ef4444', padding: '25px', borderRadius: '20px', position: 'relative', overflow: 'hidden' }}>
+                            <div style={{ position: 'absolute', top: '-10px', right: '-10px', fontSize: '5rem', opacity: 0.1 }}>🎸</div>
+                            <h3 style={{ color: '#ef4444', fontSize: '1.4rem', margin: '0 0 10px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <span>FET</span> <span style={{ fontSize: '0.9rem', background: '#ef4444', color: '#fff', padding: '2px 8px', borderRadius: '12px' }}>搖滾樂手</span>
+                            </h3>
+                            <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginBottom: '15px' }}>Field Effect Transistor</p>
+                            <ul style={{ paddingLeft: '20px', color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.7', margin: '0 0 15px 0' }}>
+                                <li><b>特色：</b> 速度極快、帶有強烈侵略性與飽和度 (染色)。</li>
+                                <li><b>聽感：</b> 聲音前衛、充滿顆粒感與態度。</li>
+                                <li><b>最佳用途：</b> 搖滾主唱、小鼓 (Snare)、電吉他。</li>
+                            </ul>
+                            <div style={{ background: 'rgba(239, 68, 68, 0.1)', padding: '10px', borderRadius: '8px', fontSize: '0.85rem', color: '#ef4444' }}>
+                                <b>經典代表：</b> UREI 1176<br />
+                                <b>Logic Pro 對應：</b> Vintage FET, Studio FET
+                            </div>
+                        </div>
+
+                        {/* OPTO */}
+                        <div style={{ background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)', border: '1px solid #fca311', padding: '25px', borderRadius: '20px', position: 'relative', overflow: 'hidden' }}>
+                            <div style={{ position: 'absolute', top: '-10px', right: '-10px', fontSize: '5rem', opacity: 0.1 }}>💡</div>
+                            <h3 style={{ color: '#fca311', fontSize: '1.4rem', margin: '0 0 10px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <span>Opto</span> <span style={{ fontSize: '0.9rem', background: '#fca311', color: '#000', padding: '2px 8px', borderRadius: '12px' }}>氣氛歌手</span>
+                            </h3>
+                            <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginBottom: '15px' }}>Optical (光學感測)</p>
+                            <ul style={{ paddingLeft: '20px', color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.7', margin: '0 0 15px 0' }}>
+                                <li><b>特色：</b> 透過光源控制，反應遲緩、溫和自然。</li>
+                                <li><b>聽感：</b> 壓縮曲線不死板，聲音像在「呼吸」般滑順。</li>
+                                <li><b>最佳用途：</b> 抒情主唱、貝斯 (Bass)、弦樂。</li>
+                            </ul>
+                            <div style={{ background: 'rgba(252, 163, 17, 0.1)', padding: '10px', borderRadius: '8px', fontSize: '0.85rem', color: '#fca311' }}>
+                                <b>經典代表：</b> Teletronix LA-2A<br />
+                                <b>Logic Pro 對應：</b> Vintage Opto
+                            </div>
                         </div>
                     </div>
                 </section>
