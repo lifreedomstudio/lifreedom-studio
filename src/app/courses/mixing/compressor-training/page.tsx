@@ -291,8 +291,8 @@ export default function CompressorTrainingRoom() {
                             <h3 style={{ color: '#10b981', fontSize: '1.2rem', margin: '0 0 15px 0' }}>🤝 Glue (膠合技術)</h3>
                             <CompressorSvgCard type="glue" color="#10b981" />
                             <p style={{ color: '#cbd5e1', lineHeight: '1.7', margin: 0, fontSize: '0.9rem' }}>
-                                <strong>目標：鼓組 (Drum Bus)、總輸出。</strong><br />
-                                用很低的 Ratio (約 2:1)，輕輕壓過所有的聲音。這會讓原本各唱各調的樂器，聽起來像是在同一個房間裡演奏。
+                                <strong>目標：總輸出、疊加自己的樂器。</strong><br />
+                                就像照片後製時「套上同一個濾鏡」。當你拿到別人的伴奏，疊加自己錄的吉他進去時，聽起來通常是「分離的」。這時將伴奏與吉他送到同一個群組，用 2:1 的 Ratio 輕輕壓過，創造一致的動態起伏，就能讓它們「黏」在一起，聽起來像是在同一個時空演奏。
                             </p>
                         </div>
                     </div>
