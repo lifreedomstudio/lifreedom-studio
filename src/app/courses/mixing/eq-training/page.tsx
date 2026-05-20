@@ -2,14 +2,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-// 🎯 定義樂器庫與對應的檔案路徑
+// 🚨 確保這裡的路徑與你 public 資料夾中的位置完全一致！
 const TRACKS = {
-    guitar: { id: 'guitar', name: '🎸 木吉他', file: '/audio/guitar-loop.mp3' }, // 🚨 確保音檔路徑正確 (建議統一放 /audio)
+    guitar: { id: 'guitar', name: '🎸 木吉他', file: '/audio/guitar-loop.mp3' },
     drum: { id: 'drum', name: '🥁 大鼓', file: '/audio/drum-loop.mp3' },
     vocal: { id: 'vocal', name: '🎤 主唱', file: '/audio/vocal-dry.mp3' }
 };
 
-// 📚 定義多樂器頻率字典 (旗艦百科版)
 const DICTIONARIES = {
     guitar: [
         { range: [20, 75], name: '50Hz：極低頻 (Sub Bass)', tags: ['地板震動 📳', '無謂能量 🗑️'], theory: '【主委筆記：拿掉它就對了】\n對木吉他來說，這裡通常是冷氣或環境震動。建議用 High-pass Filter (HPF) 切掉，把地下室空間讓給大鼓和貝斯。' },
@@ -43,7 +42,69 @@ const DICTIONARIES = {
     ]
 };
 
-export default function EQDictionaryRoom() {
+// --- 獨立出來的輔助組件：用原生 SVG 繪製發光 EQ 曲線圖 ---
+const EqSvgCard = ({ type, color }: { type: 'filters' | 'subtractive' | 'sweeping' | 'complementary', color: string }) => {
+    const renderSvg = () => {
+        switch (type) {
+            case 'filters':
+                return (
+                    <svg viewBox="0 0 400 150" style={{ width: '100%', height: '100%' }}>
+                        {/* HPF */}
+                        <path d="M 20,130 C 40,130 50,50 80,50 L 100,50" fill="none" stroke="#ef4444" strokeWidth="4" style={{ filter: 'drop-shadow(0 0 6px #ef4444)' }} />
+                        <text x="50" y="30" fill="#ef4444" fontSize="14" fontWeight="bold">HPF</text>
+                        {/* Bell */}
+                        <path d="M 120,90 C 140,90 150,30 160,30 C 170,30 180,90 200,90" fill="none" stroke="#10b981" strokeWidth="4" style={{ filter: 'drop-shadow(0 0 6px #10b981)' }} />
+                        <text x="145" y="15" fill="#10b981" fontSize="14" fontWeight="bold">Bell</text>
+                        {/* Shelf */}
+                        <path d="M 220,90 L 250,90 C 270,90 270,40 290,40 L 320,40" fill="none" stroke="#f59e0b" strokeWidth="4" style={{ filter: 'drop-shadow(0 0 6px #f59e0b)' }} />
+                        <text x="255" y="25" fill="#f59e0b" fontSize="14" fontWeight="bold">Shelf</text>
+                        {/* LPF */}
+                        <path d="M 340,50 L 360,50 C 380,50 380,130 400,130" fill="none" stroke="#38bdf8" strokeWidth="4" style={{ filter: 'drop-shadow(0 0 6px #38bdf8)' }} />
+                        <text x="355" y="30" fill="#38bdf8" fontSize="14" fontWeight="bold">LPF</text>
+                    </svg>
+                );
+            case 'subtractive':
+                return (
+                    <svg viewBox="0 0 400 150" style={{ width: '100%', height: '100%' }}>
+                        <path d="M 0,140 C 60,140 80,75 150,75 L 400,75" fill="none" stroke={color} strokeWidth="4" style={{ filter: `drop-shadow(0 0 8px ${color})` }} />
+                        {/* 紅色陰影代表切除的低頻底噪 */}
+                        <path d="M 0,75 L 150,75 C 80,75 60,140 0,140 Z" fill="rgba(239, 68, 68, 0.3)" />
+                        <text x="30" y="100" fill="#fca5a5" fontSize="16" fontWeight="bold">CUT</text>
+                    </svg>
+                );
+            case 'sweeping':
+                return (
+                    <svg viewBox="0 0 400 150" style={{ width: '100%', height: '100%' }}>
+                        <path d="M 0,100 L 150,100 C 170,100 190,20 200,20 C 210,20 230,100 250,100 L 400,100" fill="none" stroke={color} strokeWidth="4" style={{ filter: `drop-shadow(0 0 8px ${color})` }} />
+                        <circle cx="200" cy="20" r="8" fill="#fff" />
+                        <text x="220" y="35" fill="#fff" fontSize="16" fontWeight="bold">+15dB</text>
+                    </svg>
+                );
+            case 'complementary':
+                return (
+                    <svg viewBox="0 0 400 150" style={{ width: '100%', height: '100%' }}>
+                        {/* 軌道A Boost (綠) */}
+                        <path d="M 0,75 L 120,75 C 160,75 180,20 200,20 C 220,20 240,75 280,75 L 400,75" fill="none" stroke="#10b981" strokeWidth="4" style={{ filter: 'drop-shadow(0 0 8px #10b981)' }} />
+                        {/* 軌道B Cut (橘) */}
+                        <path d="M 0,75 L 120,75 C 160,75 180,130 200,130 C 220,130 240,75 280,75 L 400,75" fill="none" stroke="#f59e0b" strokeWidth="4" strokeDasharray="5,5" style={{ filter: 'drop-shadow(0 0 8px #f59e0b)' }} />
+                    </svg>
+                );
+        }
+    };
+
+    return (
+        <div style={{ width: '100%', height: '160px', background: 'rgba(0,0,0,0.4)', borderRadius: '12px', marginBottom: '15px', border: `1px solid ${color}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+            {/* 裝飾性背景網格 */}
+            <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+            <div style={{ position: 'relative', width: '100%', height: '100%', zIndex: 1 }}>
+                {renderSvg()}
+            </div>
+        </div>
+    );
+};
+
+// --- 主元件 ---
+export default function EQTrainingRoom() {
     const router = useRouter();
     const [isMobile, setIsMobile] = useState(false);
     const [activeTrack, setActiveTrack] = useState<'guitar' | 'drum' | 'vocal'>('guitar');
@@ -84,10 +145,12 @@ export default function EQDictionaryRoom() {
         }
         try {
             const response = await fetch(TRACKS[trackId].file);
+            if (!response.ok) throw new Error('音檔路徑錯誤');
             const arrayBuffer = await response.arrayBuffer();
             bufferRef.current = await audioCtxRef.current.decodeAudioData(arrayBuffer);
         } catch (e) {
-            console.error("音檔載入失敗，請確認 /public/audio/ 底下有無對應音檔", e);
+            console.error("音檔載入失敗，請確認 public 裡的音檔路徑是否正確", e);
+            alert("音檔載入失敗！請確認檔案路徑。");
         }
         setIsLoading(false);
     };
@@ -96,8 +159,6 @@ export default function EQDictionaryRoom() {
 
     useEffect(() => {
         if (!filterRef.current || !audioCtxRef.current) return;
-
-        // 🚨 使用 setTargetAtTime 平滑過渡頻率，避免調整滑桿時產生雜音 (Zipper Noise)
         filterRef.current.frequency.setTargetAtTime(frequency, audioCtxRef.current.currentTime, 0.05);
 
         if (eqMode === 'boost') {
@@ -111,8 +172,14 @@ export default function EQDictionaryRoom() {
         }
     }, [frequency, eqMode]);
 
-    const togglePlay = () => {
+    const togglePlay = async () => {
         if (!audioCtxRef.current || !bufferRef.current) return;
+
+        // 🚨 修正：解決瀏覽器阻擋自動播放 (Autoplay Policy)
+        if (audioCtxRef.current.state === 'suspended') {
+            await audioCtxRef.current.resume();
+        }
+
         if (isPlaying) {
             sourceRef.current?.stop();
             setIsPlaying(false);
@@ -135,20 +202,18 @@ export default function EQDictionaryRoom() {
         }
     };
 
-    // --- 繪製 EQ 曲線邏輯 ---
     const mapFreqToX = (f: number) => ((Math.log10(f) - minLog) / (maxLog - minLog)) * 1000;
     const peakX = mapFreqToX(frequency);
     const gainOffset = eqMode === 'boost' ? -100 : (eqMode === 'cut' ? 80 : 0);
     const qWidth = eqMode === 'cut' ? 120 : 60;
 
-    // 繪製平滑的鐘型曲線 (Bell Curve)
     const eqPath = eqMode === 'flat'
         ? `M 0,150 L 1000,150`
         : `M 0,150 L ${peakX - qWidth},150 C ${peakX - qWidth / 2},150 ${peakX - 10},${150 + gainOffset} ${peakX},${150 + gainOffset} C ${peakX + 10},${150 + gainOffset} ${peakX + qWidth / 2},150 ${peakX + qWidth},150 L 1000,150`;
 
-    // 依據模式切換顏色
     const themeColor = eqMode === 'cut' ? '#ef4444' : (eqMode === 'boost' ? '#10b981' : '#64748b');
 
+    // --- 正確包裝回傳的畫面結構 ---
     return (
         <div style={{ minHeight: '100vh', background: '#020617', color: '#f8fafc', padding: isMobile ? '1.5rem 1rem' : '4rem 2rem', fontFamily: 'sans-serif' }}>
             <div style={{ maxWidth: '900px', margin: '0 auto' }}>
@@ -159,60 +224,59 @@ export default function EQDictionaryRoom() {
                         PHASE 02 : THE FREQUENCY MANAGER
                     </div>
                     <h1 style={{ fontSize: isMobile ? '2.5rem' : '4rem', fontWeight: '900', margin: '0 0 1rem 0', background: 'linear-gradient(135deg, #10b981, #059669)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                        EQ 頻率實驗室
+                        EQ 頻率管理學
                     </h1>
                     <p style={{ color: '#94a3b8', fontSize: '1.1rem', maxWidth: '700px', margin: '0 auto', lineHeight: '1.6' }}>
-                        歡迎來到社區管委會！在這裡，我們不調音量，我們調的是「特徵」。<br />
-                        打開喇叭或戴上耳機，透過誇張的 <strong>Boost (放大)</strong> 與 <strong>Cut (挖空)</strong>，<br />訓練你的大腦記住這些關鍵的頻率長什麼樣子。
+                        歡迎來到社區管委會！在這裡我們不調音量，我們調的是「特徵」。<br />
+                        先搞懂大師的手法，再進入下方的實驗室訓練你的耳朵。
                     </p>
                 </header>
 
                 {/* --- 📖 理論區塊 1：EQ 核心名詞辭典 --- */}
                 <section style={{ marginBottom: '5rem' }}>
                     <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.2rem', color: '#fff', marginBottom: '2rem', borderLeft: '6px solid #10b981', paddingLeft: '15px' }}>
-                        1. 混音師的溝通語言：EQ 名詞定義
+                        1. 混音師的溝通語言
                     </h2>
 
                     <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '20px' }}>
-
-                        {/* 頻率 Hz */}
                         <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid #334155', padding: '25px', borderRadius: '20px' }}>
                             <h3 style={{ color: '#38bdf8', fontSize: '1.4rem', margin: '0 0 10px 0' }}>頻率 (Frequency) / Hz</h3>
                             <p style={{ color: '#cbd5e1', lineHeight: '1.7', margin: 0 }}>
-                                聲音的高度。數字越小越低沉（如 50Hz 的大鼓），數字越大越尖銳（如 10kHz 的銅鈸）。這就是我們要在頻譜上鎖定的「目標樓層」。
+                                聲音的高度。數字越小越低沉，數字越大越尖銳。這就是我們在頻譜上鎖定的「目標樓層」。
                             </p>
                         </div>
 
-                        {/* 增益 dB */}
                         <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid #334155', padding: '25px', borderRadius: '20px' }}>
                             <h3 style={{ color: '#10b981', fontSize: '1.4rem', margin: '0 0 10px 0' }}>增益 (Gain) / dB</h3>
                             <p style={{ color: '#cbd5e1', lineHeight: '1.7', margin: 0 }}>
-                                對該頻率進行的操作。往上拉叫做 <strong>Boost (放大)</strong>，增加存在感；往下拉叫做 <strong>Cut (挖空/衰減)</strong>，消除討厭的雜音。
+                                對該頻率進行的操作。往上拉叫 <strong>Boost (放大)</strong>；往下拉叫 <strong>Cut (挖空/衰減)</strong>。
                             </p>
                         </div>
 
-                        {/* Q值 */}
                         <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid #334155', padding: '25px', borderRadius: '20px', gridColumn: isMobile ? '1' : '1 / 3' }}>
                             <h3 style={{ color: '#f59e0b', fontSize: '1.4rem', margin: '0 0 10px 0' }}>頻寬 (Q Value / Resonance)</h3>
                             <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '20px', marginTop: '15px' }}>
                                 <div style={{ flex: 1 }}>
                                     <h4 style={{ color: '#fff', margin: '0 0 5px 0' }}>🗡️ 高 Q 值 (High Q) = 窄頻寬</h4>
-                                    <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>像一把手術刀。用來精準切除特定頻率的雜音（例如吉他悶音），不影響旁邊的好聲音。</p>
+                                    <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>
+                                        像一把手術刀。用來精準切除特定頻率的雜音（例如小鼓刺耳的金屬 Ringing、或是麥克風的電流底噪），不影響旁邊的好聲音。
+                                    </p>
                                 </div>
                                 <div style={{ flex: 1 }}>
                                     <h4 style={{ color: '#fff', margin: '0 0 5px 0' }}>🖌️ 低 Q 值 (Low Q) = 寬頻寬</h4>
-                                    <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>像一把大水彩筆。用來大範圍地改變音色（例如整體提亮人聲），聽起來非常自然、有音樂性。</p>
+                                    <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>
+                                        像一把大水彩筆。用來大範圍地改變音色（例如消除整把木吉他的悶音、或整體提亮人聲），聽起來非常自然。
+                                    </p>
                                 </div>
                             </div>
                         </div>
 
-                        {/* 濾波器種類 (Filter Types) */}
                         <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid #334155', padding: '25px', borderRadius: '20px', gridColumn: isMobile ? '1' : '1 / 3' }}>
                             <h3 style={{ color: '#a855f7', fontSize: '1.4rem', margin: '0 0 15px 0' }}>濾波器種類 (Filter Types)</h3>
-
+                            <EqSvgCard type="filters" color="#a855f7" />
                             <ul style={{ color: '#cbd5e1', lineHeight: '1.8', margin: 0, paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                <li><strong>HPF (High-Pass Filter / 高通濾波器)：</strong> 一刀切掉指定頻率「以下」的所有聲音。用來清除低頻底噪。</li>
-                                <li><strong>LPF (Low-Pass Filter / 低通濾波器)：</strong> 一刀切掉指定頻率「以上」的所有聲音。用來消除數位毛刺感。</li>
+                                <li><strong>HPF (高通濾波器)：</strong> 一刀切掉指定頻率「以下」的所有聲音。用來清除低頻底噪。</li>
+                                <li><strong>LPF (低通濾波器)：</strong> 一刀切掉指定頻率「以上」的所有聲音。用來消除數位毛刺感。</li>
                                 <li><strong>Bell (鐘型)：</strong> 最常見的形狀，針對特定頻段進行凸起 (Boost) 或凹陷 (Cut)。</li>
                                 <li><strong>Shelf (擱架型)：</strong> 像樓梯一樣，將某個頻率之後的聲音「整體」抬高或降低（常見於高音提亮）。</li>
                             </ul>
@@ -226,7 +290,6 @@ export default function EQDictionaryRoom() {
                         <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.2rem', color: '#fff', marginBottom: '1.5rem', fontWeight: 'bold' }}>
                             核心理論：頻率遮蔽效應 (Masking Effect)
                         </h2>
-
                         <p style={{ color: '#cbd5e1', fontSize: '1.1rem', lineHeight: '1.8', marginBottom: '1.5rem', textAlign: 'justify' }}>
                             為什麼你錄的木吉他和人聲單獨聽都很好聽，但放在一起播放時，卻覺得糊成一團、誰都聽不清？這就是遇到了<strong>「頻率遮蔽」</strong>。
                         </p>
@@ -244,89 +307,63 @@ export default function EQDictionaryRoom() {
                     <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.2rem', color: '#fff', marginBottom: '2rem', borderLeft: '6px solid #facc15', paddingLeft: '15px' }}>
                         3. 混音師的實戰 S.O.P
                     </h2>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-
-                        {/* 手法 1：減法 EQ */}
-                        <div style={{ background: '#0f172a', border: '1px solid #1e293b', padding: '30px', borderRadius: '20px', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
-                            <div style={{ fontSize: '2.5rem', color: '#ef4444' }}>✂️</div>
-                            <div>
-                                <h3 style={{ color: '#fff', fontSize: '1.4rem', margin: '0 0 10px 0' }}>Step 1: 減法優先 (Subtractive EQ)</h3>
-                                <p style={{ color: '#cbd5e1', lineHeight: '1.7', margin: 0 }}>
-                                    新手最愛 Boost（推高），但大師永遠先 Cut（挖空）。推高會吃掉 Headroom 並可能引發爆音。<strong>第一步永遠是掛上 High-Pass Filter (HPF)</strong>，把除了大鼓與貝斯之外的所有樂器，100Hz 以下的轟鳴聲全部切除乾淨！
-                                </p>
-                            </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '20px' }}>
+                        <div style={{ background: '#0f172a', border: '1px solid #1e293b', padding: '20px', borderRadius: '20px', display: 'flex', flexDirection: 'column' }}>
+                            <h3 style={{ color: '#ef4444', fontSize: '1.2rem', margin: '0 0 15px 0' }}>✂️ Step 1: 減法優先</h3>
+                            <EqSvgCard type="subtractive" color="#ef4444" />
+                            <p style={{ color: '#cbd5e1', lineHeight: '1.7', margin: 0, fontSize: '0.9rem', marginTop: '15px' }}>
+                                新手最愛 Boost，但大師永遠先 Cut。推高會吃掉 Headroom。第一步永遠是掛上 HPF，把除了大鼓與貝斯之外的所有樂器，100Hz 以下的底噪切乾淨！
+                            </p>
                         </div>
-
-                        {/* 手法 2：掃頻抓蟲 (完美連結互動實驗室) */}
-                        <div style={{ background: '#0f172a', border: '1px solid #1e293b', padding: '30px', borderRadius: '20px', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
-                            <div style={{ fontSize: '2.5rem', color: '#38bdf8' }}>🔍</div>
-                            <div>
-                                <h3 style={{ color: '#fff', fontSize: '1.4rem', margin: '0 0 10px 0' }}>Step 2: 掃頻抓蟲法 (Frequency Sweeping)</h3>
-                                <p style={{ color: '#cbd5e1', lineHeight: '1.7', margin: 0 }}>
-                                    這就是下方「互動實驗室」要訓練你的終極招式！做法如下：<br />
-                                    1. 將 Q 值調窄 (High Q)。<br />
-                                    2. 將 Gain 暴力推高 (+15dB)。<br />
-                                    3. 左右拖曳頻率滑桿。當你聽到某個極度刺耳、像共鳴箱轟炸的聲音時——恭喜你找到「蟲」了。<br />
-                                    4. 將那個頻率的 Gain 反向拉低 (-3dB 到 -6dB) 把蟲殺掉。
-                                </p>
-                            </div>
+                        <div style={{ background: '#0f172a', border: '1px solid #1e293b', padding: '20px', borderRadius: '20px', display: 'flex', flexDirection: 'column' }}>
+                            <h3 style={{ color: '#38bdf8', fontSize: '1.2rem', margin: '0 0 15px 0' }}>🔍 Step 2: 掃頻抓蟲法</h3>
+                            <EqSvgCard type="sweeping" color="#38bdf8" />
+                            <p style={{ color: '#cbd5e1', lineHeight: '1.7', margin: 0, fontSize: '0.9rem', marginTop: '15px' }}>
+                                1. 將 Q 值調窄 (High Q)<br />
+                                2. 將 Gain 暴力推高 (+15dB)<br />
+                                3. 左右拖曳滑桿尋找極度刺耳的聲音 (抓蟲)<br />
+                                4. 找到後反向拉低 (-6dB) 殺掉蟲子。
+                            </p>
                         </div>
-
-                        {/* 手法 3：互補 EQ */}
-                        <div style={{ background: '#0f172a', border: '1px solid #1e293b', padding: '30px', borderRadius: '20px', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
-                            <div style={{ fontSize: '2.5rem', color: '#10b981' }}>🧩</div>
-                            <div>
-                                <h3 style={{ color: '#fff', fontSize: '1.4rem', margin: '0 0 10px 0' }}>Step 3: 互補 EQ (Complementary EQ)</h3>
-                                <p style={{ color: '#cbd5e1', lineHeight: '1.7', margin: 0 }}>
-                                    解決頻率遮蔽的高級技巧。如果你在大鼓的 60Hz 推高了 3dB 來增加重量，那請在貝斯的 60Hz 挖空 3dB；反過來，如果貝斯在 100Hz 很有魅力，那就在大鼓的 100Hz 稍微退讓。<strong>像拼圖一樣，一凸一凹，聲音就會完美融合。</strong>
-                                </p>
-                            </div>
+                        <div style={{ background: '#0f172a', border: '1px solid #1e293b', padding: '20px', borderRadius: '20px', display: 'flex', flexDirection: 'column' }}>
+                            <h3 style={{ color: '#10b981', fontSize: '1.2rem', margin: '0 0 15px 0' }}>🧩 Step 3: 互補 EQ</h3>
+                            <EqSvgCard type="complementary" color="#10b981" />
+                            <p style={{ color: '#cbd5e1', lineHeight: '1.7', margin: 0, fontSize: '0.9rem', marginTop: '15px' }}>
+                                解決遮蔽的高級技巧。大鼓 60Hz 推高 3dB，貝斯 60Hz 就挖空 3dB。像拼圖一樣，一凸一凹，聲音就會完美融合。
+                            </p>
                         </div>
-
                     </div>
                 </section>
 
+                <div style={{ textAlign: 'center', margin: '4rem 0 2rem 0' }}>
+                    <h2 style={{ fontSize: '2rem', color: '#fff', fontWeight: 'bold' }}>👇 立刻進入聽覺實驗室 👇</h2>
+                </div>
 
                 {/* 2. 實驗室主體 */}
                 <div style={{ background: 'linear-gradient(180deg, #0f172a 0%, #020617 100%)', padding: isMobile ? '1.5rem' : '3rem', borderRadius: '32px', border: '1px solid #1e293b', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
-
-                    {/* 樂器切換 */}
                     <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginBottom: '2.5rem', flexWrap: 'wrap' }}>
                         {Object.values(TRACKS).map(track => (
                             <button
-                                key={track.id}
-                                onClick={() => setActiveTrack(track.id as any)}
-                                style={{
-                                    padding: '0.8rem 2rem', borderRadius: '50px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.3s', fontSize: '1.1rem',
-                                    background: activeTrack === track.id ? '#10b981' : 'rgba(255,255,255,0.05)',
-                                    color: activeTrack === track.id ? '#020617' : '#94a3b8',
-                                    border: `1px solid ${activeTrack === track.id ? '#10b981' : '#334155'}`,
-                                    boxShadow: activeTrack === track.id ? '0 0 20px rgba(16, 185, 129, 0.3)' : 'none'
-                                }}
+                                key={track.id} onClick={() => setActiveTrack(track.id as any)}
+                                style={{ padding: '0.8rem 2rem', borderRadius: '50px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.3s', fontSize: '1.1rem', background: activeTrack === track.id ? '#10b981' : 'rgba(255,255,255,0.05)', color: activeTrack === track.id ? '#020617' : '#94a3b8', border: `1px solid ${activeTrack === track.id ? '#10b981' : '#334155'}`, boxShadow: activeTrack === track.id ? '0 0 20px rgba(16, 185, 129, 0.3)' : 'none' }}
                             >
                                 {track.name}
                             </button>
                         ))}
                     </div>
 
-                    {/* EQ 視覺面板 (SVG) */}
                     <div style={{ width: '100%', height: isMobile ? '200px' : '280px', background: '#020617', borderRadius: '20px', border: '2px solid #1e293b', marginBottom: '2rem', position: 'relative', overflow: 'hidden', boxShadow: 'inset 0 10px 30px rgba(0,0,0,0.5)' }}>
-                        {/* 網格線 */}
                         <div style={{ position: 'absolute', width: '100%', height: '100%' }}>
                             {[50, 100, 500, 1000, 5000, 10000].map(f => (
                                 <div key={f} style={{ position: 'absolute', left: `${mapFreqToX(f) / 10}%`, top: 0, bottom: 0, width: '1px', background: 'rgba(255, 255, 255, 0.05)' }}>
                                     <span style={{ position: 'absolute', bottom: '10px', left: '6px', color: '#475569', fontSize: '0.75rem', fontWeight: 'bold' }}>{f >= 1000 ? `${f / 1000}k` : f}Hz</span>
                                 </div>
                             ))}
-                            {/* 0dB 基準線 */}
                             <div style={{ position: 'absolute', top: '150px', width: '100%', borderTop: '1px dashed rgba(255,255,255,0.2)' }}></div>
                         </div>
 
-                        {/* 動態曲線 */}
                         <svg viewBox="0 0 1000 250" style={{ width: '100%', height: '100%', filter: 'drop-shadow(0 0 10px rgba(16,185,129,0.3))' }}>
                             <path d={eqPath} fill="none" stroke={themeColor} strokeWidth="5" style={{ transition: 'all 0.1s ease' }} />
-                            {/* 頻率控制點 */}
                             {eqMode !== 'flat' && (
                                 <g style={{ transition: 'all 0.1s ease' }}>
                                     <circle cx={peakX} cy={150 + gainOffset} r="10" fill={themeColor} />
@@ -335,47 +372,28 @@ export default function EQDictionaryRoom() {
                             )}
                         </svg>
 
-                        {/* 當前頻率顯示 */}
                         <div style={{ position: 'absolute', top: '20px', right: '25px', fontSize: '2rem', fontWeight: '900', color: themeColor, fontFamily: 'monospace', textShadow: `0 0 20px ${themeColor}80` }}>
                             {frequency} <span style={{ fontSize: '1.2rem', color: '#64748b' }}>Hz</span>
                         </div>
                     </div>
 
-                    {/* 控制面板：播放與模式 */}
                     <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '1.5rem', marginBottom: '2rem' }}>
-                        {/* 播放鈕 */}
-                        <button
-                            onClick={togglePlay}
-                            disabled={isLoading}
-                            style={{
-                                flex: 1, padding: '1.2rem', borderRadius: '16px', fontWeight: '900', fontSize: '1.2rem', border: 'none', cursor: 'pointer', transition: 'all 0.2s',
-                                background: isPlaying ? '#ef4444' : '#10b981',
-                                color: '#fff',
-                                boxShadow: isPlaying ? '0 0 30px rgba(239,68,68,0.4)' : '0 10px 30px rgba(16,185,129,0.3)'
-                            }}
-                        >
+                        <button onClick={togglePlay} disabled={isLoading} style={{ flex: 1, padding: '1.2rem', borderRadius: '16px', fontWeight: '900', fontSize: '1.2rem', border: 'none', cursor: 'pointer', transition: 'all 0.2s', background: isPlaying ? '#ef4444' : '#10b981', color: '#fff', boxShadow: isPlaying ? '0 0 30px rgba(239,68,68,0.4)' : '0 10px 30px rgba(16,185,129,0.3)' }}>
                             {isLoading ? '⏳ 載入音檔中...' : isPlaying ? '⏹️ 停止掃頻' : '▶️ 開始監聽'}
                         </button>
 
-                        {/* 模式切換 */}
                         <div style={{ display: 'flex', background: 'rgba(0,0,0,0.5)', borderRadius: '16px', padding: '6px', flex: 1.5, border: '1px solid #1e293b' }}>
                             <button onClick={() => setEqMode('flat')} style={{ flex: 1, padding: '10px', border: 'none', background: eqMode === 'flat' ? '#334155' : 'transparent', color: eqMode === 'flat' ? '#fff' : '#64748b', borderRadius: '12px', cursor: 'pointer', fontWeight: 'bold' }}>Bypass (原聲)</button>
-                            <button onClick={() => setEqMode('boost')} style={{ flex: 1, padding: '10px', border: 'none', background: eqMode === 'boost' ? 'rgba(16,185,129,0.2)' : 'transparent', color: eqMode === 'boost' ? '#10b981' : '#64748b', borderRadius: '12px', cursor: 'pointer', fontWeight: 'bold' }}>🔼 放大特徵</button>
-                            <button onClick={() => setEqMode('cut')} style={{ flex: 1, padding: '10px', border: 'none', background: eqMode === 'cut' ? 'rgba(239,68,68,0.2)' : 'transparent', color: eqMode === 'cut' ? '#ef4444' : '#64748b', borderRadius: '12px', cursor: 'pointer', fontWeight: 'bold' }}>🔽 挖空差異</button>
+                            <button onClick={() => setEqMode('boost')} style={{ flex: 1, padding: '10px', border: 'none', background: eqMode === 'boost' ? 'rgba(16,185,129,0.2)' : 'transparent', color: eqMode === 'boost' ? '#10b981' : '#64748b', borderRadius: '12px', cursor: 'pointer', fontWeight: 'bold' }}>🔼 放大特徵 (抓蟲)</button>
+                            <button onClick={() => setEqMode('cut')} style={{ flex: 1, padding: '10px', border: 'none', background: eqMode === 'cut' ? 'rgba(239,68,68,0.2)' : 'transparent', color: eqMode === 'cut' ? '#ef4444' : '#64748b', borderRadius: '12px', cursor: 'pointer', fontWeight: 'bold' }}>🔽 挖空差異 (殺蟲)</button>
                         </div>
                     </div>
 
-                    {/* 滑桿區 */}
                     <div style={{ background: '#020617', padding: '2rem', borderRadius: '20px', marginBottom: '2.5rem', border: '1px solid #1e293b' }}>
                         <p style={{ color: '#94a3b8', margin: '0 0 15px 0', fontSize: '0.9rem', textAlign: 'center' }}>左右拖曳滑桿，進行 Frequency Sweeping (頻率掃描)</p>
-                        <input
-                            type="range" min="0" max="1000" value={sliderValue}
-                            onChange={e => setSliderValue(Number(e.target.value))}
-                            style={{ width: '100%', cursor: 'pointer', accentColor: themeColor }}
-                        />
+                        <input type="range" min="0" max="1000" value={sliderValue} onChange={e => setSliderValue(Number(e.target.value))} style={{ width: '100%', cursor: 'pointer', accentColor: themeColor }} />
                     </div>
 
-                    {/* 解說面板 (主委筆記) */}
                     <div style={{ minHeight: '220px' }}>
                         {currentZone && (
                             <div style={{ animation: 'fadeIn 0.4s ease', background: 'rgba(255,255,255,0.02)', padding: '2rem', borderRadius: '20px', border: '1px dashed #334155' }}>
@@ -383,16 +401,12 @@ export default function EQDictionaryRoom() {
                                     <h3 style={{ color: '#fff', margin: 0, fontSize: '1.5rem' }}>{currentZone.name}</h3>
                                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                         {currentZone.tags.map(tag => (
-                                            <span key={tag} style={{ background: themeColor, color: eqMode === 'cut' ? '#fff' : '#020617', padding: '4px 12px', borderRadius: '50px', fontSize: '0.85rem', fontWeight: 'bold' }}>
-                                                {tag}
-                                            </span>
+                                            <span key={tag} style={{ background: themeColor, color: eqMode === 'cut' ? '#fff' : '#020617', padding: '4px 12px', borderRadius: '50px', fontSize: '0.85rem', fontWeight: 'bold' }}>{tag}</span>
                                         ))}
                                     </div>
                                 </div>
                                 <div style={{ borderLeft: `4px solid ${themeColor}`, paddingLeft: '1.5rem' }}>
-                                    <p style={{ margin: 0, color: '#cbd5e1', lineHeight: '1.8', fontSize: '1.1rem', whiteSpace: 'pre-wrap' }}>
-                                        {currentZone.theory}
-                                    </p>
+                                    <p style={{ margin: 0, color: '#cbd5e1', lineHeight: '1.8', fontSize: '1.1rem', whiteSpace: 'pre-wrap' }}>{currentZone.theory}</p>
                                 </div>
                             </div>
                         )}
@@ -401,25 +415,9 @@ export default function EQDictionaryRoom() {
 
                 {/* 3. 底部導覽 (CTA) */}
                 <section style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', marginTop: '5rem', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.1)', gap: '20px' }}>
-                    <button
-                        onClick={() => router.push('/courses/mixing/gain-staging-training')}
-                        style={{ background: 'transparent', color: '#94a3b8', border: '1px solid #334155', padding: '1rem 2rem', fontSize: '1rem', borderRadius: '50px', cursor: 'pointer', transition: 'all 0.2s' }}
-                        onMouseOver={(e) => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#fff'; }}
-                        onMouseOut={(e) => { e.currentTarget.style.color = '#94a3b8'; e.currentTarget.style.borderColor = '#334155'; }}
-                    >
-                        ⬅️ 上一關：Gain 源頭管理
-                    </button>
-
-                    <button
-                        onClick={() => router.push('/courses/mixing/compressor-training')}
-                        style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)', color: '#fff', border: 'none', padding: '1rem 3rem', fontSize: '1.1rem', fontWeight: 'bold', borderRadius: '50px', cursor: 'pointer', boxShadow: '0 10px 20px rgba(245, 158, 11, 0.2)', transition: 'transform 0.2s' }}
-                        onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-                        onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                    >
-                        下一關：Compressor 動態老爸 ➔
-                    </button>
+                    <button onClick={() => router.push('/courses/mixing/gain-staging-training')} style={{ background: 'transparent', color: '#94a3b8', border: '1px solid #334155', padding: '1rem 2rem', fontSize: '1rem', borderRadius: '50px', cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={(e) => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#fff'; }} onMouseOut={(e) => { e.currentTarget.style.color = '#94a3b8'; e.currentTarget.style.borderColor = '#334155'; }}>⬅️ 上一關：Gain 源頭管理</button>
+                    <button onClick={() => router.push('/courses/mixing/compressor-training')} style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)', color: '#fff', border: 'none', padding: '1rem 3rem', fontSize: '1.1rem', fontWeight: 'bold', borderRadius: '50px', cursor: 'pointer', boxShadow: '0 10px 20px rgba(245, 158, 11, 0.2)', transition: 'transform 0.2s' }} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>下一關：Compressor 動態老爸 ➔</button>
                 </section>
-
             </div>
         </div>
     );
