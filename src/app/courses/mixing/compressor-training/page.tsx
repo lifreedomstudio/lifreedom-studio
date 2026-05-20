@@ -296,6 +296,23 @@ export default function CompressorTrainingRoom() {
                             </p>
                         </div>
                     </div>
+
+                    {/* --- 🚌 課外輔導：什麼是 Bus？ (微導購鋪陳) --- */}
+                    <div style={{ marginTop: '2rem', background: 'linear-gradient(145deg, rgba(167, 139, 250, 0.1), transparent)', border: '1px dashed #a78bfa', padding: '25px', borderRadius: '20px', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+                        <div style={{ fontSize: '3rem' }}>🚌</div>
+                        <div>
+                            <h4 style={{ color: '#a78bfa', fontSize: '1.2rem', margin: '0 0 10px 0', fontWeight: 'bold' }}>等等，什麼是 Bus (總線/群組)？</h4>
+                            <p style={{ color: '#cbd5e1', lineHeight: '1.7', margin: '0 0 15px 0', fontSize: '0.95rem' }}>
+                                想像 Bus 就是聲音的「接駁車」。你可以把你錄的吉他、別人的伴奏通通送上同一台車，然後我們只要對這台「車」掛上一個 Compressor，車上所有的聲音就會一起被擠壓。這就是 Glue (膠合) 能讓聲音融為一體的核心原理！
+                            </p>
+                            <div style={{ background: 'rgba(2, 6, 23, 0.6)', padding: '12px 18px', borderRadius: '12px', borderLeft: '4px solid #fca311', display: 'inline-block' }}>
+                                <span style={{ color: '#fca311', fontSize: '0.9rem', fontWeight: 'bold' }}>🚀 製作人進階預告：</span>
+                                <span style={{ color: '#94a3b8', fontSize: '0.9rem', marginLeft: '8px', lineHeight: '1.6' }}>
+                                    Bus 其實是混音界最強的「空間魔法」。在解鎖付費的進階實驗室中，我們將完整解析 Bus 的終極應用——包含讓鼓聲炸裂的「平行壓縮」，以及打造 3D 演唱會聽感的「Reverb 空間發送魔法」。
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </section>
 
                 {/* --- 🔌 理論區塊 3：壓縮器的三大門派 (硬體模擬) --- */}
