@@ -62,15 +62,19 @@ const WaveformClippingVisual = ({ isMobile }: { isMobile: boolean }) => (
     </div>
 );
 
-// --- 🎙️ 2. 宅錄防呆指南卡片 (使用 4 張獨立原創圖片) ---
+// --- 🎙️ 2. 宅錄防呆指南卡片 (修正版：不裁剪圖片，完整顯示) ---
 const RecordingHackCard = ({ num, title, desc, imgSrc, color }: { num: string, title: string, desc: string, imgSrc: string, color: string }) => (
     <div style={{ background: 'rgba(255,255,255,0.03)', border: `2px solid ${color}40`, borderRadius: '16px', padding: '20px', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+        {/* 背景數字 */}
         <div style={{ position: 'absolute', top: '-15px', right: '-10px', fontSize: '6rem', color: `${color}15`, fontWeight: '900', zIndex: 0 }}>{num}</div>
+
+        {/* 卡片內容區 */}
         <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column' }}>
 
-            {/* 直接讀取我們剛剛生成的 4 張獨立圖片 */}
-            <div style={{ width: '100%', height: '160px', background: 'rgba(0,0,0,0.5)', borderRadius: '12px', marginBottom: '15px', overflow: 'hidden', border: `1px solid ${color}30` }}>
-                <img src={imgSrc} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = `<div style="width:100%;height:100%;display:flex;justify-content:center;align-items:center;color:${color}80;font-size:2rem;"><i class="fa-solid fa-image"></i></div>`; }} />
+            {/* 🚨 修正：移除固定高度 height: '160px' 改為 height: 'auto'，讓它自然展開 */}
+            <div style={{ width: '100%', height: 'auto', background: 'rgba(0,0,0,0.5)', borderRadius: '12px', marginBottom: '15px', overflow: 'hidden', border: `1px solid ${color}30` }}>
+                {/* 🚨 修正：img 設為 width: '100%', height: 'auto'，移除 objectFit: 'cover' */}
+                <img src={imgSrc} alt={title} style={{ width: '100%', height: 'auto' }} onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = `<div style="width:100%;height:100px;display:flex;justify-content:center;align-items:center;color:${color}80;font-size:2rem;"><i class="fa-solid fa-image"></i></div>`; }} />
             </div>
 
             <h4 style={{ color: '#fff', fontSize: '1.2rem', marginBottom: '10px', fontWeight: 'bold' }}>{title}</h4>
