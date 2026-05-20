@@ -62,13 +62,13 @@ const WaveformClippingVisual = ({ isMobile }: { isMobile: boolean }) => (
     </div>
 );
 
-// --- 🎙️ 2. 宅錄防呆指南卡片 (升級：支援插入 IG 圖片) ---
+// --- 🎙️ 2. 宅錄防呆指南卡片 (使用 4 張獨立原創圖片) ---
 const RecordingHackCard = ({ num, title, desc, imgSrc, color }: { num: string, title: string, desc: string, imgSrc: string, color: string }) => (
-    <div style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${color}40`, borderRadius: '16px', padding: '20px', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ background: 'rgba(255,255,255,0.03)', border: `2px solid ${color}40`, borderRadius: '16px', padding: '20px', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         <div style={{ position: 'absolute', top: '-15px', right: '-10px', fontSize: '6rem', color: `${color}15`, fontWeight: '900', zIndex: 0 }}>{num}</div>
         <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column' }}>
 
-            {/* 這裡準備好放你的 IG 截圖！只要替換 imgSrc 的路徑即可 */}
+            {/* 直接讀取我們剛剛生成的 4 張獨立圖片 */}
             <div style={{ width: '100%', height: '160px', background: 'rgba(0,0,0,0.5)', borderRadius: '12px', marginBottom: '15px', overflow: 'hidden', border: `1px solid ${color}30` }}>
                 <img src={imgSrc} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = `<div style="width:100%;height:100%;display:flex;justify-content:center;align-items:center;color:${color}80;font-size:2rem;"><i class="fa-solid fa-image"></i></div>`; }} />
             </div>
@@ -78,7 +78,6 @@ const RecordingHackCard = ({ num, title, desc, imgSrc, color }: { num: string, t
         </div>
     </div>
 );
-
 // --- 📖 課程主頁面 ---
 export default function GainStagingTraining() {
     const router = useRouter();
@@ -130,11 +129,10 @@ export default function GainStagingTraining() {
                     </p>
 
                     <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '20px' }}>
-                        {/* 🚨 注意：這裡的 imgSrc 路徑請替換成你實際存放在 public/images/ 裡面的圖檔名稱 */}
                         <RecordingHackCard
                             num="01" color="#10b981"
                             imgSrc="/images/hack-headphone.jpg"
-                            title="伴奏入耳，徹底隔離"
+                            title="伴奏不外洩，徹底隔離"
                             desc="永遠戴著耳機聽伴奏錄音！千萬不能讓伴奏從喇叭播出來被麥克風錄進去，這種「漏音 (Bleed)」會讓後續混音完全無法單獨處理人聲。"
                         />
                         <RecordingHackCard
@@ -157,7 +155,41 @@ export default function GainStagingTraining() {
                         />
                     </div>
                 </section>
+                {/* 2.5 名詞釐清：Gain、Volume、Master 差在哪？ */}
+                <section style={{ marginBottom: '6rem' }}>
+                    <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.5rem', color: '#facc15', marginBottom: '1.5rem', borderLeft: '8px solid #ca8a04', paddingLeft: '20px', fontWeight: 'bold' }}>
+                        必考題：Gain、Volume、Master 差在哪？
+                    </h2>
+                    <p style={{ color: '#cbd5e1', lineHeight: '1.8', fontSize: '1.1rem', marginBottom: '2rem' }}>
+                        這三個詞都跟「音量」有關，但它們在混音流程中扮演的角色完全不同。把它想像成一套「自來水系統」：
+                    </p>
 
+                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '20px' }}>
+                        <div style={{ background: 'rgba(59, 130, 246, 0.05)', border: '1px solid rgba(59, 130, 246, 0.3)', padding: '20px', borderRadius: '16px' }}>
+                            <h4 style={{ color: '#3b82f6', fontSize: '1.2rem', margin: '0 0 10px 0' }}>🚰 1. Gain (增益)</h4>
+                            <p style={{ color: '#fff', fontWeight: 'bold', margin: '0 0 5px 0' }}>自來水廠的總水壓</p>
+                            <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>
+                                這是**源頭**的訊號大小（進效果器前）。如果水廠水壓太小，你家水龍頭開到底也只有幾滴水（底噪）；如果水壓太大，水管就會爆裂（爆音 Clipping）。
+                            </p>
+                        </div>
+
+                        <div style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '20px', borderRadius: '16px' }}>
+                            <h4 style={{ color: '#10b981', fontSize: '1.2rem', margin: '0 0 10px 0' }}>🎚️ 2. Volume (推桿音量)</h4>
+                            <p style={{ color: '#fff', fontWeight: 'bold', margin: '0 0 5px 0' }}>你家廚房的水龍頭</p>
+                            <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>
+                                這是聲音經過各種效果器處理後，最後**輸出**的音量（Fader）。你用它來調整這項樂器在整首歌裡的比例（大鼓大聲一點，吉他小聲一點）。它不會改變波形本體。
+                            </p>
+                        </div>
+
+                        <div style={{ background: 'rgba(239, 68, 68, 0.05)', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '20px', borderRadius: '16px' }}>
+                            <h4 style={{ color: '#ef4444', fontSize: '1.2rem', margin: '0 0 10px 0' }}>🔊 3. Master (總輸出)</h4>
+                            <p style={{ color: '#fff', fontWeight: 'bold', margin: '0 0 5px 0' }}>整棟大樓的總排水管</p>
+                            <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>
+                                所有軌道（所有住戶的廢水）最後都會匯集到這裡。如果每軌的 Volume 都推得很高，Master 就會瞬間爆滿亮紅燈。**混音時，Master 永遠必須低於 0dB！**
+                            </p>
+                        </div>
+                    </div>
+                </section>
                 {/* 3. 實戰做法：Gain Staging 到底在哪裡調？ */}
                 <section style={{ marginBottom: '6rem' }}>
                     <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.5rem', color: '#facc15', marginBottom: '1.5rem', borderLeft: '8px solid #ca8a04', paddingLeft: '20px', fontWeight: 'bold' }}>

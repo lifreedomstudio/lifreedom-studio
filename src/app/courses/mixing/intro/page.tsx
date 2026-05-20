@@ -2,27 +2,43 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-// --- 🎛️ 1. 混音控制台視覺組件 (模擬具體樂器 Faders) ---
-const MixingConsoleVisual = ({ isMobile }: { isMobile: boolean }) => {
-    const channelNames = ['Kick (大鼓)', 'Snare (小鼓)', 'Bass (貝斯)', 'Gtr (吉他)', 'Keys (鍵盤)', 'Vocal (主唱)'];
+// --- 🎛️ 1. Gain (增益) 視覺組件：波形縮放 ---
+const GainWaveformVisual = ({ isMobile }: { isMobile: boolean }) => {
+    const [gainLevel, setGainLevel] = useState(50); // 0-100
 
     return (
-        <div style={{ display: 'flex', gap: '15px', background: '#0f172a', padding: '30px', borderRadius: '24px', border: '2px solid #334155', justifyContent: 'center', height: '300px' }}>
-            {channelNames.map((name, i) => (
-                <div key={i} style={{ width: '40px', background: '#1e293b', borderRadius: '20px', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10px 0' }}>
-                    <div style={{ width: '2px', height: '180px', background: '#334155', position: 'absolute', top: '40px' }}></div>
-                    <div style={{
-                        width: '30px', height: '50px', background: '#38bdf8', borderRadius: '6px',
-                        position: 'absolute', top: `${40 + (i * 20) + (i === 5 ? -10 : 0)}px`, cursor: 'grab',
-                        boxShadow: '0 0 15px rgba(56, 189, 248, 0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center'
-                    }}>
-                        <div style={{ width: '20px', height: '2px', background: 'rgba(0,0,0,0.3)' }}></div>
-                    </div>
-                    <span style={{ position: 'absolute', bottom: '15px', fontSize: '10px', color: '#cbd5e1', fontWeight: 'bold', width: '38px', textAlign: 'center', lineHeight: '1.2', whiteSpace: 'wrap' }}>
-                        {name}
-                    </span>
-                </div>
-            ))}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', background: '#0f172a', padding: '30px', borderRadius: '24px', border: '2px solid #334155', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ color: '#94a3b8', fontSize: '0.9rem', fontWeight: 'bold' }}>Clip Gain</span>
+                <span style={{ color: gainLevel > 80 ? '#ef4444' : '#38bdf8', fontWeight: 'bold' }}>
+                    {gainLevel > 80 ? '危險 (Clipping)' : '健康 (-12dB)'}
+                </span>
+            </div>
+
+            {/* 波形展示區 */}
+            <div style={{ width: '100%', height: '120px', background: 'rgba(0,0,0,0.4)', borderRadius: '12px', border: `1px solid ${gainLevel > 80 ? '#ef4444' : '#38bdf8'}`, position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {/* 0dB 天花板線 */}
+                <div style={{ position: 'absolute', top: '10%', left: 0, width: '100%', height: '1px', borderTop: '1px dashed #ef4444', opacity: 0.5 }}></div>
+                <div style={{ position: 'absolute', bottom: '10%', left: 0, width: '100%', height: '1px', borderTop: '1px dashed #ef4444', opacity: 0.5 }}></div>
+
+                {/* 動態變化的波形 */}
+                <svg viewBox="0 0 200 100" style={{ width: '100%', height: '100%', transform: `scaleY(${gainLevel / 50})`, transition: 'transform 0.1s linear' }}>
+                    <path d="M0,50 L20,30 L40,70 L60,20 L80,80 L100,10 L120,90 L140,30 L160,70 L180,40 L200,50" fill="none" stroke={gainLevel > 80 ? '#fca5a5' : '#38bdf8'} strokeWidth="3" strokeLinejoin="round" />
+                </svg>
+            </div>
+
+            {/* 互動滑桿 */}
+            <input
+                type="range"
+                min="10"
+                max="100"
+                value={gainLevel}
+                onChange={(e) => setGainLevel(Number(e.target.value))}
+                style={{ width: '100%', cursor: 'pointer', accentColor: gainLevel > 80 ? '#ef4444' : '#38bdf8' }}
+            />
+            <p style={{ color: '#cbd5e1', fontSize: '0.85rem', margin: 0, textAlign: 'center' }}>
+                試著拉動滑桿：Gain 是直接放大「波形本身」。太大聲撞到紅線就會產生刺耳的爆音！
+            </p>
         </div>
     );
 };
@@ -109,7 +125,7 @@ export default function MixingIntroduction() {
                             </p>
                         </div>
                     </div>
-                    <MixingConsoleVisual isMobile={isMobile} />
+                    <GainWaveformVisual isMobile={isMobile} />
                 </section>
 
                 {/* 2. Frequency & EQ */}
