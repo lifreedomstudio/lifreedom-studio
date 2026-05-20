@@ -167,6 +167,127 @@ export default function EQDictionaryRoom() {
                     </p>
                 </header>
 
+                {/* --- 📖 理論區塊 1：EQ 核心名詞辭典 --- */}
+                <section style={{ marginBottom: '5rem' }}>
+                    <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.2rem', color: '#fff', marginBottom: '2rem', borderLeft: '6px solid #10b981', paddingLeft: '15px' }}>
+                        1. 混音師的溝通語言：EQ 名詞定義
+                    </h2>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '20px' }}>
+
+                        {/* 頻率 Hz */}
+                        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid #334155', padding: '25px', borderRadius: '20px' }}>
+                            <h3 style={{ color: '#38bdf8', fontSize: '1.4rem', margin: '0 0 10px 0' }}>頻率 (Frequency) / Hz</h3>
+                            <p style={{ color: '#cbd5e1', lineHeight: '1.7', margin: 0 }}>
+                                聲音的高度。數字越小越低沉（如 50Hz 的大鼓），數字越大越尖銳（如 10kHz 的銅鈸）。這就是我們要在頻譜上鎖定的「目標樓層」。
+                            </p>
+                        </div>
+
+                        {/* 增益 dB */}
+                        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid #334155', padding: '25px', borderRadius: '20px' }}>
+                            <h3 style={{ color: '#10b981', fontSize: '1.4rem', margin: '0 0 10px 0' }}>增益 (Gain) / dB</h3>
+                            <p style={{ color: '#cbd5e1', lineHeight: '1.7', margin: 0 }}>
+                                對該頻率進行的操作。往上拉叫做 <strong>Boost (放大)</strong>，增加存在感；往下拉叫做 <strong>Cut (挖空/衰減)</strong>，消除討厭的雜音。
+                            </p>
+                        </div>
+
+                        {/* Q值 */}
+                        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid #334155', padding: '25px', borderRadius: '20px', gridColumn: isMobile ? '1' : '1 / 3' }}>
+                            <h3 style={{ color: '#f59e0b', fontSize: '1.4rem', margin: '0 0 10px 0' }}>頻寬 (Q Value / Resonance)</h3>
+                            <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '20px', marginTop: '15px' }}>
+                                <div style={{ flex: 1 }}>
+                                    <h4 style={{ color: '#fff', margin: '0 0 5px 0' }}>🗡️ 高 Q 值 (High Q) = 窄頻寬</h4>
+                                    <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>像一把手術刀。用來精準切除特定頻率的雜音（例如吉他悶音），不影響旁邊的好聲音。</p>
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <h4 style={{ color: '#fff', margin: '0 0 5px 0' }}>🖌️ 低 Q 值 (Low Q) = 寬頻寬</h4>
+                                    <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>像一把大水彩筆。用來大範圍地改變音色（例如整體提亮人聲），聽起來非常自然、有音樂性。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 濾波器種類 (Filter Types) */}
+                        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid #334155', padding: '25px', borderRadius: '20px', gridColumn: isMobile ? '1' : '1 / 3' }}>
+                            <h3 style={{ color: '#a855f7', fontSize: '1.4rem', margin: '0 0 15px 0' }}>濾波器種類 (Filter Types)</h3>
+
+                            <ul style={{ color: '#cbd5e1', lineHeight: '1.8', margin: 0, paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                <li><strong>HPF (High-Pass Filter / 高通濾波器)：</strong> 一刀切掉指定頻率「以下」的所有聲音。用來清除低頻底噪。</li>
+                                <li><strong>LPF (Low-Pass Filter / 低通濾波器)：</strong> 一刀切掉指定頻率「以上」的所有聲音。用來消除數位毛刺感。</li>
+                                <li><strong>Bell (鐘型)：</strong> 最常見的形狀，針對特定頻段進行凸起 (Boost) 或凹陷 (Cut)。</li>
+                                <li><strong>Shelf (擱架型)：</strong> 像樓梯一樣，將某個頻率之後的聲音「整體」抬高或降低（常見於高音提亮）。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                {/* --- 🧠 理論區塊 2：頻率遮蔽效應 --- */}
+                <section style={{ marginBottom: '5rem' }}>
+                    <div style={{ background: 'linear-gradient(135deg, rgba(15,23,42,0.8), rgba(30,41,59,0.8))', padding: isMobile ? '2rem' : '3.5rem', borderRadius: '32px', border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
+                        <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.2rem', color: '#fff', marginBottom: '1.5rem', fontWeight: 'bold' }}>
+                            核心理論：頻率遮蔽效應 (Masking Effect)
+                        </h2>
+
+                        <p style={{ color: '#cbd5e1', fontSize: '1.1rem', lineHeight: '1.8', marginBottom: '1.5rem', textAlign: 'justify' }}>
+                            為什麼你錄的木吉他和人聲單獨聽都很好聽，但放在一起播放時，卻覺得糊成一團、誰都聽不清？這就是遇到了<strong>「頻率遮蔽」</strong>。
+                        </p>
+                        <div style={{ background: 'rgba(239, 68, 68, 0.1)', borderLeft: '4px solid #ef4444', padding: '20px', borderRadius: '0 12px 12px 0' }}>
+                            <p style={{ color: '#f8fafc', lineHeight: '1.8', fontSize: '1.05rem', margin: 0 }}>
+                                <strong>🎵 聲學物理現象：</strong> 當兩個樂器（例如木吉他與男主唱）的聲音都大量集中在 <strong>300Hz - 800Hz</strong> 這個中頻區間時，音量較大、或頻率較寬的那個，會「吃掉（掩蓋）」另一個樂器的細節。<br /><br />
+                                這也是為什麼前面說 EQ 像大廈主委——你必須強制規定：「吉他，你把 500Hz 讓出來給主唱，你去負責 3kHz 的清脆感！」這就叫做<strong>頻率分工</strong>。
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                {/* --- 🥷 理論區塊 3：業界三大實戰手法 --- */}
+                <section style={{ marginBottom: '6rem' }}>
+                    <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.2rem', color: '#fff', marginBottom: '2rem', borderLeft: '6px solid #facc15', paddingLeft: '15px' }}>
+                        3. 混音師的實戰 S.O.P
+                    </h2>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+
+                        {/* 手法 1：減法 EQ */}
+                        <div style={{ background: '#0f172a', border: '1px solid #1e293b', padding: '30px', borderRadius: '20px', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+                            <div style={{ fontSize: '2.5rem', color: '#ef4444' }}>✂️</div>
+                            <div>
+                                <h3 style={{ color: '#fff', fontSize: '1.4rem', margin: '0 0 10px 0' }}>Step 1: 減法優先 (Subtractive EQ)</h3>
+                                <p style={{ color: '#cbd5e1', lineHeight: '1.7', margin: 0 }}>
+                                    新手最愛 Boost（推高），但大師永遠先 Cut（挖空）。推高會吃掉 Headroom 並可能引發爆音。<strong>第一步永遠是掛上 High-Pass Filter (HPF)</strong>，把除了大鼓與貝斯之外的所有樂器，100Hz 以下的轟鳴聲全部切除乾淨！
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* 手法 2：掃頻抓蟲 (完美連結互動實驗室) */}
+                        <div style={{ background: '#0f172a', border: '1px solid #1e293b', padding: '30px', borderRadius: '20px', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+                            <div style={{ fontSize: '2.5rem', color: '#38bdf8' }}>🔍</div>
+                            <div>
+                                <h3 style={{ color: '#fff', fontSize: '1.4rem', margin: '0 0 10px 0' }}>Step 2: 掃頻抓蟲法 (Frequency Sweeping)</h3>
+                                <p style={{ color: '#cbd5e1', lineHeight: '1.7', margin: 0 }}>
+                                    這就是下方「互動實驗室」要訓練你的終極招式！做法如下：<br />
+                                    1. 將 Q 值調窄 (High Q)。<br />
+                                    2. 將 Gain 暴力推高 (+15dB)。<br />
+                                    3. 左右拖曳頻率滑桿。當你聽到某個極度刺耳、像共鳴箱轟炸的聲音時——恭喜你找到「蟲」了。<br />
+                                    4. 將那個頻率的 Gain 反向拉低 (-3dB 到 -6dB) 把蟲殺掉。
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* 手法 3：互補 EQ */}
+                        <div style={{ background: '#0f172a', border: '1px solid #1e293b', padding: '30px', borderRadius: '20px', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+                            <div style={{ fontSize: '2.5rem', color: '#10b981' }}>🧩</div>
+                            <div>
+                                <h3 style={{ color: '#fff', fontSize: '1.4rem', margin: '0 0 10px 0' }}>Step 3: 互補 EQ (Complementary EQ)</h3>
+                                <p style={{ color: '#cbd5e1', lineHeight: '1.7', margin: 0 }}>
+                                    解決頻率遮蔽的高級技巧。如果你在大鼓的 60Hz 推高了 3dB 來增加重量，那請在貝斯的 60Hz 挖空 3dB；反過來，如果貝斯在 100Hz 很有魅力，那就在大鼓的 100Hz 稍微退讓。<strong>像拼圖一樣，一凸一凹，聲音就會完美融合。</strong>
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+
                 {/* 2. 實驗室主體 */}
                 <div style={{ background: 'linear-gradient(180deg, #0f172a 0%, #020617 100%)', padding: isMobile ? '1.5rem' : '3rem', borderRadius: '32px', border: '1px solid #1e293b', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
 
