@@ -292,7 +292,8 @@ export default function CompressorTrainingRoom() {
                             <CompressorSvgCard type="glue" color="#10b981" />
                             <p style={{ color: '#cbd5e1', lineHeight: '1.7', margin: 0, fontSize: '0.9rem' }}>
                                 <strong>目標：總輸出、疊加自己的樂器。</strong><br />
-                                就像照片後製時「套上同一個濾鏡」。當你拿到別人的伴奏，疊加自己錄的吉他進去時，聽起來通常是「分離的」。這時將伴奏與吉他送到同一個群組，用 2:1 的 Ratio 輕輕壓過，創造一致的動態起伏，就能讓它們「黏」在一起，聽起來像是在同一個時空演奏。
+                                就像照片後製時「套上同一個濾鏡」。當你拿到別人的伴奏，疊加自己錄的吉他進去時，聽起來通常是「分離的」。這時將伴奏與吉他送到同一個bus
+                                群組，用 2:1 的 Ratio 輕輕壓過，創造一致的動態起伏，就能讓它們「黏」在一起，聽起來像是在同一個時空演奏。
                             </p>
                         </div>
                     </div>
