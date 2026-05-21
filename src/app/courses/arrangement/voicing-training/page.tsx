@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
-// --- 🎧 A/B 試聽播放器元件 (從第一章繼承過來) ---
+// --- 🎧 A/B 試聽播放器元件 ---
 const AudioComparer = ({ title, description, badSrc, goodSrc, isMobile, badLabel, goodLabel }: { title: string, description: string, badSrc: string, goodSrc: string, isMobile: boolean, badLabel: string, goodLabel: string }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [isGood, setIsGood] = useState(false);
@@ -85,26 +85,21 @@ const AudioComparer = ({ title, description, badSrc, goodSrc, isMobile, badLabel
     );
 };
 
-// --- 🎸 1. 原創無版權：吉他指板 CSS 示意圖 (已修復對齊問題) ---
+// --- 🎸 吉他指板 CSS 示意圖 ---
 const GuitarFretboard = () => {
     return (
         <div style={{ position: 'relative', width: '100%', height: '220px', background: '#111827', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', overflow: 'hidden', padding: '0' }}>
-            {/* 琴弦 */}
             <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', zIndex: 1, padding: '20px 0' }}>
                 {[...Array(6)].map((_, i) => (
                     <div key={i} style={{ width: '100%', height: i < 3 ? '1px' : '2px', background: '#94a3b8', boxShadow: '0 1px 1px rgba(0,0,0,0.5)' }}></div>
                 ))}
             </div>
-
-            {/* 琴格 (精準切分 12 格) */}
             <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, display: 'flex', zIndex: 2 }}>
                 {[...Array(12)].map((_, i) => (
                     <div key={i} style={{ flex: 1, borderRight: '2px solid #cbd5e1', position: 'relative' }}>
-                        {/* 在第 3, 5, 7, 9 格中間加點 (陣列索引 2, 4, 6, 8) */}
                         {[2, 4, 6, 8].includes(i) && (
                             <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '12px', height: '12px', background: '#e2e8f0', borderRadius: '50%', boxShadow: '0 0 5px rgba(0,0,0,0.5)' }}></div>
                         )}
-                        {/* 第 12 格雙點 */}
                         {i === 11 && (
                             <>
                                 <div style={{ position: 'absolute', top: '30%', left: '50%', transform: 'translate(-50%, -50%)', width: '12px', height: '12px', background: '#e2e8f0', borderRadius: '50%', boxShadow: '0 0 5px rgba(0,0,0,0.5)' }}></div>
@@ -114,8 +109,6 @@ const GuitarFretboard = () => {
                     </div>
                 ))}
             </div>
-
-            {/* 色塊區域 (完美貼齊琴格) */}
             <div style={{ position: 'absolute', top: '10px', bottom: '10px', left: '0%', width: '25%', background: 'rgba(239, 68, 68, 0.2)', border: '2px solid #ef4444', borderRadius: '8px', zIndex: 3, display: 'flex', alignItems: 'flex-end', padding: '8px', boxSizing: 'border-box' }}>
                 <span style={{ color: '#fca5a5', fontWeight: 'bold', fontSize: '0.8rem', textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>紅色警戒 (0-3格)</span>
             </div>
@@ -129,7 +122,7 @@ const GuitarFretboard = () => {
     );
 };
 
-// --- 🎹 2. 原創無版權：實體鋼琴鍵盤 CSS 示意圖 ---
+// --- 🎹 鋼琴鍵盤 CSS 示意圖 ---
 const PianoKeyboard = () => {
     const whiteKeys = Array.from({ length: 21 });
     const blackKeyIndices = [0, 1, 3, 4, 5, 7, 8, 10, 11, 12, 14, 15, 17, 18, 19];
@@ -137,42 +130,32 @@ const PianoKeyboard = () => {
     return (
         <div style={{ position: 'relative', width: '100%', height: '220px', background: '#1e293b', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', overflow: 'hidden', padding: '20px' }}>
             <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', background: '#f8fafc', borderRadius: '6px', border: '2px solid #0f172a', overflow: 'hidden' }}>
-                {/* 白鍵 */}
                 {whiteKeys.map((_, i) => (
                     <div key={`white-${i}`} style={{ flex: 1, borderRight: '1px solid #cbd5e1', position: 'relative' }}>
                         {i % 7 === 0 && (
-                            <span style={{ position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)', color: '#64748b', fontSize: '0.8rem', fontWeight: 'bold' }}>
-                                C{3 + i / 7}
-                            </span>
+                            <span style={{ position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)', color: '#64748b', fontSize: '0.8rem', fontWeight: 'bold' }}>C{3 + i / 7}</span>
                         )}
                     </div>
                 ))}
-                {/* 黑鍵 */}
                 {blackKeyIndices.map(i => (
                     <div key={`black-${i}`} style={{
                         position: 'absolute', left: `calc(${(i + 1) * (100 / 21)}% - ${(100 / 21) * 0.3}%)`,
                         width: `${(100 / 21) * 0.6}%`, height: '60%', background: '#0f172a', borderRadius: '0 0 4px 4px', zIndex: 2
                     }}></div>
                 ))}
-
-                {/* 顏色標記區 */}
                 <div style={{
                     position: 'absolute', top: 0, bottom: 0, left: 0, width: `${(7 / 21) * 100}%`,
                     background: 'rgba(239, 68, 68, 0.25)', border: '3px solid #ef4444', borderLeft: 'none',
                     zIndex: 3, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: '15px', pointerEvents: 'none'
                 }}>
-                    <span style={{ background: 'rgba(0,0,0,0.8)', color: '#fca5a5', padding: '6px 12px', borderRadius: '6px', fontSize: '0.9rem', fontWeight: 'bold' }}>
-                        🔴 吉他激戰區 (C3)
-                    </span>
+                    <span style={{ background: 'rgba(0,0,0,0.8)', color: '#fca5a5', padding: '6px 12px', borderRadius: '6px', fontSize: '0.9rem', fontWeight: 'bold' }}>🔴 吉他激戰區 (C3)</span>
                 </div>
                 <div style={{
                     position: 'absolute', top: 0, bottom: 0, left: `${(7 / 21) * 100}%`, right: 0,
                     background: 'rgba(34, 197, 94, 0.25)', border: '3px solid #22c55e', borderRight: 'none',
                     zIndex: 3, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: '15px', pointerEvents: 'none'
                 }}>
-                    <span style={{ background: 'rgba(0,0,0,0.8)', color: '#86efac', padding: '6px 12px', borderRadius: '6px', fontSize: '0.9rem', fontWeight: 'bold' }}>
-                        🟢 鍵盤推薦降落區 (C4-C5)
-                    </span>
+                    <span style={{ background: 'rgba(0,0,0,0.8)', color: '#86efac', padding: '6px 12px', borderRadius: '6px', fontSize: '0.9rem', fontWeight: 'bold' }}>🟢 鍵盤推薦降落區 (C4-C5)</span>
                 </div>
             </div>
         </div>
@@ -226,38 +209,42 @@ export default function VoicingTraining() {
                         <span>🎯</span> 本章破關目標
                     </h3>
                     <p style={{ color: '#fef08a', margin: 0, lineHeight: '1.6' }}>
-                        理解「八度 (Octave)」與「和弦轉位 (Inversion)」的魔法。學會把黏在一起的樂器拆開，創造出寬廣且透明的編曲層次。
+                        破解迷思：<strong style={{ color: '#fff' }}>「樂理上的轉位」不等於「聲學上的錯位」</strong>。學會運用 Capo 與八度音，把黏在一起的頻率物理性拆開。
                     </p>
                 </div>
 
                 {/* 內容區塊 1：吉他指板 */}
                 <section style={{ marginBottom: '5rem' }}>
                     <h2 style={{ fontSize: '1.8rem', color: '#facc15', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '10px', marginBottom: '1.5rem' }}>
-                        1. 吉他指板：三色生存區塊
+                        1. 吉他指板：別在同一個房間刷和弦
                     </h2>
-                    <p style={{ color: '#cbd5e1', lineHeight: '1.8', fontSize: '1.1rem', marginBottom: '2rem' }}>
-                        如果兩把吉他同時擠在同一個把位刷弦，聲音絕對會糊成一團。我們必須把指板切分成三個物理空間：
-                    </p>
 
-                    {/* 吉他圖解 */}
+                    <div style={{ background: 'rgba(239, 68, 68, 0.1)', borderLeft: '4px solid #ef4444', padding: '15px', borderRadius: '0 12px 12px 0', marginBottom: '2rem' }}>
+                        <p style={{ color: '#fca5a5', margin: 0, lineHeight: '1.6', fontSize: '1.05rem', fontWeight: 'bold' }}>
+                            ⚠️ 新手致命錯誤：在 0-3 格彈奏轉位和弦。
+                        </p>
+                        <p style={{ color: '#cbd5e1', margin: '5px 0 0 0', lineHeight: '1.6', fontSize: '0.95rem' }}>
+                            很多新手知道兩把吉他不能彈一樣的，於是吉他 1 彈 C，吉他 2 彈 C/E (轉位)。但在混音台的頻譜上看，它們都在「紅色警戒區」發聲，根本是同一坨頻率，完全沒有錯開！
+                        </p>
+                    </div>
+
                     <div style={{ marginBottom: '2rem' }}>
                         <GuitarFretboard />
                     </div>
 
                     <ul style={{ color: '#cbd5e1', lineHeight: '1.8', fontSize: '1.1rem', paddingLeft: '1.5rem', marginBottom: '2rem' }}>
-                        <li style={{ marginBottom: '10px' }}><strong style={{ color: '#ef4444' }}>🔴 紅色警戒區 (0-3格)：</strong> 溫暖厚實的地基。若吉他 1 已在此刷和弦，吉他 2 請勿進入。</li>
-                        <li style={{ marginBottom: '10px' }}><strong style={{ color: '#22c55e' }}>🟢 綠色安全區 (5-8格)：</strong> 絕佳的對位空間。使用 Capo (移調夾) 或封閉和弦，讓清脆的高頻點綴流出。</li>
-                        <li><strong style={{ color: '#3b82f6' }}>🔵 藍色高空區 (9格+)：</strong> 穿透力極強。適合 Solo 或琶音，完全避開中頻混亂。</li>
+                        <li style={{ marginBottom: '10px' }}><strong style={{ color: '#ef4444' }}>🔴 紅色警戒區 (0-3格)：</strong> 吉他 1 專屬的溫暖地基。如果吉他 1 在此刷開放和弦，吉他 2 請勿進入。</li>
+                        <li style={{ marginBottom: '10px' }}><strong style={{ color: '#22c55e' }}>🟢 綠色安全區 (5-8格)：</strong> 吉他 2 的最佳解法！使用 <strong>Capo (移調夾)</strong> 夾在第 5 格，或者直接使用高把位封閉和弦。讓清脆的高頻點綴流出，這才是真正的物理頻率錯開。</li>
                     </ul>
 
                     {/* 🎧 吉他聽覺實戰 */}
                     <AudioComparer
-                        title="🎧 聽覺實驗：吉他 Capo (移調夾) 魔法"
-                        description="聽聽看，如果兩把吉他都在低把位刷和弦會有多混濁。然後切換到完美版，感受吉他 2 夾上 Capo 移到『綠色安全區』後，高頻閃爍的層次感！"
+                        title="🎧 聽覺實驗：Capo 物理錯位術"
+                        description="請聽聽看兩把吉他都在低把位刷和弦的混濁感。接著切換版本，感受吉他 2 夾上 Capo 來到『綠色安全區』後，兩把吉他瞬間立體起來的 3D 感！"
                         badSrc="/audio/guitar-clash.mp3"
                         goodSrc="/audio/guitar-capo.mp3"
                         badLabel="低把位打架 (糊)"
-                        goodLabel="Capo 錯開 (層次)"
+                        goodLabel="Capo 高把位 (清脆)"
                         isMobile={isMobile}
                     />
                 </section>
@@ -265,33 +252,64 @@ export default function VoicingTraining() {
                 {/* 內容區塊 2：鋼琴鍵盤 */}
                 <section style={{ marginBottom: '4rem' }}>
                     <h2 style={{ fontSize: '1.8rem', color: '#facc15', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '10px', marginBottom: '1.5rem' }}>
-                        2. 鋼琴鍵盤：尋找安全降落點
+                        2. 鋼琴鍵盤：移高八度 + 轉位輔助
                     </h2>
                     <p style={{ color: '#cbd5e1', lineHeight: '1.8', fontSize: '1.1rem', marginBottom: '2rem' }}>
                         木吉他的開放和弦通常落在 <strong style={{ color: '#fca5a5' }}>C3 八度音域（紅色區塊）</strong>。如果此時鋼琴也在這個區域彈奏厚實的柱式和弦，主唱的位子就會被完全塞滿。
                     </p>
 
-                    {/* 鋼琴圖解 */}
                     <div style={{ marginBottom: '2rem' }}>
                         <PianoKeyboard />
                     </div>
 
-                    <p style={{ color: '#cbd5e1', lineHeight: '1.8', fontSize: '1.1rem', marginBottom: '2rem', padding: '1.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', borderLeft: '4px solid #22c55e' }}>
-                        <strong style={{ color: '#86efac', display: 'block', marginBottom: '10px' }}>✅ 最佳解法：Octave Up (移高八度)</strong>
-                        當吉他佔據了左側的紅色激戰區時，請讓鍵盤手直接將右手移到 <strong style={{ color: '#86efac' }}>右側的綠色安全區 (C4-C5)</strong>。吉他在一樓，鋼琴去二樓，層次瞬間打開！
-                    </p>
+                    <div style={{ background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', padding: '20px', borderRadius: '16px', marginBottom: '2rem' }}>
+                        <h4 style={{ color: '#86efac', fontSize: '1.1rem', marginBottom: '10px' }}>🎹 正確的雙管齊下策略：</h4>
+                        <ol style={{ color: '#cbd5e1', lineHeight: '1.8', fontSize: '1.05rem', margin: 0, paddingLeft: '20px' }}>
+                            <li style={{ marginBottom: '10px' }}>
+                                <strong style={{ color: '#fff' }}>第一步：Octave Up (移高八度避車禍)。</strong><br />
+                                鍵盤手請整個人往右坐！將右手移到 C4-C5 的「綠色安全區」。吉他在一樓，鋼琴去二樓，這能直接解決頻率重疊。
+                            </li>
+                            <li>
+                                <strong style={{ color: '#fff' }}>第二步：和弦轉位 (Inversion 解決呆板)。</strong><br />
+                                移高八度後，為了讓鋼琴的旋律線聽起來像在「滑順地唱歌」而不是跳來跳去，我們才需要運用樂理上的「轉位」，讓最高音（Top Note）平穩流動。
+                            </li>
+                        </ol>
+                    </div>
 
                     {/* 🎧 鋼琴聽覺實戰 */}
                     <AudioComparer
-                        title="🎧 聽覺實驗：八度音錯位術 (Octave Up)"
-                        description="請留意聽鋼琴跟吉他重疊的感覺。當我們把 MIDI 裡面的鋼琴全選，往上拉高一個八度 (Octave Up)，這首歌的空間感瞬間就被撐開了。"
+                        title="🎧 聽覺實驗：鋼琴的二樓視角"
+                        description="注意聽吉他與鋼琴疊在一起的感覺。在完美版中，我們將鋼琴的 MIDI 往上提了一個八度 (Octave Up)，這首歌的空間感瞬間就被撐開了。"
                         badSrc="/audio/piano-clash.mp3"
                         goodSrc="/audio/piano-octave-up.mp3"
-                        badLabel="C3 重疊打架"
-                        goodLabel="鋼琴上二樓 (C4)"
+                        badLabel="C3 互搶地盤"
+                        goodLabel="鋼琴升級二樓"
                         isMobile={isMobile}
                     />
                 </section>
+
+                {/* 🎧 吉他聽覺實戰 (你原本的程式碼) */}
+                <AudioComparer
+                    title="🎧 聽覺實驗：Capo 物理錯位術"
+                    description="請聽聽看兩把吉他都在低把位刷和弦的混濁感。接著切換版本，感受吉他 2 夾上 Capo 來到『綠色安全區』後，兩把吉他瞬間立體起來的 3D 感！"
+                    badSrc="/audio/guitar-clash.mp3"
+                    goodSrc="/audio/guitar-capo.mp3"
+                    badLabel="低把位打架 (糊)"
+                    goodLabel="Capo 高把位 (清脆)"
+                    isMobile={isMobile}
+                />
+
+                {/* 👇 新增的：編曲的企業管理學卡片 */}
+                <div style={{ background: 'rgba(56, 189, 248, 0.05)', borderLeft: '4px solid #38bdf8', padding: '1.5rem', borderRadius: '0 16px 16px 0', marginTop: '2rem', marginBottom: '1rem' }}>
+                    <h4 style={{ color: '#38bdf8', fontSize: '1.2rem', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        💼 企業管理學：不只錯開音區，更要錯開「工作」
+                    </h4>
+                    <p style={{ color: '#cbd5e1', lineHeight: '1.7', fontSize: '1.05rem', margin: 0 }}>
+                        就像一間公司，如果所有人都在做「第一線業務（用力刷和弦）」，卻沒有人負責「研發產品（彈奏單音或分散和弦）」，整間公司就會空轉，聽眾也會覺得資訊量爆炸。
+                        <br /><br />
+                        <strong>這就是為什麼吉他 2 移到高把位後，絕對不能再跟著刷和弦！</strong> 木吉他 1 已經把「節奏地基」鋪滿了，電吉他 2 的任務應該轉為「精緻包裝」，改用 <strong style={{ color: '#fff' }}>分散和弦 (Arpeggio)</strong> 或單音來點綴。這種「工作職位的錯開」，才是創造無敵 3D 聽感的終極秘密。
+                    </p>
+                </div>
 
                 {/* 💡 混音助理提示 */}
                 <div style={{ background: 'rgba(56, 189, 248, 0.05)', border: '1px dashed #38bdf8', padding: '1.5rem', borderRadius: '16px', textAlign: 'center', marginBottom: '5rem' }}>
