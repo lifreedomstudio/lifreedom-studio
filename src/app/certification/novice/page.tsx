@@ -3,9 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-// 📝 新手村 12 大核心題 (涵蓋：混音觀念 + 基礎編曲 + 空間佈局)
+// 📝 新手村終極大會考：16 題滿血版 (涵蓋：混音觀念 + 編曲四大學派)
 const QUESTIONS = [
-    // --- 【混音觀念篇】 ---
+    // --- 【第 1 章：混音觀念與 Gain】 ---
     {
         id: 1, question: "根據「室內設計師」的比喻，如果混音時把所有樂器的音量都推到最大，並且都放在正中間 (Pan = 0)，會發生什麼事？",
         options: ["聲音會變得最清晰且有力量", "就像把客廳所有傢俱全擠在正中間，會互相干擾、沒有立體感", "會產生好聽的類比飽和與溫暖感", "代表混音已經完美結束"],
@@ -16,6 +16,8 @@ const QUESTIONS = [
         options: ["增加聲音的動態範圍", "讓後面的 Compressor 運作更順暢", "產生刺耳且無法後期修復的「數位截斷失真 (Clipping)」", "獲得完美的真空管聲音"],
         correct: 2, explanation: "數位爆音是毀滅性的。維持在 -12dB 到 -18dB 保留 Headroom 才是混音的第一步。"
     },
+
+    // --- 【第 2 章：EQ 與 Muddy】 ---
     {
         id: 3, question: "當主唱的聲音聽起來像「被關在紙箱裡唱歌」一樣悶悶糊糊的 (Muddy)，通常是哪個頻段堆積了太多？",
         options: ["20Hz - 60Hz (極低頻)", "200Hz - 500Hz (中低頻)", "2kHz - 5kHz (中高頻)", "10kHz 以上 (極高頻)"],
@@ -23,9 +25,11 @@ const QUESTIONS = [
     },
     {
         id: 4, question: "在 EQ 的「公寓社區」比喻中，大鼓和貝斯的專屬樓層是「地下室」。如果吉他手也跑來佔空間，主委 (EQ) 該怎麼做？",
-        options: ["用 Low Cut (低通) 把吉他趕回屬於它的中間樓層", "用 High Cut 把吉他的高頻砍掉", "把地下室的音量全部推大", "幫吉他加上厚重的 Reverb"],
+        options: ["用 Low Cut (低通濾波) 把吉他趕回屬於它的中間樓層", "用 High Cut 把吉他的高頻砍掉", "把地下室的音量全部推大", "幫吉他加上厚重的 Reverb"],
         correct: 0, explanation: "低頻空間非常珍貴，切除其他樂器不需要的低頻，能讓大鼓和貝斯更扎實。"
     },
+
+    // --- 【第 3 章：Compressor 動態管理】 ---
     {
         id: 5, question: "用「暴躁老爸」理解 Compressor，其中「Ratio (壓縮比)」代表什麼意思？",
         options: ["多大聲老爸才開始打人 (Threshold)", "老爸衝過來打你的速度 (Attack)", "老爸放過你的時間 (Release)", "老爸拿什麼武器教訓你 (壓縮的狠度與比例)"],
@@ -37,38 +41,60 @@ const QUESTIONS = [
         correct: 1, explanation: "Attack 設慢一點，可以讓聲音開頭的瞬態 (Transient) 溜過去，這就是 Punch 的來源！"
     },
 
-    // --- 【基礎編曲與配器篇】 ---
+    // --- 【🥁 第 4 章：編曲學 - Groove 律動】 ---
     {
-        id: 7, question: "【編曲實戰】你編了一把木吉他跟一台鋼琴，結果兩者在副歌彈奏相同的音域，頻率嚴重打架。最不破壞音色的解決方法是？",
-        options: ["用 EQ 把吉他砍得剩高頻", "掛上兩台 Compressor 死命壓縮", "使用『八度音錯位術』，把鋼琴移高或移低一個八度", "把兩個樂器都 Pan 到極左"],
-        correct: 2, explanation: "編曲問題就該用編曲解決！錯開八度能瞬間讓兩者擁有各自的發揮空間，不用動任何 EQ。"
+        id: 7, question: "【注入人味】在軟體中編輯鼓組 MIDI 時，如果將所有音符都『100% 貼齊網格線 (Quantize)』且力度都調到最大，會產生什麼問題？",
+        options: ["聲音聽起來會非常專業且有律動感", "這是一種叫做 Lock-in 的高級技巧", "聽起來會像機關槍一樣死板的機器人，毫無人類真實打鼓的呼吸感", "會讓大鼓跟貝斯不會打架"],
+        correct: 2, explanation: "完美對齊會殺死 Groove！微小的時間偏差 (Micro-timing) 與輕重力度 (Velocity) 才是律動的來源。"
     },
     {
-        id: 8, question: "【編曲實戰】歌曲到了副歌，你覺得聽起來很雜亂。根據『減法藝術』，你應該做的第一步是什麼？",
-        options: ["再疊三把吉他進去撐場面", "勇敢按下 Mute 鍵，把非必要的裝飾音軌靜音", "把所有軌道都加上 Reverb 融合在一起", "在 Master 軌掛上 Limiter 硬壓"],
-        correct: 1, explanation: "好的編曲是懂得留白。與其用 EQ 搶空間，不如直接刪減不必要的軌道。"
+        id: 8, question: "【終極奧義】為了解決大鼓與貝斯各走各的路，我們學到了『Lock-in (鎖定)』技巧。這代表我們在編曲時應該怎麼做？",
+        options: ["大鼓踩下去的那一瞬間，貝斯剛好也要彈出那個音，特別是在重拍上", "讓貝斯手隨便彈，不要理大鼓", "讓大鼓和貝斯分配到左右兩個不同的聲道 (Pan)", "用 EQ 把大鼓完全切掉"],
+        correct: 0, explanation: "Lock-in 就是把它們變成同一個超級樂器！大鼓是發聲的瞬間，貝斯是聲音的延續。"
     },
     {
-        id: 9, question: "【編曲實戰】大家都在正拍彈奏，導致音樂聽起來像一堵笨重的牆。你該如何建立歌曲的 Groove (律動)？",
-        options: ["把所有人的音量調小", "學會『節奏的交錯』，你彈我休、你休我彈", "全部改用合成器彈", "把 BPM 調快 20"],
-        correct: 1, explanation: "節奏交錯 (Rhythmic Interlocking) 能讓樂器之間產生對話感，音樂才會『跳動』起來。"
-    },
-    {
-        id: 10, question: "【頻段配器法】如果你已經決定用 Bass 負責所有的低頻流動，那你的合成器 (Synth) 在編寫時應該注意什麼？",
-        options: ["盡量往下彈低音，跟 Bass 一起讓低頻更厚", "避免在低頻區間彈奏複雜的旋律，把空間讓給 Bass", "掛上破音讓它蓋過 Bass", "Pan 到極左"],
-        correct: 1, explanation: "如果頻段已經被某個樂器佔據，其他樂器就該避開該頻段，這就是頻段配器的核心邏輯。"
+        id: 9, question: "【Bass 手的秘密】當吉他手彈奏 C ➔ G ➔ Am ➔ Em ➔ F 時，Bass 手如果不想死死地只彈根音，可以使用什麼高級技巧讓情緒像樓梯一樣滑順推進？",
+        options: ["使用『平行壓縮 (Parallel Compression)』", "使用『根音下行』(如彈奏 C ➔ B ➔ A ➔ G ➔ F)，利用和弦的組成音轉位往下走", "用力踩下 Distortion 效果器", "停止彈奏"],
+        correct: 1, explanation: "根音下行 (Descending Bassline) 能把呆板的伴奏變成一條引導情緒的絕美旋律線。"
     },
 
-    // --- 【空間構築篇】 ---
+    // --- 【🎹 第 5 章：編曲學 - Voicing 與 Masking】 ---
     {
-        id: 11, question: "在「立體聲場構築實驗室」中，日系搖滾常用的「LCR 擺位法」最核心的策略是什麼？",
-        options: ["把主唱、大鼓、Bass 全部分配到極左或極右", "把所有樂器都維持在正中央", "主唱和節奏地基留中間，把雙吉他極端分配到 L100 與 R100", "隨機把樂器分配在左右 50 之間"],
-        correct: 2, explanation: "將配器硬分左右，能極限拉寬聽覺舞台，同時確保正中間精華區保留給主唱與節奏組。"
+        id: 10, question: "【空間錯位】如果木吉他正在彈奏「紅色警戒區(C3附近)」的開放和弦，此時鋼琴也要加入，鋼琴手最聰明的選擇是什麼？",
+        options: ["跟著吉他一起在 C3 彈奏厚實的柱式和弦", "使用 Octave Up (移高八度) 往綠色安全區 (C4-C5) 彈奏，避開吉他的頻率", "加入大量的 Reverb 把它蓋過去", "也拿一把吉他來彈"],
+        correct: 1, explanation: "吉他在一樓，鋼琴就去二樓！這就是八度音錯位 (Octave Displacement) 的物理空間魔法。"
     },
     {
-        id: 12, question: "承上題，現代流行樂 (Modern Pop) 為了營造『溫暖緊密的包覆感』，吉他通常會怎麼擺位？",
-        options: ["一樣推到 L100 跟 R100", "稍微往中間靠攏 (約 L40 / R40)", "全部擠在正中間 (C)", "Pan 到同一邊"],
-        correct: 1, explanation: "稍微靠攏能犧牲一點極致的寬度，換來樂器之間更凝聚、溫柔的融合感。"
+        id: 11, question: "【頻率遮蔽】多個同頻樂器擠在一起，就像五個人同時要擠過一道門，這稱為 Masking。其中 300Hz - 2kHz 這個被稱為「車禍層」的區塊，我們必須盡量留白給誰？",
+        options: ["大鼓 (Kick)", "Bass", "人聲 (Vocal)", "銅鈸 (Crash)"],
+        correct: 2, explanation: "300Hz-2kHz 是人耳最敏感的區域，也是人聲的專屬領空，必須時刻為其護航。"
+    },
+
+    // --- 【🎢 第 6 章：編曲學 - Dynamics 動態與曲式 (New!)】 ---
+    {
+        id: 12, question: "【情緒劇本】在流行音樂中，負責「能量最高點，重複性強的主題」的段落稱為什麼？",
+        options: ["Verse (主歌)", "Pre-Chorus (導歌)", "Chorus (副歌)", "Bridge (橋段)"],
+        correct: 2, explanation: "Chorus (副歌) 是全曲情緒爆發的核心，也是最容易被聽眾記住的段落。"
+    },
+    {
+        id: 13, question: "【留白的力量】在進入大副歌的前一刻 (約 200-500 毫秒)，專業編曲人經常會使用一種「退一步，進兩步」的技巧，指的是什麼？",
+        options: ["把所有樂器的音量推到最大", "將所有背景音樂『抽乾』(Silence)，讓聲響瞬間消失", "加入大量的 Delay (回音)", "讓吉他手瘋狂 Solo"],
+        correct: 1, explanation: "這短暫的「真空狀態」會產生強烈的補償心理，讓隨後的副歌爆發具備無比的撞擊力！"
+    },
+    {
+        id: 14, question: "【轉場吸力】為了在進入副歌時創造「被吸進去」的強大張力，我們可以將銅鈸 (Crash) 的音檔進行什麼處理？",
+        options: ["加上 Distortion (破音)", "Reverse (反轉倒放)，並將最大音量點對齊重拍", "Tune (調音) 到最高", "Pan 到極左"],
+        correct: 1, explanation: "Reverse 會讓聲音從「碰—斯」變成「斯—碰」，創造出完美的真空吸力直到爆發點。"
+    },
+    {
+        id: 15, question: "【Automation 戰術】為了讓主唱在副歌的龐大樂團中保持權威感，我們可以利用 Automation 針對主唱的 Reverb (殘響) 做什麼設定？",
+        options: ["在進入副歌瞬間，把 Reverb 調到最濕 (100%)", "在進入副歌瞬間，自動向下把 Reverb 調『乾』", "讓 Reverb 左右快速搖擺", "完全關掉主唱軌"],
+        correct: 1, explanation: "調乾 Reverb 能讓主唱的聲音瞬間「跳到最前面」，顯得清晰且具備能量權威。"
+    },
+    {
+        id: 16, question: "【聲場佈局】在「立體聲場構築實驗室」中，日系搖滾常用的「LCR 擺位法」是將雙吉他如何配置？",
+        options: ["全部放在正中間", "分配到極左 (L100) 與極右 (R100) 拉寬舞台", "隨機分配在 L50 到 R50 之間", "只放在左邊"],
+        correct: 1, explanation: "將配器硬分左右，能極限拉寬聽覺舞台，同時確保正中間精華區保留給主唱與節奏組。"
     }
 ];
 
@@ -84,7 +110,7 @@ export default function NoviceCertificationPage() {
     const [showResult, setShowResult] = useState(false);
     const [answersRec, setAnswersRec] = useState<boolean[]>([]);
 
-    const MAX_SCORE = QUESTIONS.length * 10; // 滿分 120
+    const MAX_SCORE = QUESTIONS.length * 10; // 滿分 160
 
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -117,13 +143,13 @@ export default function NoviceCertificationPage() {
         setAnswersRec([]);
     };
 
-    // 🎯 結算評語邏輯 (依照你的需求客製化級距)
+    // 🎯 動態級距評語
     const getFeedback = (currentScore: number) => {
         const percentage = currentScore / MAX_SCORE;
         if (percentage === 1) return { text: "完美滿分！你已經具備無懈可擊的觀念，直接邁向大師之路吧！", color: '#fca311', icon: '🏆' };
-        if (percentage >= 0.75) return { text: "很不錯！再努力些，你會成為混音大師的！", color: '#10b981', icon: '🌟' };
+        if (percentage >= 0.75) return { text: "非常優秀！再努力些，你會成為混音大師的！", color: '#10b981', icon: '🌟' };
         if (percentage >= 0.5) return { text: "觀念正在成形中，但還有進步空間。建議回頭複習錯題的章節喔！", color: '#38bdf8', icon: '📈' };
-        return { text: "看來你需要再認真學習囉！先回頭把魔導書跟實驗室重新摸熟吧。", color: '#ef4444', icon: '💥' };
+        return { text: "看來你需要再認真學習囉！先回頭把魔導書跟各個關卡重新摸熟吧。", color: '#ef4444', icon: '💥' };
     };
 
     // 🏆 畫面 1：考試首頁
@@ -134,7 +160,7 @@ export default function NoviceCertificationPage() {
                     <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎓</div>
                     <h1 style={{ color: '#10b981', fontSize: '2.2rem', marginBottom: '1rem', fontWeight: '900' }}>新手全面認證大會考</h1>
                     <p style={{ color: '#94a3b8', fontSize: '1.1rem', lineHeight: '1.6', marginBottom: '2.5rem' }}>
-                        這場測驗將驗證你是否真正吸收了 Gain、EQ、Compressor 以及「基礎編曲配器」的核心思維。<br /><br />
+                        這場終極測驗將驗證你是否真正吸收了 Gain、EQ、Compressor 以及「基礎編曲四大學派」的核心思維。<br /><br />
                         全卷共 {QUESTIONS.length} 題，每題 10 分，滿分 {MAX_SCORE} 分。<br />
                         準備好證明自己的實力了嗎？
                     </p>

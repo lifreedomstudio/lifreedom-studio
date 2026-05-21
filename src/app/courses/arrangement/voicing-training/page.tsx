@@ -1,36 +1,128 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
-// --- 🎸 1. 原創無版權：吉他指板 CSS 示意圖 ---
+// --- 🎧 A/B 試聽播放器元件 (從第一章繼承過來) ---
+const AudioComparer = ({ title, description, badSrc, goodSrc, isMobile, badLabel, goodLabel }: { title: string, description: string, badSrc: string, goodSrc: string, isMobile: boolean, badLabel: string, goodLabel: string }) => {
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [isGood, setIsGood] = useState(false);
+    const audioRef = useRef<HTMLAudioElement>(null);
+
+    useEffect(() => {
+        if (audioRef.current) {
+            const currentTime = audioRef.current.currentTime;
+            const wasPlaying = !audioRef.current.paused;
+
+            audioRef.current.src = isGood ? goodSrc : badSrc;
+            audioRef.current.currentTime = currentTime;
+
+            if (wasPlaying) {
+                audioRef.current.play().catch(e => console.error("Play error:", e));
+            }
+        }
+    }, [isGood, badSrc, goodSrc]);
+
+    const togglePlay = () => {
+        if (audioRef.current) {
+            if (isPlaying) {
+                audioRef.current.pause();
+            } else {
+                audioRef.current.play();
+            }
+            setIsPlaying(!isPlaying);
+        }
+    };
+
+    return (
+        <div style={{
+            background: 'rgba(20, 20, 30, 0.8)', padding: isMobile ? '1.5rem' : '2rem',
+            borderRadius: '1.5rem', border: '1px solid rgba(255,255,255,0.1)',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.4)', marginTop: '2rem', boxSizing: 'border-box'
+        }}>
+            <h4 style={{ fontSize: '1.3rem', fontWeight: 'bold', color: '#fff', margin: '0 0 0.5rem 0' }}>{title}</h4>
+            <p style={{ color: '#cbd5e1', fontSize: '1rem', marginBottom: '1.5rem', lineHeight: '1.6' }}>{description}</p>
+
+            <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center', gap: '1rem' }}>
+                <button
+                    onClick={togglePlay}
+                    style={{
+                        background: isPlaying ? '#eab308' : '#facc15', color: '#020617', border: 'none',
+                        width: isMobile ? '100%' : '60px', height: isMobile ? '50px' : '60px', borderRadius: isMobile ? '12px' : '50%',
+                        fontSize: '1.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        boxShadow: '0 4px 15px rgba(250, 204, 21, 0.4)', transition: 'background 0.2s'
+                    }}
+                >
+                    {isPlaying ? '⏸' : '▶'}
+                </button>
+
+                <div style={{ display: 'flex', background: 'rgba(0,0,0,0.5)', borderRadius: '12px', padding: '6px', flex: 1 }}>
+                    <button
+                        onClick={() => setIsGood(false)}
+                        style={{
+                            flex: 1, padding: '12px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold',
+                            background: !isGood ? 'rgba(239, 68, 68, 0.2)' : 'transparent', color: !isGood ? '#fca5a5' : '#64748b',
+                            borderBottom: !isGood ? '2px solid #ef4444' : '2px solid transparent',
+                            transition: 'all 0.2s', fontSize: isMobile ? '0.9rem' : '1rem'
+                        }}
+                    >
+                        ❌ {badLabel}
+                    </button>
+                    <button
+                        onClick={() => setIsGood(true)}
+                        style={{
+                            flex: 1, padding: '12px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold',
+                            background: isGood ? 'rgba(34, 197, 94, 0.2)' : 'transparent', color: isGood ? '#86efac' : '#64748b',
+                            borderBottom: isGood ? '2px solid #22c55e' : '2px solid transparent',
+                            transition: 'all 0.2s', fontSize: isMobile ? '0.9rem' : '1rem'
+                        }}
+                    >
+                        ✅ {goodLabel}
+                    </button>
+                </div>
+            </div>
+            <audio ref={audioRef} onEnded={() => setIsPlaying(false)} />
+        </div>
+    );
+};
+
+// --- 🎸 1. 原創無版權：吉他指板 CSS 示意圖 (已修復對齊問題) ---
 const GuitarFretboard = () => {
     return (
-        <div style={{ position: 'relative', width: '100%', height: '220px', background: '#111827', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 20px' }}>
+        <div style={{ position: 'relative', width: '100%', height: '220px', background: '#111827', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', overflow: 'hidden', padding: '0' }}>
             {/* 琴弦 */}
-            <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', padding: '20px 0', zIndex: 1 }}>
+            <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', zIndex: 1, padding: '20px 0' }}>
                 {[...Array(6)].map((_, i) => (
-                    <div key={i} style={{ width: '100%', height: i < 3 ? '2px' : '3px', background: '#475569', boxShadow: '0 1px 2px rgba(0,0,0,0.5)' }}></div>
+                    <div key={i} style={{ width: '100%', height: i < 3 ? '1px' : '2px', background: '#94a3b8', boxShadow: '0 1px 1px rgba(0,0,0,0.5)' }}></div>
                 ))}
             </div>
-            {/* 琴格線條 */}
-            <div style={{ position: 'absolute', top: 0, bottom: 0, left: '20px', right: '20px', display: 'flex', justifyContent: 'space-between', zIndex: 2 }}>
-                {[...Array(13)].map((_, i) => (
-                    <div key={i} style={{ width: '4px', height: '100%', background: '#94a3b8', borderLeft: '1px solid #cbd5e1', borderRight: '1px solid #64748b' }}></div>
-                ))}
-            </div>
-            {/* 標記點 */}
-            <div style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', left: '25%', width: '15px', height: '15px', background: '#e2e8f0', borderRadius: '50%', zIndex: 2 }}></div>
-            <div style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', left: '40%', width: '15px', height: '15px', background: '#e2e8f0', borderRadius: '50%', zIndex: 2 }}></div>
-            <div style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', left: '55%', width: '15px', height: '15px', background: '#e2e8f0', borderRadius: '50%', zIndex: 2 }}></div>
 
-            {/* 色塊區域 */}
-            <div style={{ position: 'absolute', top: '10px', bottom: '10px', left: '20px', width: '22%', background: 'rgba(239, 68, 68, 0.2)', border: '2px solid #ef4444', borderRadius: '8px', zIndex: 3, display: 'flex', alignItems: 'flex-end', padding: '8px' }}>
+            {/* 琴格 (精準切分 12 格) */}
+            <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, display: 'flex', zIndex: 2 }}>
+                {[...Array(12)].map((_, i) => (
+                    <div key={i} style={{ flex: 1, borderRight: '2px solid #cbd5e1', position: 'relative' }}>
+                        {/* 在第 3, 5, 7, 9 格中間加點 (陣列索引 2, 4, 6, 8) */}
+                        {[2, 4, 6, 8].includes(i) && (
+                            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '12px', height: '12px', background: '#e2e8f0', borderRadius: '50%', boxShadow: '0 0 5px rgba(0,0,0,0.5)' }}></div>
+                        )}
+                        {/* 第 12 格雙點 */}
+                        {i === 11 && (
+                            <>
+                                <div style={{ position: 'absolute', top: '30%', left: '50%', transform: 'translate(-50%, -50%)', width: '12px', height: '12px', background: '#e2e8f0', borderRadius: '50%', boxShadow: '0 0 5px rgba(0,0,0,0.5)' }}></div>
+                                <div style={{ position: 'absolute', top: '70%', left: '50%', transform: 'translate(-50%, -50%)', width: '12px', height: '12px', background: '#e2e8f0', borderRadius: '50%', boxShadow: '0 0 5px rgba(0,0,0,0.5)' }}></div>
+                            </>
+                        )}
+                    </div>
+                ))}
+            </div>
+
+            {/* 色塊區域 (完美貼齊琴格) */}
+            <div style={{ position: 'absolute', top: '10px', bottom: '10px', left: '0%', width: '25%', background: 'rgba(239, 68, 68, 0.2)', border: '2px solid #ef4444', borderRadius: '8px', zIndex: 3, display: 'flex', alignItems: 'flex-end', padding: '8px', boxSizing: 'border-box' }}>
                 <span style={{ color: '#fca5a5', fontWeight: 'bold', fontSize: '0.8rem', textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>紅色警戒 (0-3格)</span>
             </div>
-            <div style={{ position: 'absolute', top: '10px', bottom: '10px', left: '38%', width: '22%', background: 'rgba(34, 197, 94, 0.2)', border: '2px solid #22c55e', borderRadius: '8px', zIndex: 3, display: 'flex', alignItems: 'flex-end', padding: '8px' }}>
+            <div style={{ position: 'absolute', top: '10px', bottom: '10px', left: '33.33%', width: '33.33%', background: 'rgba(34, 197, 94, 0.2)', border: '2px solid #22c55e', borderRadius: '8px', zIndex: 3, display: 'flex', alignItems: 'flex-end', padding: '8px', boxSizing: 'border-box' }}>
                 <span style={{ color: '#86efac', fontWeight: 'bold', fontSize: '0.8rem', textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>綠色安全 (5-8格)</span>
             </div>
-            <div style={{ position: 'absolute', top: '10px', bottom: '10px', left: '70%', right: '20px', background: 'rgba(59, 130, 246, 0.2)', border: '2px solid #3b82f6', borderRadius: '8px', zIndex: 3, display: 'flex', alignItems: 'flex-end', padding: '8px' }}>
+            <div style={{ position: 'absolute', top: '10px', bottom: '10px', left: '66.66%', width: '33.33%', background: 'rgba(59, 130, 246, 0.2)', border: '2px solid #3b82f6', borderRadius: '8px', zIndex: 3, display: 'flex', alignItems: 'flex-end', padding: '8px', boxSizing: 'border-box' }}>
                 <span style={{ color: '#93c5fd', fontWeight: 'bold', fontSize: '0.8rem', textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>藍色高空 (9格+)</span>
             </div>
         </div>
@@ -39,21 +131,15 @@ const GuitarFretboard = () => {
 
 // --- 🎹 2. 原創無版權：實體鋼琴鍵盤 CSS 示意圖 ---
 const PianoKeyboard = () => {
-    // 建立 3 個八度的白鍵 (C3 到 B5，共 21 個白鍵)
     const whiteKeys = Array.from({ length: 21 });
-    // 黑鍵的位置規律 (C-D, D-E, F-G, G-A, A-B 之間有黑鍵)
     const blackKeyIndices = [0, 1, 3, 4, 5, 7, 8, 10, 11, 12, 14, 15, 17, 18, 19];
 
     return (
         <div style={{ position: 'relative', width: '100%', height: '220px', background: '#1e293b', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', overflow: 'hidden', padding: '20px' }}>
-
-            {/* 鍵盤本體容器 */}
             <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', background: '#f8fafc', borderRadius: '6px', border: '2px solid #0f172a', overflow: 'hidden' }}>
-
                 {/* 白鍵 */}
                 {whiteKeys.map((_, i) => (
                     <div key={`white-${i}`} style={{ flex: 1, borderRight: '1px solid #cbd5e1', position: 'relative' }}>
-                        {/* 標示 C 鍵 (C3, C4, C5) */}
                         {i % 7 === 0 && (
                             <span style={{ position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)', color: '#64748b', fontSize: '0.8rem', fontWeight: 'bold' }}>
                                 C{3 + i / 7}
@@ -61,24 +147,15 @@ const PianoKeyboard = () => {
                         )}
                     </div>
                 ))}
-
                 {/* 黑鍵 */}
                 {blackKeyIndices.map(i => (
                     <div key={`black-${i}`} style={{
-                        position: 'absolute',
-                        // 每個白鍵寬度約為 100% / 21。黑鍵放在白鍵交界處。
-                        left: `calc(${(i + 1) * (100 / 21)}% - ${(100 / 21) * 0.3}%)`,
-                        width: `${(100 / 21) * 0.6}%`,
-                        height: '60%',
-                        background: '#0f172a',
-                        borderRadius: '0 0 4px 4px',
-                        zIndex: 2
+                        position: 'absolute', left: `calc(${(i + 1) * (100 / 21)}% - ${(100 / 21) * 0.3}%)`,
+                        width: `${(100 / 21) * 0.6}%`, height: '60%', background: '#0f172a', borderRadius: '0 0 4px 4px', zIndex: 2
                     }}></div>
                 ))}
 
-                {/* --- 色塊標記區域 --- */}
-
-                {/* 紅色激戰區 (C3 到 B3，前 7 個白鍵) */}
+                {/* 顏色標記區 */}
                 <div style={{
                     position: 'absolute', top: 0, bottom: 0, left: 0, width: `${(7 / 21) * 100}%`,
                     background: 'rgba(239, 68, 68, 0.25)', border: '3px solid #ef4444', borderLeft: 'none',
@@ -88,8 +165,6 @@ const PianoKeyboard = () => {
                         🔴 吉他激戰區 (C3)
                     </span>
                 </div>
-
-                {/* 綠色安全區 (C4 到 B5，後 14 個白鍵) */}
                 <div style={{
                     position: 'absolute', top: 0, bottom: 0, left: `${(7 / 21) * 100}%`, right: 0,
                     background: 'rgba(34, 197, 94, 0.25)', border: '3px solid #22c55e', borderRight: 'none',
@@ -99,7 +174,6 @@ const PianoKeyboard = () => {
                         🟢 鍵盤推薦降落區 (C4-C5)
                     </span>
                 </div>
-
             </div>
         </div>
     );
@@ -162,19 +236,30 @@ export default function VoicingTraining() {
                         1. 吉他指板：三色生存區塊
                     </h2>
                     <p style={{ color: '#cbd5e1', lineHeight: '1.8', fontSize: '1.1rem', marginBottom: '2rem' }}>
-                        如果兩把吉他同時擠在同一個把位刷弦，聲音會糊成一團。我們必須把指板切分成三個物理空間：
+                        如果兩把吉他同時擠在同一個把位刷弦，聲音絕對會糊成一團。我們必須把指板切分成三個物理空間：
                     </p>
 
-                    {/* 呼叫自製無版權圖解 */}
+                    {/* 吉他圖解 */}
                     <div style={{ marginBottom: '2rem' }}>
                         <GuitarFretboard />
                     </div>
 
-                    <ul style={{ color: '#cbd5e1', lineHeight: '1.8', fontSize: '1.1rem', paddingLeft: '1.5rem' }}>
+                    <ul style={{ color: '#cbd5e1', lineHeight: '1.8', fontSize: '1.1rem', paddingLeft: '1.5rem', marginBottom: '2rem' }}>
                         <li style={{ marginBottom: '10px' }}><strong style={{ color: '#ef4444' }}>🔴 紅色警戒區 (0-3格)：</strong> 溫暖厚實的地基。若吉他 1 已在此刷和弦，吉他 2 請勿進入。</li>
-                        <li style={{ marginBottom: '10px' }}><strong style={{ color: '#22c55e' }}>🟢 綠色安全區 (5-8格)：</strong> 絕佳的對位空間。使用 Capo 或封閉和弦，讓清脆的高頻點綴流出。</li>
+                        <li style={{ marginBottom: '10px' }}><strong style={{ color: '#22c55e' }}>🟢 綠色安全區 (5-8格)：</strong> 絕佳的對位空間。使用 Capo (移調夾) 或封閉和弦，讓清脆的高頻點綴流出。</li>
                         <li><strong style={{ color: '#3b82f6' }}>🔵 藍色高空區 (9格+)：</strong> 穿透力極強。適合 Solo 或琶音，完全避開中頻混亂。</li>
                     </ul>
+
+                    {/* 🎧 吉他聽覺實戰 */}
+                    <AudioComparer
+                        title="🎧 聽覺實驗：吉他 Capo (移調夾) 魔法"
+                        description="聽聽看，如果兩把吉他都在低把位刷和弦會有多混濁。然後切換到完美版，感受吉他 2 夾上 Capo 移到『綠色安全區』後，高頻閃爍的層次感！"
+                        badSrc="/audio/guitar-clash.mp3"
+                        goodSrc="/audio/guitar-capo.mp3"
+                        badLabel="低把位打架 (糊)"
+                        goodLabel="Capo 錯開 (層次)"
+                        isMobile={isMobile}
+                    />
                 </section>
 
                 {/* 內容區塊 2：鋼琴鍵盤 */}
@@ -183,19 +268,29 @@ export default function VoicingTraining() {
                         2. 鋼琴鍵盤：尋找安全降落點
                     </h2>
                     <p style={{ color: '#cbd5e1', lineHeight: '1.8', fontSize: '1.1rem', marginBottom: '2rem' }}>
-                        木吉他的開放和弦通常落在 <strong style={{ color: '#fca5a5' }}>C3 八度音域（紅色區塊）</strong>。如果此時鋼琴也在這個區域彈奏厚實的柱式和弦 (Block Chords)，主唱的位子就會被完全塞滿。
+                        木吉他的開放和弦通常落在 <strong style={{ color: '#fca5a5' }}>C3 八度音域（紅色區塊）</strong>。如果此時鋼琴也在這個區域彈奏厚實的柱式和弦，主唱的位子就會被完全塞滿。
                     </p>
 
-                    {/* 呼叫自製無版權 鋼琴鍵盤圖解 */}
+                    {/* 鋼琴圖解 */}
                     <div style={{ marginBottom: '2rem' }}>
                         <PianoKeyboard />
                     </div>
 
                     <p style={{ color: '#cbd5e1', lineHeight: '1.8', fontSize: '1.1rem', marginBottom: '2rem', padding: '1.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', borderLeft: '4px solid #22c55e' }}>
                         <strong style={{ color: '#86efac', display: 'block', marginBottom: '10px' }}>✅ 最佳解法：Octave Up (移高八度)</strong>
-                        當吉他佔據了左側的紅色激戰區時，請讓鍵盤手直接將右手移到 <strong style={{ color: '#86efac' }}>右側的綠色安全區 (C4-C5)</strong> 彈奏轉位和弦。這樣吉他在一樓，鋼琴在二樓，層次瞬間打開！
+                        當吉他佔據了左側的紅色激戰區時，請讓鍵盤手直接將右手移到 <strong style={{ color: '#86efac' }}>右側的綠色安全區 (C4-C5)</strong>。吉他在一樓，鋼琴去二樓，層次瞬間打開！
                     </p>
 
+                    {/* 🎧 鋼琴聽覺實戰 */}
+                    <AudioComparer
+                        title="🎧 聽覺實驗：八度音錯位術 (Octave Up)"
+                        description="請留意聽鋼琴跟吉他重疊的感覺。當我們把 MIDI 裡面的鋼琴全選，往上拉高一個八度 (Octave Up)，這首歌的空間感瞬間就被撐開了。"
+                        badSrc="/audio/piano-clash.mp3"
+                        goodSrc="/audio/piano-octave-up.mp3"
+                        badLabel="C3 重疊打架"
+                        goodLabel="鋼琴上二樓 (C4)"
+                        isMobile={isMobile}
+                    />
                 </section>
 
                 {/* 💡 混音助理提示 */}
