@@ -8,6 +8,13 @@ export default function CoursesPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(true);
 
+    // 🚪 Waitlist 彈出視窗狀態管理
+    const [showWaitlistModal, setShowWaitlistModal] = useState(false);
+    const [waitlistEmail, setWaitlistEmail] = useState('');
+    const [waitlistCourseType, setWaitlistCourseType] = useState(''); // 記錄是點擊哪堂課
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitSuccess, setSubmitSuccess] = useState(false);
+
     // 佈署守門員：驗證登入狀態
     useEffect(() => {
         const checkUser = async () => {
@@ -34,6 +41,27 @@ export default function CoursesPage() {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
+    const openWaitlist = (courseName: string) => {
+        setWaitlistCourseType(courseName);
+        setShowWaitlistModal(true);
+        setSubmitSuccess(false);
+        setWaitlistEmail('');
+    };
+
+    const handleWaitlistSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!waitlistEmail) return;
+
+        setIsSubmitting(true);
+
+        // 這裡未來可以接到 Supabase 去存 Email，目前先用 setTimeout 模擬
+        setTimeout(() => {
+            setIsSubmitting(false);
+            setSubmitSuccess(true);
+            // 成功後可以考慮 2 秒後自動關閉視窗，或讓使用者手動關閉
+        }, 1000);
+    };
+
     if (loading) {
         return (
             <div style={{ minHeight: '100vh', background: '#020617', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -45,7 +73,6 @@ export default function CoursesPage() {
         );
     }
 
-    // 🎨 基礎區卡片統一樣式
     const basicCardStyle = {
         background: 'rgba(30, 41, 59, 0.5)',
         padding: '2rem',
@@ -61,7 +88,7 @@ export default function CoursesPage() {
     return (
         <div style={{ minHeight: '100vh', background: '#020617', color: '#fff', padding: isMobile ? '1rem' : '3rem 2rem', maxWidth: '1000px', margin: '0 auto', fontFamily: 'sans-serif' }}>
 
-            {/* 🔝 頂部導覽列 */}
+            {/* 🔝 頂部導覽列 (已修正拔除建築所) */}
             <div style={{
                 display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center',
                 gap: isMobile ? '1.5rem' : '1rem', marginBottom: '3rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1.5rem'
@@ -95,7 +122,7 @@ export default function CoursesPage() {
                 </h2>
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
 
-                    {/* 基礎編曲學 */}
+                    {/* 基礎編曲學 (已修正連結) */}
                     <Link href="/courses/arrangement/intro" style={{ textDecoration: 'none' }}>
                         <div style={{ ...basicCardStyle }}
                             onMouseOver={e => { e.currentTarget.style.border = '1px solid #10b981'; e.currentTarget.style.transform = 'translateY(-5px)'; }}
@@ -144,14 +171,14 @@ export default function CoursesPage() {
                 background: 'rgba(16, 185, 129, 0.05)', borderRadius: '24px', border: '1px dashed #10b981'
             }}>
                 <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🎓</div>
-                <h3 style={{ color: '#10b981', fontSize: '1.5rem', marginBottom: '0.5rem' }}>新手綜合理論認證</h3>
-                <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '1.5rem' }}>完成基礎課程與道場試煉後，挑戰 10 題觀念測驗，證明你已脫離新手村。</p>
+                <h3 style={{ color: '#10b981', fontSize: '1.5rem', marginBottom: '0.5rem' }}>新手全面認證大會考</h3>
+                <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '1.5rem' }}>完成基礎課程與道場試煉後，挑戰 12 題觀念測驗，證明你已脫離新手村。</p>
                 <Link href="/certification/novice" style={{ display: 'inline-block', padding: '0.8rem 2rem', background: 'transparent', color: '#10b981', border: '2px solid #10b981', borderRadius: '50px', fontWeight: 'bold', textDecoration: 'none' }}>
                     開始新手測驗
                 </Link>
             </div>
 
-            {/* 🌟 5. 高階修煉地圖 (深水區) */}
+            {/* 🌟 5. 高階修煉地圖 (深水區) - Waitlist 假門設計 */}
             <div style={{ marginBottom: '4rem' }}>
                 <h2 style={{ fontSize: '2rem', textAlign: 'center', marginBottom: '3rem', color: '#fff', fontWeight: '900', letterSpacing: '2px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '4rem' }}>
                     解鎖高階製作人地圖
@@ -159,7 +186,7 @@ export default function CoursesPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
 
-                    {/* 高階編曲區 */}
+                    {/* 高階編曲區 (Waitlist Trigger) */}
                     <div style={{
                         background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)', padding: '2.5rem', borderRadius: '24px', border: '1px solid #f97316',
                         boxShadow: '0 20px 50px rgba(249, 115, 22, 0.15)', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden'
@@ -172,15 +199,15 @@ export default function CoursesPage() {
                             混音的災難，往往始於編曲的碰撞。<br /><br />
                             跳脫單純的樂理，學習「邏輯化」的配器思維。掌握八度音錯位、頻段切割法則，以及如何利用合成器與取樣（Sample）建立層次，在源頭就寫出極具商業感的厚實劇本。
                         </p>
-                        <Link href="/courses/arrangement/advanced" style={{
-                            padding: '1.2rem', background: '#f97316', color: '#020617', textAlign: 'center',
-                            borderRadius: '12px', fontWeight: '900', fontSize: '1.1rem', textDecoration: 'none'
+                        <button onClick={() => openWaitlist('高階編曲學')} style={{
+                            padding: '1.2rem', background: '#f97316', color: '#020617', textAlign: 'center', cursor: 'pointer', border: 'none',
+                            borderRadius: '12px', fontWeight: '900', fontSize: '1.1rem'
                         }}>
                             解鎖高階編曲 ➔
-                        </Link>
+                        </button>
                     </div>
 
-                    {/* 高階混音區 */}
+                    {/* 高階混音區 (Waitlist Trigger) */}
                     <div style={{
                         background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)', padding: '2.5rem', borderRadius: '24px', border: '1px solid #3b82f6',
                         boxShadow: '0 20px 50px rgba(59, 130, 246, 0.15)', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden'
@@ -191,20 +218,20 @@ export default function CoursesPage() {
                         </h3>
                         <p style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.7', marginBottom: '2rem', flex: 1 }}>
                             超越基礎 EQ 與壓縮，邁向 3D 空間管理的領域。<br /><br />
-                            學習好萊塢級的空間配置。透過 Reverb/Delay 發送建立深邃的前後景，運用 Saturation (飽和度) 增加昂貴的硬體染色，並掌握 Bus 總線平行壓縮技巧，打造具備業界競爭力的寬廣聽感。
+                            解密「Fletcher-Munson 等響度曲線」、小音量骨架檢驗法，學習透過 Reverb 發送建立深邃前中後景，並掌握總線 (Bus) Glue 黏合技巧，打造業界標準的商業混音。
                         </p>
-                        <Link href="/courses/mixing/advanced" style={{
-                            padding: '1.2rem', background: '#3b82f6', color: '#fff', textAlign: 'center',
-                            borderRadius: '12px', fontWeight: '900', fontSize: '1.1rem', textDecoration: 'none'
+                        <button onClick={() => openWaitlist('高階混音學')} style={{
+                            padding: '1.2rem', background: '#3b82f6', color: '#fff', textAlign: 'center', cursor: 'pointer', border: 'none',
+                            borderRadius: '12px', fontWeight: '900', fontSize: '1.1rem'
                         }}>
                             解鎖高階混音 ➔
-                        </Link>
+                        </button>
                     </div>
 
                 </div>
             </div>
 
-            {/* 🏆 6. 高階大師綜合理論認證 */}
+            {/* 🏆 6. 高階大師綜合理論認證 (保持原本的路徑) */}
             <div style={{
                 margin: '4rem 0', padding: isMobile ? '2.5rem 1.5rem' : '4rem 2rem', textAlign: 'center',
                 background: 'linear-gradient(135deg, rgba(167, 139, 250, 0.1), rgba(139, 92, 246, 0.05))', borderRadius: '32px',
@@ -212,12 +239,82 @@ export default function CoursesPage() {
             }}>
                 <span style={{ fontSize: '0.85rem', color: '#a78bfa', fontWeight: 'bold', letterSpacing: '4px' }}>MASTER EXAM</span>
                 <h2 style={{ color: '#fff', fontSize: isMobile ? '1.8rem' : '2.5rem', margin: '1rem 0', fontWeight: '900' }}>大師綜合理論認證</h2>
-                <p style={{ color: '#e2e8f0', marginBottom: '2.5rem', fontSize: isMobile ? '0.95rem' : '1.1rem', lineHeight: '1.6' }}>完成所有高階訓練後，挑戰終極實戰模擬測驗。取得 Lifreedom Studio 官方大師結業證書。</p>
+                <p style={{ color: '#e2e8f0', marginBottom: '2.5rem', fontSize: isMobile ? '0.95rem' : '1.1rem', lineHeight: '1.6' }}>完成所有高階訓練後，挑戰 10 題終極實戰模擬測驗。取得 Lifreedom Studio 官方大師結業證書。</p>
                 <Link href="/certification/master" style={{ display: 'inline-block', padding: '1.2rem 3rem', background: '#a78bfa', color: '#020617', textDecoration: 'none', fontSize: isMobile ? '1rem' : '1.2rem', fontWeight: '900', borderRadius: '50px', boxShadow: '0 10px 20px rgba(167, 139, 250, 0.3)' }}>
                     👑 挑戰大師認證考試
                 </Link>
             </div>
 
+            {/* 🚨 Waitlist 彈出視窗 (Modal) */}
+            {showWaitlistModal && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(2, 6, 23, 0.85)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 999, backdropFilter: 'blur(8px)', padding: '1rem'
+                }}>
+                    <div style={{
+                        background: 'linear-gradient(145deg, #0f172a, #1e293b)', width: '100%', maxWidth: '500px', borderRadius: '24px',
+                        border: '1px solid #475569', padding: '2.5rem', position: 'relative', boxShadow: '0 25px 50px rgba(0,0,0,0.5)',
+                        animation: 'fadeIn 0.3s ease'
+                    }}>
+                        {/* 關閉按鈕 */}
+                        <button onClick={() => setShowWaitlistModal(false)} style={{
+                            position: 'absolute', top: '15px', right: '15px', background: 'transparent', border: 'none', color: '#94a3b8',
+                            fontSize: '1.5rem', cursor: 'pointer', padding: '5px'
+                        }}>✕</button>
+
+                        {!submitSuccess ? (
+                            <>
+                                <div style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '1rem' }}>🚀</div>
+                                <h3 style={{ color: '#fff', fontSize: '1.5rem', textAlign: 'center', marginBottom: '1rem', fontWeight: 'bold' }}>
+                                    {waitlistCourseType} 內容正在火熱籌備中！
+                                </h3>
+                                <p style={{ color: '#94a3b8', fontSize: '1rem', textAlign: 'center', lineHeight: '1.6', marginBottom: '2rem' }}>
+                                    我們正在為這堂課打造好萊塢級的互動實戰內容。留下你的 Email 加入早鳥等候名單，課程上線時我們將發送 <strong style={{ color: '#fca311' }}>專屬早鳥 5 折優惠碼</strong> 給你！
+                                </p>
+                                <form onSubmit={handleWaitlistSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                    <input
+                                        type="email"
+                                        required
+                                        placeholder="輸入你的常用 Email"
+                                        value={waitlistEmail}
+                                        onChange={(e) => setWaitlistEmail(e.target.value)}
+                                        style={{ padding: '1rem', borderRadius: '12px', border: '1px solid #334155', background: '#020617', color: '#fff', fontSize: '1rem', outline: 'none' }}
+                                    />
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        style={{
+                                            padding: '1rem', borderRadius: '12px', background: isSubmitting ? '#475569' : '#fca311', color: '#020617',
+                                            border: 'none', fontSize: '1.1rem', fontWeight: '900', cursor: isSubmitting ? 'not-allowed' : 'pointer'
+                                        }}
+                                    >
+                                        {isSubmitting ? '處理中...' : '加入早鳥名單 🎟️'}
+                                    </button>
+                                </form>
+                            </>
+                        ) : (
+                            <div style={{ textAlign: 'center', padding: '2rem 0' }}>
+                                <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎉</div>
+                                <h3 style={{ color: '#10b981', fontSize: '1.5rem', marginBottom: '1rem', fontWeight: 'bold' }}>加入成功！</h3>
+                                <p style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.6' }}>
+                                    感謝你的支持！專屬折扣碼已經為你預留。<br />當 <strong>{waitlistCourseType}</strong> 準備就緒時，我們會第一時間通知你。
+                                </p>
+                                <button onClick={() => setShowWaitlistModal(false)} style={{
+                                    marginTop: '2rem', padding: '0.8rem 2rem', background: 'transparent', border: '1px solid #64748b',
+                                    color: '#94a3b8', borderRadius: '50px', cursor: 'pointer', fontWeight: 'bold'
+                                }}>關閉視窗</button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            <style jsx global>{`
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+            `}</style>
         </div>
     );
 }
