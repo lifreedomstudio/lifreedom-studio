@@ -82,7 +82,11 @@ const DICTIONARY = [
     { term: "Glue (黏合)", type: "混音神技", desc: "用壓縮器讓各個音軌聽起來像是一個整體的樂團，而不是分開的音檔。" },
     { term: "Sidechain (側鏈)", type: "混音神技", desc: "最常用於大鼓打下去時讓 Bass 自動變小聲，騰出低頻空間。" },
     { term: "Summing", type: "混音神技", desc: "將多軌混合成兩軌的過程。類比 Summing 能增加聲音的寬度與染色。" },
-    { term: "Pan (聲相)", type: "混音神技", desc: "調整聲音在左右聲道的位置，創造立體聲舞台感。" },
+    {
+        term: "Pan (聲相)", type: "混音神技",
+        desc: "調整聲音在左右聲道的位置，創造立體聲舞台感。除了單純的左右，還包含 LCR (極左、中、極右) 的極端擺位法。",
+        example: "就像是安排樂團成員在舞台上的站位，如果你把所有人都擠在正中央 (Pan = 0)，聲音聽起來就會很悶且打架。"
+    },
     { term: "Punch", type: "混音神技", desc: "聲音的「拳頭感」。通常來自於保留良好的 Transient (瞬態)。" },
     { term: "Parallel Comp", type: "混音神技", desc: "平行壓縮。保留原始動態的同時，混入重壓後的肥厚音色。" },
 
@@ -176,14 +180,15 @@ export default function GlossaryPage() {
                                 {item.desc}
                             </p>
 
-                            {/* 💡 實戰舉例區塊：只有你在資料庫中有加上 example 欄位時，這塊才會顯示出來 */}
+                            {/* 💡 實戰舉例區塊 */}
                             {item.example && (
                                 <div style={{
                                     marginTop: 'auto',
                                     background: 'rgba(252, 163, 17, 0.05)',
                                     borderLeft: '3px solid #fca311',
                                     padding: '1rem',
-                                    borderRadius: '0 8px 8px 0'
+                                    borderRadius: '0 8px 8px 0',
+                                    marginBottom: item.term === "Pan (聲相)" ? '1rem' : '0' // 如果有按鈕，留點下邊距
                                 }}>
                                     <div style={{ fontSize: '0.8rem', color: '#fca311', fontWeight: 'bold', marginBottom: '0.3rem' }}>
                                         💡 製作人秒懂：
@@ -191,6 +196,26 @@ export default function GlossaryPage() {
                                     <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.9rem', lineHeight: '1.6' }}>
                                         {item.example}
                                     </p>
+                                </div>
+                            )}
+
+                            {/* 🚀 專屬傳送門：只在 "Pan (聲相)" 出現 */}
+                            {item.term === "Pan (聲相)" && (
+                                <div style={{ marginTop: 'auto' }}>
+                                    <Link
+                                        href="/courses/arrangement/sonic-lab"
+                                        style={{
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                                            padding: '10px 15px', background: 'linear-gradient(135deg, #10b981, #059669)',
+                                            color: '#fff', textDecoration: 'none', borderRadius: '12px',
+                                            fontWeight: 'bold', fontSize: '0.9rem', boxShadow: '0 5px 15px rgba(16, 185, 129, 0.3)',
+                                            transition: 'transform 0.2s, box-shadow 0.2s'
+                                        }}
+                                        onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(16, 185, 129, 0.5)'; }}
+                                        onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 5px 15px rgba(16, 185, 129, 0.3)'; }}
+                                    >
+                                        <span>🎧</span> 親耳聽聽看：進入聲場構築實驗室 ➔
+                                    </Link>
                                 </div>
                             )}
                         </div>
