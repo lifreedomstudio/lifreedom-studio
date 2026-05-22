@@ -219,12 +219,14 @@ export default function VoicingTraining() {
                         1. 吉他指板：別在同一個房間刷和弦
                     </h2>
 
+                    {/* ⚠️ 升級版：解釋樂器種類與頻率錯位的迷思 */}
                     <div style={{ background: 'rgba(239, 68, 68, 0.1)', borderLeft: '4px solid #ef4444', padding: '15px', borderRadius: '0 12px 12px 0', marginBottom: '2rem' }}>
                         <p style={{ color: '#fca5a5', margin: 0, lineHeight: '1.6', fontSize: '1.05rem', fontWeight: 'bold' }}>
-                            ⚠️ 新手致命錯誤：在 0-3 格彈奏轉位和弦。
+                            ⚠️ 新手致命錯誤：以為「換樂器」或「彈轉位」就不會打架。
                         </p>
-                        <p style={{ color: '#cbd5e1', margin: '5px 0 0 0', lineHeight: '1.6', fontSize: '0.95rem' }}>
-                            很多新手知道兩把吉他不能彈一樣的，於是吉他 1 彈 C，吉他 2 彈 C/E (轉位)。但在混音台的頻譜上看，它們都在「紅色警戒區」發聲，根本是同一坨頻率，完全沒有錯開！
+                        <p style={{ color: '#cbd5e1', margin: '8px 0 0 0', lineHeight: '1.6', fontSize: '0.95rem' }}>
+                            很多新手會想：「吉他 1 是木吉他，那吉他 2 換成電吉他，音色不同就不會打架了吧？」或者「吉他 1 彈 C，吉他 2 彈 C/E (轉位和弦) 總可以了吧？」<br /><br />
+                            <strong style={{ color: '#fff' }}>錯！這是物理頻段的問題。</strong> 只要你們都擠在 0-3 格（紅色警戒區）發聲，不管你是木吉他還是電吉他，在混音台的頻譜儀上看，它們就是同一坨頻率，絕對會糊成一團！
                         </p>
                     </div>
 
@@ -240,13 +242,26 @@ export default function VoicingTraining() {
                     {/* 🎧 吉他聽覺實戰 */}
                     <AudioComparer
                         title="🎧 聽覺實驗：Capo 物理錯位術"
-                        description="請聽聽看兩把吉他都在低把位刷和弦的混濁感。接著切換版本，感受吉他 2 夾上 Capo 來到『綠色安全區』後，兩把吉他瞬間立體起來的 3D 感！"
+                        description="請聽聽看兩把吉他 (木吉他+電吉他) 都在低把位刷和弦的混濁感。接著切換版本，感受電吉他夾上 Capo 來到『綠色安全區』後，兩把吉他瞬間立體起來的 3D 感！"
                         badSrc="/audio/guitar-clash.mp3"
                         goodSrc="/audio/guitar-capo.mp3"
                         badLabel="低把位打架 (糊)"
                         goodLabel="Capo 高把位 (清脆)"
                         isMobile={isMobile}
                     />
+
+                    {/* 💼 編曲的企業管理學卡片 */}
+                    <div style={{ background: 'rgba(56, 189, 248, 0.05)', borderLeft: '4px solid #38bdf8', padding: '1.5rem', borderRadius: '0 16px 16px 0', marginTop: '2rem', marginBottom: '1rem' }}>
+                        <h4 style={{ color: '#38bdf8', fontSize: '1.2rem', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            💼 企業管理學：不只錯開音區，更要錯開「工作」
+                        </h4>
+                        <p style={{ color: '#cbd5e1', lineHeight: '1.7', fontSize: '1.05rem', margin: 0 }}>
+                            就像一間公司，如果所有人都在做「第一線銷售（用力刷和弦）」，卻沒有人負責「研發產品（彈奏單音或分散和弦）」，整間公司就會空轉，聽眾也會覺得資訊量爆炸。
+                            <br /><br />
+                            <strong>這就是為什麼吉他 2 移到高把位後，絕對不能再跟著刷和弦！</strong> 木吉他已經把「節奏地基」鋪滿了，電吉他的任務應該轉為「精緻點綴」，改用 <strong style={{ color: '#fff' }}>分散和弦 (Arpeggio)</strong> 或單音。這種「工作職位與彈奏手法的錯開」，才是創造無敵 3D 聽感的終極秘密。
+                        </p>
+                    </div>
+
                 </section>
 
                 {/* 內容區塊 2：鋼琴鍵盤 */}
@@ -287,29 +302,6 @@ export default function VoicingTraining() {
                         isMobile={isMobile}
                     />
                 </section>
-
-                {/* 🎧 吉他聽覺實戰 (你原本的程式碼) */}
-                <AudioComparer
-                    title="🎧 聽覺實驗：Capo 物理錯位術"
-                    description="請聽聽看兩把吉他都在低把位刷和弦的混濁感。接著切換版本，感受吉他 2 夾上 Capo 來到『綠色安全區』後，兩把吉他瞬間立體起來的 3D 感！"
-                    badSrc="/audio/guitar-clash.mp3"
-                    goodSrc="/audio/guitar-capo.mp3"
-                    badLabel="低把位打架 (糊)"
-                    goodLabel="Capo 高把位 (清脆)"
-                    isMobile={isMobile}
-                />
-
-                {/* 👇 新增的：編曲的企業管理學卡片 */}
-                <div style={{ background: 'rgba(56, 189, 248, 0.05)', borderLeft: '4px solid #38bdf8', padding: '1.5rem', borderRadius: '0 16px 16px 0', marginTop: '2rem', marginBottom: '1rem' }}>
-                    <h4 style={{ color: '#38bdf8', fontSize: '1.2rem', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        💼 企業管理學：不只錯開音區，更要錯開「工作」
-                    </h4>
-                    <p style={{ color: '#cbd5e1', lineHeight: '1.7', fontSize: '1.05rem', margin: 0 }}>
-                        就像一間公司，如果所有人都在做「第一線業務（用力刷和弦）」，卻沒有人負責「研發產品（彈奏單音或分散和弦）」，整間公司就會空轉，聽眾也會覺得資訊量爆炸。
-                        <br /><br />
-                        <strong>這就是為什麼吉他 2 移到高把位後，絕對不能再跟著刷和弦！</strong> 木吉他 1 已經把「節奏地基」鋪滿了，電吉他 2 的任務應該轉為「精緻包裝」，改用 <strong style={{ color: '#fff' }}>分散和弦 (Arpeggio)</strong> 或單音來點綴。這種「工作職位的錯開」，才是創造無敵 3D 聽感的終極秘密。
-                    </p>
-                </div>
 
                 {/* 💡 混音助理提示 */}
                 <div style={{ background: 'rgba(56, 189, 248, 0.05)', border: '1px dashed #38bdf8', padding: '1.5rem', borderRadius: '16px', textAlign: 'center', marginBottom: '5rem' }}>
