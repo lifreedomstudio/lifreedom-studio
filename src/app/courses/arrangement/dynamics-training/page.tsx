@@ -49,41 +49,7 @@ const ReverseWaveformVisual = ({ isMobile }: { isMobile: boolean }) => (
     </div>
 );
 
-// --- 🛠️ 3. 聽覺實驗室卡片 (共用元件) ---
-const ListeningLabCard = ({
-    tagNum, tagColor, song, time, listenGoal, learnGoal, isSingleCol = false
-}: {
-    tagNum: string, tagColor: string, song: string, time: string, listenGoal: string, learnGoal?: string, isSingleCol?: boolean
-}) => (
-    <div style={{ background: 'rgba(15, 23, 42, 0.95)', border: `2px solid ${tagColor}`, borderRadius: '24px', padding: '2rem', width: '100%' }}>
-        <span style={{ background: tagColor, color: tagColor === '#10b981' ? '#020617' : '#fff', padding: '4px 14px', borderRadius: '6px', fontWeight: 'bold', fontSize: '15px', marginBottom: '15px', display: 'inline-block' }}>
-            CASE STUDY {tagNum}
-        </span>
-        <h3 style={{ fontSize: '1.5rem', marginBottom: '10px', color: '#fff' }}>{song}</h3>
-        <p style={{ color: tagColor, fontSize: '1.1rem', marginBottom: '20px', fontWeight: 'bold' }}>📍 關鍵時刻：{time}</p>
-
-        {isSingleCol ? (
-            <div style={{ marginTop: '15px' }}>
-                <p style={{ color: '#f8fafc', fontSize: '1.1rem', lineHeight: '1.6' }}>{listenGoal}</p>
-            </div>
-        ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', marginTop: '15px' }}>
-                <div style={{ borderLeft: `4px solid ${tagColor}`, paddingLeft: '20px' }}>
-                    <p style={{ color: '#fff', fontWeight: 'bold', marginBottom: '10px' }}>👂 聽：現象</p>
-                    <p style={{ color: '#f8fafc', lineHeight: '1.6' }}>{listenGoal}</p>
-                </div>
-                {learnGoal && (
-                    <div style={{ borderLeft: `4px solid #34d399`, paddingLeft: '20px' }}>
-                        <p style={{ color: '#fff', fontWeight: 'bold', marginBottom: '10px' }}>💡 學：技巧</p>
-                        <p style={{ color: '#f8fafc', lineHeight: '1.6' }}>{learnGoal}</p>
-                    </div>
-                )}
-            </div>
-        )}
-    </div>
-);
-
-// --- 🌪️ 4. 過門與推進力音效卡片 (新加入的獨立播放器) ---
+// --- 🌪️ 3. 過門與推進力音效卡片 ---
 const TransitionCard = ({ title, subtitle, desc, audioSrc, color, icon }: { title: string, subtitle: string, desc: string, audioSrc: string, color: string, icon: string }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const audioRef = useRef<HTMLAudioElement>(null);
@@ -134,7 +100,7 @@ const TransitionCard = ({ title, subtitle, desc, audioSrc, color, icon }: { titl
     );
 };
 
-// --- 🛠️ 5. 極簡實戰音檔播放器 (原本的左右 Pan 示範) ---
+// --- 🛠️ 4. 極簡實戰音檔播放器 ---
 const TransitionAudioPlayer = ({ isMobile }: { isMobile: boolean }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -363,20 +329,52 @@ export default function DynamicsTraining() {
                     </div>
                 </section>
 
-                {/* 5. 案例研究 */}
+                {/* --- 🆕 4. 製作人常見 Q&A 與實戰地雷 --- */}
                 <section style={{ marginBottom: '6rem' }}>
-                    <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.5rem', color: '#10b981', marginBottom: '2rem', borderLeft: '8px solid #059669', paddingLeft: '20px' }}>4. 名曲實戰解析</h2>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                        <ListeningLabCard
-                            tagNum="01" tagColor="#facc15" song="Official 髭男 dism - 《Pretender》" time="00:58 (情緒斷點)"
-                            listenGoal="注意進入副歌的第一個字「Goodbye」。所有聲響瞬間消失，只剩下主唱的乾淨人聲，創造了強大的情緒撞擊力。"
-                            isSingleCol={true}
-                        />
-                        <ListeningLabCard
-                            tagNum="02" tagColor="#3b82f6" song="ONE OK ROCK - 《Wherever you are》" time="03:00 (能量堆疊)"
-                            listenGoal="感受副歌時吉他在兩耳張開的寬度（Pan），以及鼓組如何填滿整個空間感。"
-                            learnGoal="觀察最後一段副歌如何透過「弦樂群」與「堆疊樂器」達到能量沸點，展現全曲最廣闊的音場寬度。"
-                        />
+                    <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.5rem', color: '#10b981', marginBottom: '2rem', borderLeft: '8px solid #059669', paddingLeft: '20px' }}>4. 製作人常見地雷與 Q&A</h2>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                        {/* Q1: 牆壁音量迷思 */}
+                        <div style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '20px', padding: isMobile ? '1.5rem' : '2rem' }}>
+                            <h3 style={{ color: '#ef4444', fontSize: '1.2rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <span>💣 地雷一：</span> 「我的副歌不夠炸，所以我把副歌音量推到最大？」
+                            </h3>
+                            <p style={{ color: '#cbd5e1', lineHeight: '1.7', marginBottom: '1.5rem', fontSize: '1rem' }}>
+                                動態是「比較」出來的。如果整首歌從頭到尾都很大聲（像一堵音牆），聽眾的耳朵很快就會疲勞。把副歌推到爆軌，只會讓混音變得很刺耳。
+                            </p>
+                            <div style={{ background: 'rgba(16, 185, 129, 0.1)', borderLeft: '4px solid #10b981', padding: '1rem 1.5rem', borderRadius: '0 12px 12px 0' }}>
+                                <p style={{ color: '#10b981', fontWeight: 'bold', margin: '0 0 5px 0' }}>💡 大師心法：做減法</p>
+                                <p style={{ color: '#f8fafc', margin: 0, lineHeight: '1.6', fontSize: '0.95rem' }}>不要去動副歌的音量，而是回頭把**主歌 (Verse) 變小聲，或者減少主歌的樂器數量**。當主歌夠安靜，副歌原封不動撞進來時，就會顯得無比巨大！</p>
+                            </div>
+                        </div>
+
+                        {/* Q2: 過門塞太滿 */}
+                        <div style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '20px', padding: isMobile ? '1.5rem' : '2rem' }}>
+                            <h3 style={{ color: '#ef4444', fontSize: '1.2rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <span>💣 地雷二：</span> 「進副歌前的 Drum Fill (過門) 塞了滿滿的鼓點，為什麼副歌第一拍還是軟掉？」
+                            </h3>
+                            <p style={{ color: '#cbd5e1', lineHeight: '1.7', marginBottom: '1.5rem', fontSize: '1rem' }}>
+                                很多新手喜歡在 Pre-Chorus 最後一拍瘋狂打小鼓跟中鼓（Tom），把頻率跟空間都塞滿了，導致副歌第一拍的大鼓和 Crash 砸下來時，聽覺上沒有任何「落差感」。
+                            </p>
+                            <div style={{ background: 'rgba(16, 185, 129, 0.1)', borderLeft: '4px solid #10b981', padding: '1rem 1.5rem', borderRadius: '0 12px 12px 0' }}>
+                                <p style={{ color: '#10b981', fontWeight: 'bold', margin: '0 0 5px 0' }}>💡 大師心法：刻意斷片 (The Drop)</p>
+                                <p style={{ color: '#f8fafc', margin: 0, lineHeight: '1.6', fontSize: '0.95rem' }}>試著在進入第一拍前（例如第四拍的後半拍），將所有樂器**完全靜音 (Mute)** 瞬間製造一個真空狀態。就像跳水前要先深吸一口氣，那瞬間的安靜，會讓接下來的爆炸充滿毀滅性。</p>
+                            </div>
+                        </div>
+
+                        {/* Q3: Automation 畫太死 */}
+                        <div style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '20px', padding: isMobile ? '1.5rem' : '2rem' }}>
+                            <h3 style={{ color: '#ef4444', fontSize: '1.2rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <span>💣 地雷三：</span> 「我畫了 Automation，但聽起來很不自然，像是一節一節的？」
+                            </h3>
+                            <p style={{ color: '#cbd5e1', lineHeight: '1.7', marginBottom: '1.5rem', fontSize: '1rem' }}>
+                                在 DAW 裡畫音量 Automation 時，如果都畫成「直角（瞬間把音量拉高）」，會讓聽眾意識到有人在推 fader，破壞了聽歌的沉浸感。
+                            </p>
+                            <div style={{ background: 'rgba(16, 185, 129, 0.1)', borderLeft: '4px solid #10b981', padding: '1rem 1.5rem', borderRadius: '0 12px 12px 0' }}>
+                                <p style={{ color: '#10b981', fontWeight: 'bold', margin: '0 0 5px 0' }}>💡 大師心法：偷拉 Master Fader</p>
+                                <p style={{ color: '#f8fafc', margin: 0, lineHeight: '1.6', fontSize: '0.95rem' }}>使用曲線 (Curve) 讓參數平滑過渡。一個業界不能說的秘密：很多混音師會在進入副歌時，偷偷用 Automation 將總輸出 (Master) 的音量**平滑推高 0.5dB 到 1dB**。聽眾根本察覺不出音量變大，大腦只會告訴他們「這段情緒好激昂」！</p>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
