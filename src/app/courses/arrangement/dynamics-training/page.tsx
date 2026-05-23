@@ -160,15 +160,6 @@ export default function DynamicsTraining() {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    const termItemStyle = {
-        fontSize: '0.9rem',
-        background: 'rgba(16, 185, 129, 0.08)',
-        padding: '12px',
-        borderRadius: '10px',
-        borderLeft: '4px solid #10b981',
-        color: '#f1f5f9'
-    };
-
     return (
         <div style={{ minHeight: '100vh', background: '#020617', color: '#f8fafc', padding: isMobile ? '1.5rem 0.5rem' : '4rem 2rem', fontFamily: 'sans-serif', overflowX: 'hidden' }}>
             <div style={{ maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
@@ -195,32 +186,75 @@ export default function DynamicsTraining() {
                     <div style={{ background: 'rgba(15,23,42,0.4)', padding: isMobile ? '20px 10px' : '40px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)' }}>
                         <EmotionCurveChart />
 
-                        <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '15px', marginBottom: '30px' }}>
-                            <div style={{ flex: 1, background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '12px', border: '1px solid rgba(16,185,129,0.2)' }}>
-                                <p style={{ color: '#10b981', fontWeight: 'bold', marginBottom: '8px', fontSize: '1.1rem' }}>1. 敘事期 (Verse)</p>
-                                <p style={{ fontSize: '0.95rem', color: '#cbd5e1', lineHeight: '1.5', margin: 0 }}>以簡約伴奏敘述故事，為後續爆發預留巨大空間。</p>
-                            </div>
-                            <div style={{ flex: 1, background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '12px', border: '1px solid rgba(16,185,129,0.2)' }}>
-                                <p style={{ color: '#facc15', fontWeight: 'bold', marginBottom: '8px', fontSize: '1.1rem' }}>2. 蓄力期 (Pre-Cho)</p>
-                                <p style={{ fontSize: '0.95rem', color: '#cbd5e1', lineHeight: '1.5', margin: 0 }}>加入 Bass 與打擊樂，暗示情緒即將進入高潮。</p>
-                            </div>
-                            <div style={{ flex: 1, background: 'rgba(16, 185, 129, 0.1)', padding: '20px', borderRadius: '12px', border: '1px solid rgba(16,185,129,0.5)' }}>
-                                <p style={{ color: '#10b981', fontWeight: 'bold', marginBottom: '8px', fontSize: '1.1rem' }}>3. 爆發期 (Chorus)</p>
-                                <p style={{ fontSize: '0.95rem', color: '#f8fafc', lineHeight: '1.5', margin: 0 }}>全編制炸進來，呈現最壯闊、飽滿的聽覺震撼。</p>
+                        {/* 🎬 升級版：曲式結構與劇本解析卡片 */}
+                        <div style={{ marginTop: '2rem' }}>
+                            <p style={{ color: '#10b981', fontWeight: 'bold', fontSize: '1.2rem', marginBottom: '15px', borderBottom: '1px solid rgba(16, 185, 129, 0.3)', paddingBottom: '10px' }}>
+                                <i className="fa-solid fa-book-open"></i> 曲式劇本完全解析 (Arrangement Terms)
+                            </p>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '20px' }}>
+                                {/* Intro */}
+                                <div style={{ background: 'rgba(15, 23, 42, 0.8)', padding: '20px', borderRadius: '12px', borderLeft: '4px solid #facc15' }}>
+                                    <h4 style={{ color: '#facc15', fontSize: '1.1rem', margin: '0 0 10px 0' }}>Intro (前奏)</h4>
+                                    <p style={{ color: '#f8fafc', fontSize: '0.95rem', margin: '0 0 10px 0' }}>引導進入歌曲氛圍的開場。</p>
+                                    <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '8px', fontSize: '0.85rem' }}>
+                                        <p style={{ color: '#cbd5e1', margin: '0 0 5px 0' }}><b>🎬 劇本比喻：</b> 電影一開場的風景空鏡頭，定調整部片的氣氛。</p>
+                                        <p style={{ color: '#94a3b8', margin: 0 }}><b>🎧 聽覺特徵：</b> 通常只有單一樂器（例如木吉他或鋼琴），或是截取副歌的一小段無人聲旋律。</p>
+                                    </div>
+                                </div>
+
+                                {/* Verse */}
+                                <div style={{ background: 'rgba(15, 23, 42, 0.8)', padding: '20px', borderRadius: '12px', borderLeft: '4px solid #38bdf8' }}>
+                                    <h4 style={{ color: '#38bdf8', fontSize: '1.1rem', margin: '0 0 10px 0' }}>Verse (主歌)</h4>
+                                    <p style={{ color: '#f8fafc', fontSize: '0.95rem', margin: '0 0 10px 0' }}>建立背景與敘事的情節核心。</p>
+                                    <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '8px', fontSize: '0.85rem' }}>
+                                        <p style={{ color: '#cbd5e1', margin: '0 0 5px 0' }}><b>🎬 劇本比喻：</b> 主角登場，開始用平穩的語氣講述故事背景。</p>
+                                        <p style={{ color: '#94a3b8', margin: 0 }}><b>🎧 聽覺特徵：</b> 人聲進場，伴奏通常很克制。大鼓跟 Bass 通常還沒完全加入，留給歌手說故事的空間。</p>
+                                    </div>
+                                </div>
+
+                                {/* Pre-Chorus */}
+                                <div style={{ background: 'rgba(15, 23, 42, 0.8)', padding: '20px', borderRadius: '12px', borderLeft: '4px solid #a78bfa' }}>
+                                    <h4 style={{ color: '#a78bfa', fontSize: '1.1rem', margin: '0 0 10px 0' }}>Pre-Chorus (導歌)</h4>
+                                    <p style={{ color: '#f8fafc', fontSize: '0.95rem', margin: '0 0 10px 0' }}>連結主副歌，創造上行張力。</p>
+                                    <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '8px', fontSize: '0.85rem' }}>
+                                        <p style={{ color: '#cbd5e1', margin: '0 0 5px 0' }}><b>🎬 劇本比喻：</b> 暴風雨前的寧靜，或是慢慢爬升的雲霄飛車。</p>
+                                        <p style={{ color: '#94a3b8', margin: 0 }}><b>🎧 聽覺特徵：</b> 節奏開始變密集（如小鼓加速），或 Bass 開始走上升/下行階梯，暗示情緒即將爆發。</p>
+                                    </div>
+                                </div>
+
+                                {/* Chorus */}
+                                <div style={{ background: 'rgba(15, 23, 42, 0.8)', padding: '20px', borderRadius: '12px', borderLeft: '4px solid #10b981' }}>
+                                    <h4 style={{ color: '#10b981', fontSize: '1.1rem', margin: '0 0 10px 0' }}>Chorus (副歌)</h4>
+                                    <p style={{ color: '#f8fafc', fontSize: '0.95rem', margin: '0 0 10px 0' }}>能量最高點，重複性強的主題。</p>
+                                    <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '8px', fontSize: '0.85rem' }}>
+                                        <p style={{ color: '#cbd5e1', margin: '0 0 5px 0' }}><b>🎬 劇本比喻：</b> 電影最高潮的爆破戲、激烈爭吵或深情告白。</p>
+                                        <p style={{ color: '#94a3b8', margin: 0 }}><b>🎧 聽覺特徵：</b> 所有樂器 (Full Band) 全下！音場最寬，頻率最滿，是全曲最好記的段落。</p>
+                                    </div>
+                                </div>
+
+                                {/* Bridge */}
+                                <div style={{ background: 'rgba(15, 23, 42, 0.8)', padding: '20px', borderRadius: '12px', borderLeft: '4px solid #ef4444' }}>
+                                    <h4 style={{ color: '#ef4444', fontSize: '1.1rem', margin: '0 0 10px 0' }}>Bridge (橋段)</h4>
+                                    <p style={{ color: '#f8fafc', fontSize: '0.95rem', margin: '0 0 10px 0' }}>提供對比與新鮮感的過渡。</p>
+                                    <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '8px', fontSize: '0.85rem' }}>
+                                        <p style={{ color: '#cbd5e1', margin: '0 0 5px 0' }}><b>🎬 劇本比喻：</b> 劇情突然大反轉，或是主角陷入絕望的內心獨白。</p>
+                                        <p style={{ color: '#94a3b8', margin: 0 }}><b>🎧 聽覺特徵：</b> 發生在第二次副歌之後。通常和弦走向會完全改變，節奏可能瞬間放慢，或接上一段吉他 Solo。</p>
+                                    </div>
+                                </div>
+
+                                {/* Outro */}
+                                <div style={{ background: 'rgba(15, 23, 42, 0.8)', padding: '20px', borderRadius: '12px', borderLeft: '4px solid #64748b' }}>
+                                    <h4 style={{ color: '#64748b', fontSize: '1.1rem', margin: '0 0 10px 0' }}>Outro (尾奏)</h4>
+                                    <p style={{ color: '#f8fafc', fontSize: '0.95rem', margin: '0 0 10px 0' }}>故事終章，引導情緒平復。</p>
+                                    <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '8px', fontSize: '0.85rem' }}>
+                                        <p style={{ color: '#cbd5e1', margin: '0 0 5px 0' }}><b>🎬 劇本比喻：</b> 電影結局後，伴隨著滾動字幕的餘韻。</p>
+                                        <p style={{ color: '#94a3b8', margin: 0 }}><b>🎧 聽覺特徵：</b> 樂器一件一件收掉，或是用 Fade out (漸弱) 的方式讓音樂慢慢消失在空氣中。</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <div style={{ background: 'rgba(15, 23, 42, 0.9)', border: '1px dashed rgba(16, 185, 129, 0.4)', padding: '20px', borderRadius: '14px' }}>
-                            <p style={{ color: '#10b981', fontWeight: 'bold', fontSize: '1rem', marginBottom: '15px' }}><i className="fa-solid fa-book-open"></i> 曲式結構字彙定義 (Arrangement Terms)：</p>
-                            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '12px' }}>
-                                <div style={termItemStyle}><b style={{ color: '#facc15', display: 'block', marginBottom: '4px', fontSize: '1rem' }}>Intro (前奏)</b> 引導進入歌曲氛圍的開場。</div>
-                                <div style={termItemStyle}><b style={{ color: '#facc15', display: 'block', marginBottom: '4px', fontSize: '1rem' }}>Verse (主歌)</b> 建立背景與敘事的情節核心。</div>
-                                <div style={termItemStyle}><b style={{ color: '#facc15', display: 'block', marginBottom: '4px', fontSize: '1rem' }}>Pre-Chorus (導歌)</b> 連結主副歌，創造上行張力。</div>
-                                <div style={termItemStyle}><b style={{ color: '#facc15', display: 'block', marginBottom: '4px', fontSize: '1rem' }}>Chorus (副歌)</b> 能量最高點，重複性強的主題。</div>
-                                <div style={termItemStyle}><b style={{ color: '#facc15', display: 'block', marginBottom: '4px', fontSize: '1rem' }}>Bridge (橋段)</b> 提供對比與新鮮感的過渡。</div>
-                                <div style={termItemStyle}><b style={{ color: '#facc15', display: 'block', marginBottom: '4px', fontSize: '1rem' }}>Outro (尾奏)</b> 故事終章，引導情緒平復。</div>
-                            </div>
-                        </div>
                     </div>
                 </section>
 
