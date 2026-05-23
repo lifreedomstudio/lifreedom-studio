@@ -545,7 +545,8 @@ export default function CompressorTrainingRoom() {
                     </button>
 
                     <button
-                        style={{ background: '#1e293b', color: '#64748b', border: 'none', padding: '1rem 3rem', fontSize: '1.1rem', fontWeight: 'bold', borderRadius: '50px', cursor: 'not-allowed' }}
+                        onClick={() => router.push('/courses')}
+                        style={{ /* 保留你原本的 style 設定 */ }}
                     >
                         混音新手村：完結 🎉
                     </button>
