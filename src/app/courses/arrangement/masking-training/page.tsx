@@ -130,26 +130,60 @@ const MidFreqJamVisual = ({ isMobile }: { isMobile: boolean }) => {
     );
 };
 
-// --- 🛠️ 3. 檢查流程 Timeline ---
+// --- 🛠️ 3. 檢查流程 Timeline (加入實戰舉例) ---
 const MaskingTimeline = ({ isMobile }: { isMobile: boolean }) => {
     const steps = [
-        { title: "1. 選色 (Tone)", desc: "挑選本質就互補的音色，減少後製負擔。", pos: "top" },
-        { title: "2. 佈局 (Layout)", desc: "將樂器分配到不同音域口袋。", pos: "bottom" },
-        { title: "3. 節奏 (Rhythm)", desc: "確保樂器間節奏互補而非互相碰撞。", pos: "top" },
-        { title: "4. 修整 (Trim)", desc: "刪除多餘裝飾，只保留最重要的敘事線。", pos: "bottom" },
+        {
+            title: "1. 選色 (Tone)",
+            desc: "挑選本質就互補的音色。",
+            example: "❌ 兩把木吉他刷扣 \n✅ 一把木吉他 + 一個 Pad 合成器鋪底",
+            pos: "top"
+        },
+        {
+            title: "2. 佈局 (Layout)",
+            desc: "將樂器分配到不同音域口袋。",
+            example: "❌ 鋼琴和吉他都在 C3 彈和弦 \n✅ 吉他留在一樓，鋼琴移高八度上二樓",
+            pos: "bottom"
+        },
+        {
+            title: "3. 節奏 (Rhythm)",
+            desc: "確保樂器間節奏互補而非碰撞。",
+            example: "❌ 貝斯和大鼓各彈各的 \n✅ 讓貝斯的音符完美「貼齊 (Lock-in)」大鼓",
+            pos: "top"
+        },
+        {
+            title: "4. 修整 (Trim)",
+            desc: "刪除多餘裝飾，保留敘事線。",
+            example: "❌ 副歌每件樂器都在 Solo \n✅ 副歌抽掉過於複雜的吉他過弦，把焦點還給主唱",
+            pos: "bottom"
+        },
     ];
 
     return (
-        <div style={{ position: 'relative', width: '100%', height: isMobile ? 'auto' : '200px', marginTop: '3rem' }}>
+        <div style={{ position: 'relative', width: '100%', height: isMobile ? 'auto' : '300px', marginTop: '3rem' }}>
             <div style={{ position: 'absolute', top: isMobile ? 0 : '50%', left: isMobile ? '20px' : 0, right: 0, bottom: isMobile ? 0 : 'auto', width: isMobile ? '2px' : '100%', height: isMobile ? '100%' : '3px', background: 'rgba(16, 185, 129, 0.2)', transform: isMobile ? 'none' : 'translateY(-1.5px)', zIndex: 1 }} />
-            <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', height: '100%', gap: isMobile ? '2rem' : '0' }}>
+
+            <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', height: '100%', gap: isMobile ? '2.5rem' : '0' }}>
                 {steps.map((step, i) => (
                     <div key={i} style={{ flex: 1, position: 'relative', display: 'flex', flexDirection: isMobile ? 'row' : 'column', alignItems: 'center', paddingLeft: isMobile ? '50px' : '0' }}>
+
                         <div style={{ position: 'absolute', top: isMobile ? '50%' : '50%', left: isMobile ? '20px' : '50%', transform: 'translate(-50%, -50%)', width: '18px', height: '18px', background: '#10b981', borderRadius: '50%', border: '3px solid #020617', boxShadow: '0 0 10px #10b981', zIndex: 10 }} />
-                        <div style={{ textAlign: isMobile ? 'left' : 'center', width: isMobile ? '100%' : '240px', position: isMobile ? 'static' : 'absolute', bottom: !isMobile && step.pos === 'top' ? 'calc(50% + 30px)' : 'auto', top: !isMobile && step.pos === 'bottom' ? 'calc(50% + 30px)' : 'auto', padding: isMobile ? '0.5rem 0' : '0' }}>
-                            <h4 style={{ color: '#10b981', fontSize: '1.1rem', marginBottom: '8px', fontWeight: 'bold' }}>{step.title}</h4>
-                            <p style={{ color: '#94a3b8', fontSize: '0.9rem', margin: 0, lineHeight: '1.5' }}>{step.desc}</p>
+
+                        <div style={{
+                            textAlign: isMobile ? 'left' : 'center',
+                            width: isMobile ? '100%' : '240px',
+                            position: isMobile ? 'static' : 'absolute',
+                            bottom: !isMobile && step.pos === 'top' ? 'calc(50% + 30px)' : 'auto',
+                            top: !isMobile && step.pos === 'bottom' ? 'calc(50% + 30px)' : 'auto',
+                            padding: isMobile ? '0.5rem 0' : '0'
+                        }}>
+                            <h4 style={{ color: '#10b981', fontSize: '1.2rem', marginBottom: '8px', fontWeight: 'bold' }}>{step.title}</h4>
+                            <p style={{ color: '#f8fafc', fontSize: '1rem', margin: '0 0 10px 0', lineHeight: '1.5' }}>{step.desc}</p>
+                            <div style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid #334155', padding: '10px', borderRadius: '8px', textAlign: 'left', fontSize: '0.85rem', color: '#94a3b8', whiteSpace: 'pre-line', lineHeight: '1.6' }}>
+                                {step.example}
+                            </div>
                         </div>
+
                     </div>
                 ))}
             </div>

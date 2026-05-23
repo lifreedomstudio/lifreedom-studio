@@ -533,11 +533,11 @@ export default function CompressorTrainingRoom() {
                     </div>
                 )}
 
-                {/* 3. 底部導覽 (CTA) */}
+                {/* 3. 底部導覽 (CTA) - ✅ 修復完結按鈕樣式與事件 */}
                 <section style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', marginTop: '5rem', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.1)', gap: '20px' }}>
                     <button
                         onClick={() => router.push('/courses/mixing/eq-training')}
-                        style={{ background: 'transparent', color: '#94a3b8', border: '1px solid #334155', padding: '1rem 2rem', fontSize: '1rem', borderRadius: '50px', cursor: 'pointer', transition: 'all 0.2s' }}
+                        style={{ background: 'transparent', color: '#94a3b8', border: '1px solid #334155', padding: '1rem 2rem', fontSize: '1rem', borderRadius: '50px', cursor: 'pointer', transition: 'all 0.2s', width: isMobile ? '100%' : 'auto' }}
                         onMouseOver={(e) => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#fff'; }}
                         onMouseOut={(e) => { e.currentTarget.style.color = '#94a3b8'; e.currentTarget.style.borderColor = '#334155'; }}
                     >
@@ -546,7 +546,9 @@ export default function CompressorTrainingRoom() {
 
                     <button
                         onClick={() => router.push('/courses')}
-                        style={{ /* 保留你原本的 style 設定 */ }}
+                        style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '1rem 2rem', fontSize: '1.1rem', fontWeight: 'bold', borderRadius: '50px', cursor: 'pointer', boxShadow: '0 10px 20px rgba(59, 130, 246, 0.3)', transition: 'transform 0.2s', width: isMobile ? '100%' : 'auto' }}
+                        onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                        onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                     >
                         混音新手村：完結 🎉
                     </button>
