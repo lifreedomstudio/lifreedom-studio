@@ -241,12 +241,12 @@ export default function VoicingTraining() {
 
                     {/* 🎧 吉他聽覺實戰 */}
                     <AudioComparer
-                        title="🎧 聽覺實驗：Capo 物理錯位術"
-                        description="請聽聽看兩把吉他 (木吉他+電吉他) 都在低把位刷和弦的混濁感。接著切換版本，感受電吉他夾上 Capo 來到『綠色安全區』後，兩把吉他瞬間立體起來的 3D 感！"
+                        title="🎧 聽覺實驗：音區與手法的雙重錯開"
+                        description="請聽聽看兩把吉他都在「低把位」同時「刷和弦」時，頻段互相打架的混濁感。接著切換版本：我們讓木吉他留在低把位穩住節奏，電吉他則移到『綠色安全區』改彈單音旋律點綴。感受這種「不搶地盤也不搶工作」帶來的 3D 立體感！"
                         badSrc="/audio/guitar-clash.mp3"
                         goodSrc="/audio/guitar-capo.mp3"
-                        badLabel="低把位打架 (糊)"
-                        goodLabel="Capo 高把位 (清脆)"
+                        badLabel="低把位齊刷 (糊)"
+                        goodLabel="高把位旋律點綴 (立體)"
                         isMobile={isMobile}
                     />
 
