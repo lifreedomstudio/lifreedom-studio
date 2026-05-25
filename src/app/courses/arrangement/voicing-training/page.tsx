@@ -278,17 +278,68 @@ export default function VoicingTraining() {
                     </div>
 
                     <div style={{ background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', padding: '20px', borderRadius: '16px', marginBottom: '2rem' }}>
-                        <h4 style={{ color: '#86efac', fontSize: '1.1rem', marginBottom: '10px' }}>🎹 正確的雙管齊下策略：</h4>
-                        <ol style={{ color: '#cbd5e1', lineHeight: '1.8', fontSize: '1.05rem', margin: 0, paddingLeft: '20px' }}>
-                            <li style={{ marginBottom: '10px' }}>
-                                <strong style={{ color: '#fff' }}>第一步：Octave Up (移高八度避車禍)。</strong><br />
-                                鍵盤手請整個人往右坐！將右手移到 C4-C5 的「綠色安全區」。吉他在一樓，鋼琴去二樓，這能直接解決頻率重疊。
-                            </li>
-                            <li>
-                                <strong style={{ color: '#fff' }}>第二步：和弦轉位 (Inversion 解決呆板)。</strong><br />
-                                移高八度後，為了讓鋼琴的旋律線聽起來像在「滑順地唱歌」而不是跳來跳去，我們才需要運用樂理上的「轉位」，讓最高音（Top Note）平穩流動。
-                            </li>
-                        </ol>
+                        <h4 style={{ color: '#86efac', fontSize: '1.1rem', marginBottom: '15px' }}>🎹 正確的雙管齊下策略：</h4>
+
+                        <div style={{ marginBottom: '25px' }}>
+                            <strong style={{ color: '#fff', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <span style={{ background: '#22c55e', color: '#000', padding: '2px 8px', borderRadius: '4px', fontSize: '0.9rem' }}>STEP 1</span>
+                                Octave Up (移高八度避車禍)
+                            </strong>
+                            <p style={{ color: '#cbd5e1', lineHeight: '1.6', fontSize: '1.05rem', margin: '8px 0 0 0', paddingLeft: '4px' }}>
+                                鍵盤手請整個人往右坐！將右手移到 C4-C5 的「綠色安全區」。吉他在一樓，鋼琴去二樓，這能直接解決物理上的頻率重疊。
+                            </p>
+                        </div>
+
+                        <div style={{ background: 'rgba(2, 6, 23, 0.5)', borderRadius: '12px', padding: '20px', borderLeft: '4px solid #facc15' }}>
+                            <strong style={{ color: '#facc15', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <span style={{ background: '#facc15', color: '#000', padding: '2px 8px', borderRadius: '4px', fontSize: '0.9rem' }}>STEP 2</span>
+                                和弦轉位 (Inversion) 解決「青蛙跳」
+                            </strong>
+                            <p style={{ color: '#cbd5e1', lineHeight: '1.6', fontSize: '1.05rem', margin: '10px 0 20px 0' }}>
+                                移高八度後，新手常犯一個致命錯誤：<strong style={{ color: '#ef4444' }}>把手像青蛙一樣整組跳來跳去</strong>。這會讓伴奏聽起來非常呆板、斷裂。請看下方 C 和弦接到 F 和弦的真實差異：
+                            </p>
+
+                            {/* C 到 F 的視覺化對比 */}
+                            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '15px' }}>
+
+                                {/* NG 示範 */}
+                                <div style={{ background: 'rgba(239, 68, 68, 0.1)', padding: '15px', borderRadius: '8px', border: '1px dashed rgba(239, 68, 68, 0.3)' }}>
+                                    <div style={{ color: '#ef4444', fontSize: '0.95rem', fontWeight: 'bold', marginBottom: '12px' }}>❌ NG 青蛙跳 (永遠彈原位)</div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', color: '#94a3b8', fontSize: '0.95rem', fontFamily: 'monospace' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', background: 'rgba(0,0,0,0.3)', padding: '4px 8px', borderRadius: '4px' }}>
+                                            <span>最高音： G</span> <span style={{ color: '#ef4444' }}>➜ (大跳) ➜</span> <span style={{ color: '#fff' }}>C</span>
+                                        </div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', background: 'rgba(0,0,0,0.3)', padding: '4px 8px', borderRadius: '4px' }}>
+                                            <span>中間音： E</span> <span style={{ color: '#ef4444' }}>➜ (大跳) ➜</span> <span style={{ color: '#fff' }}>A</span>
+                                        </div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', background: 'rgba(0,0,0,0.3)', padding: '4px 8px', borderRadius: '4px' }}>
+                                            <span>最低音： C</span> <span style={{ color: '#ef4444' }}>➜ (大跳) ➜</span> <span style={{ color: '#fff' }}>F</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* OK 示範 */}
+                                <div style={{ background: 'rgba(34, 197, 94, 0.1)', padding: '15px', borderRadius: '8px', border: '1px dashed rgba(34, 197, 94, 0.3)' }}>
+                                    <div style={{ color: '#10b981', fontSize: '0.95rem', fontWeight: 'bold', marginBottom: '12px' }}>✅ OK 轉位 (就近尋找最短路徑)</div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', color: '#94a3b8', fontSize: '0.95rem', fontFamily: 'monospace' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', background: 'rgba(0,0,0,0.3)', padding: '4px 8px', borderRadius: '4px' }}>
+                                            <span>最高音： G</span> <span style={{ color: '#10b981' }}>➜ (走一步) ➜</span> <span style={{ color: '#fff' }}>A</span>
+                                        </div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', background: 'rgba(0,0,0,0.3)', padding: '4px 8px', borderRadius: '4px' }}>
+                                            <span>中間音： E</span> <span style={{ color: '#10b981' }}>➜ (走一步) ➜</span> <span style={{ color: '#fff' }}>F</span>
+                                        </div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', background: 'rgba(250, 204, 21, 0.2)', padding: '4px 8px', borderRadius: '4px' }}>
+                                            <span style={{ color: '#facc15', fontWeight: 'bold' }}>最低音： C</span> <span style={{ color: '#facc15' }}>➜ (共同音) ➜</span> <span style={{ color: '#facc15', fontWeight: 'bold' }}>C</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginTop: '15px', lineHeight: '1.7', margin: '15px 0 0 0' }}>
+                                <strong>💡 大師秘訣：尋找共同音！</strong> 像上面的例子，C 弦和 F 和弦都有「C」這個音，所以彈 F 和弦時，我們刻意把 C 留在最下方（變成 C-F-A，也就是第二轉位）。這樣一來，最高音就會從 G 平穩滑動到 A，聽起來就像在「滑順地唱歌」，這就是專業伴奏聽起來黏密、高級的原因。
+                            </p>
+                        </div>
                     </div>
 
                     {/* 🎧 鋼琴聽覺實戰 */}
