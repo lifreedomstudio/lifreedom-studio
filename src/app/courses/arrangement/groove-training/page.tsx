@@ -281,41 +281,96 @@ export default function GrooveTraining() {
                     </div>
                 </section>
 
-                {/* 2. MIDI 注入人味 */}
-                <section style={{ marginBottom: '6rem' }}>
-                    <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.5rem', color: '#ea580c', marginBottom: '1rem', borderLeft: '8px solid #c2410c', paddingLeft: '20px' }}>
+                <div style={{ marginBottom: '4rem' }}>
+                    <h3 style={{ fontSize: '1.8rem', color: '#ea580c', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{ background: '#ea580c', width: '6px', height: '30px', borderRadius: '4px' }}></span>
                         2. 注入靈魂：MIDI 的「人味」
-                    </h2>
-                    <p style={{ color: '#cbd5e1', fontSize: '1.1rem', marginBottom: '2rem', lineHeight: '1.6' }}>
+                    </h3>
+                    <p style={{ color: '#cbd5e1', fontSize: '1.1rem', lineHeight: '1.8', marginBottom: '2rem' }}>
                         在軟體中編輯鼓組 MIDI 時，最忌諱的就是將所有音符 100% 貼齊在網格線上。真實世界的樂手是不完美的，正是這些微小的瑕疵創造了律動。
                     </p>
 
-                    <div style={{ background: 'rgba(15,23,42,0.4)', padding: isMobile ? '20px' : '40px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                        <MidiHumanizeVisual isMobile={isMobile} />
+                    {/* 視覺化對比區塊 */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
 
-                        <div style={{ marginTop: '2.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                            <div style={{ borderLeft: '4px solid #ea580c', paddingLeft: '20px' }}>
-                                <h4 style={{ color: '#fff', fontSize: '1.2rem', marginBottom: '10px' }}><i className="fa-solid fa-wand-magic-sparkles" style={{ color: '#ea580c' }}></i> 實戰手法 (Humanization)</h4>
-                                <ul style={{ color: '#cbd5e1', lineHeight: '1.8', fontSize: '1.05rem', margin: 0, paddingLeft: '20px' }}>
-                                    <li><strong>力度 (Velocity) 變化：</strong> 不要讓每個音的力度都是 127 (最大值)。加入輕音（Ghost Notes）讓節奏有起伏。</li>
-                                    <li><strong>時間偏移 (Micro-timing)：</strong> 讓 Hi-Hat 稍微晚於網格線出現，會產生一種慵懶、向後拖拽的舒適感 (Laid-back)。</li>
+                        {/* NG 示範：死板機器人 */}
+                        <div style={{ background: 'rgba(15, 23, 42, 0.6)', borderRadius: '16px', padding: '1.5rem', border: '1px solid rgba(255,255,255,0.05)' }}>
+                            <div style={{ textAlign: 'center', color: '#ef4444', fontWeight: 'bold', marginBottom: '1.5rem' }}>死板的機器人 (100% 對齊)</div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', borderLeft: '1px dashed #334155', borderRight: '1px dashed #334155', padding: '20px 0', position: 'relative' }}>
+                                {/* 中間的網格線 */}
+                                <div style={{ position: 'absolute', left: '33%', top: 0, bottom: 0, borderLeft: '1px dashed #334155' }}></div>
+                                <div style={{ position: 'absolute', left: '66%', top: 0, bottom: 0, borderLeft: '1px dashed #334155' }}></div>
+
+                                {/* 完美的音符 */}
+                                <div style={{ width: '40px', height: '20px', background: '#ef4444', borderRadius: '4px', zIndex: 1 }}></div>
+                                <div style={{ width: '40px', height: '20px', background: '#ef4444', borderRadius: '4px', zIndex: 1, position: 'absolute', left: '33%' }}></div>
+                                <div style={{ width: '40px', height: '20px', background: '#ef4444', borderRadius: '4px', zIndex: 1, position: 'absolute', left: '66%' }}></div>
+                            </div>
+                            <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginTop: '1.5rem', lineHeight: '1.6' }}>
+                                每個音符都完美貼在網格線上，且力度完全一樣（127）。聽起來像機關槍，毫無律動感。
+                            </p>
+                        </div>
+
+                        {/* OK 示範：注入人味 */}
+                        <div style={{ background: 'rgba(16, 185, 129, 0.05)', borderRadius: '16px', padding: '1.5rem', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                            <div style={{ textAlign: 'center', color: '#10b981', fontWeight: 'bold', marginBottom: '1.5rem' }}>注入人味 (Humanized)</div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', borderLeft: '1px dashed #334155', borderRight: '1px dashed #334155', padding: '20px 0', position: 'relative' }}>
+                                {/* 中間的網格線 */}
+                                <div style={{ position: 'absolute', left: '33%', top: 0, bottom: 0, borderLeft: '1px dashed #334155' }}></div>
+                                <div style={{ position: 'absolute', left: '66%', top: 0, bottom: 0, borderLeft: '1px dashed #334155' }}></div>
+
+                                {/* 刻意不準的音符 (高度代表力度，左右代表時間偏移) */}
+                                <div style={{ width: '40px', height: '20px', background: '#10b981', borderRadius: '4px', zIndex: 1 }}></div>
+                                <div style={{ width: '40px', height: '12px', background: 'rgba(16, 185, 129, 0.6)', borderRadius: '4px', zIndex: 1, position: 'absolute', left: '33%', transform: 'translateX(18px) translateY(4px)' }}></div> {/* 刻意延遲且變小 */}
+                                <div style={{ width: '40px', height: '16px', background: 'rgba(16, 185, 129, 0.8)', borderRadius: '4px', zIndex: 1, position: 'absolute', left: '66%', transform: 'translateX(-10px) translateY(2px)' }}></div> {/* 刻意提早 */}
+                            </div>
+                            <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginTop: '1.5rem', lineHeight: '1.6' }}>
+                                時間有微小的偏差（明顯看到方塊偏離虛線），且視覺高度代表打擊力度（Velocity）有輕重之分，這才是人類打鼓的呼吸感。
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* 具體數值建議區 (新增) */}
+                    <div style={{ background: '#0f172a', padding: '2rem', borderRadius: '16px', borderLeft: '4px solid #38bdf8' }}>
+                        <h4 style={{ color: '#38bdf8', fontSize: '1.2rem', marginBottom: '1rem', fontWeight: 'bold' }}>🥁 各部件實戰數值參考 (以常見 8-Beat 為例)</h4>
+                        <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '1.5rem' }}>* MIDI 力度值範圍為 0-127，以下數值為建議起點，請依曲風微調：</p>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
+
+                            {/* Hi-hat */}
+                            <div style={{ background: '#020617', padding: '1.5rem', borderRadius: '12px' }}>
+                                <h5 style={{ color: '#e2e8f0', fontSize: '1.1rem', marginBottom: '0.5rem' }}>Hi-Hat (雙面鈸)</h5>
+                                <div style={{ color: '#fca311', fontSize: '0.85rem', marginBottom: '10px' }}>律動的靈魂，絕對不能一樣大聲</div>
+                                <ul style={{ color: '#cbd5e1', fontSize: '0.9rem', lineHeight: '1.8', paddingLeft: '20px', margin: 0 }}>
+                                    <li><strong>正拍 (1, 2, 3, 4拍)：</strong> 力度設為 <span style={{ color: '#10b981' }}>90 - 105</span></li>
+                                    <li><strong>反拍 (1.5, 2.5拍...)：</strong> 力度降為 <span style={{ color: '#10b981' }}>60 - 75</span></li>
+                                    <li><strong>時間微調：</strong> 讓所有 Hi-Hat 稍微<span style={{ color: '#ef4444' }}>延遲 5-10 個 Ticks</span>，能創造慵懶的 Laid-back 感。</li>
                                 </ul>
                             </div>
 
-                            <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '16px', padding: '20px' }}>
-                                <h4 style={{ color: '#f8fafc', fontSize: '1.1rem', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <i className="fa-brands fa-youtube" style={{ color: '#ef4444', fontSize: '1.5rem' }}></i> 進階學習推薦
-                                </h4>
-                                <p style={{ color: '#cbd5e1', fontSize: '1rem', lineHeight: '1.6', marginBottom: '15px' }}>
-                                    想進一步了解真實鼓手是如何打擊的？推薦觀看 GQ Taiwan 的《專業鼓手示範13個難度級別的鼓技》。影片中詳細示範了不同樂風的拍點差異，以及如何透過 Velocity 創造出無可取代的呼吸感！
-                                </p>
-                                <a href="https://www.youtube.com/watch?v=aKHgDLm2f0o" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', background: '#ef4444', color: '#fff', padding: '10px 20px', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '0.95rem', transition: 'background 0.2s' }}>
-                                    前往觀看 YouTube 影片 ➔
-                                </a>
+                            {/* Kick */}
+                            <div style={{ background: '#020617', padding: '1.5rem', borderRadius: '12px' }}>
+                                <h5 style={{ color: '#e2e8f0', fontSize: '1.1rem', marginBottom: '0.5rem' }}>Kick (大鼓)</h5>
+                                <div style={{ color: '#fca311', fontSize: '0.85rem', marginBottom: '10px' }}>整首歌的底盤，與 Bass 緊密咬合</div>
+                                <ul style={{ color: '#cbd5e1', fontSize: '0.9rem', lineHeight: '1.8', paddingLeft: '20px', margin: 0 }}>
+                                    <li><strong>第一拍重音：</strong> 需要穩定感，精準貼齊網格，力度 <span style={{ color: '#10b981' }}>110 - 120</span></li>
+                                    <li><strong>過門裝飾音 (Ghost Note)：</strong> 藏在正拍之前的連續雙踩，力度降至 <span style={{ color: '#10b981' }}>40 - 65</span>，創造推動感。</li>
+                                </ul>
                             </div>
+
+                            {/* Snare */}
+                            <div style={{ background: '#020617', padding: '1.5rem', borderRadius: '12px' }}>
+                                <h5 style={{ color: '#e2e8f0', fontSize: '1.1rem', marginBottom: '0.5rem' }}>Snare (小鼓)</h5>
+                                <div style={{ color: '#fca311', fontSize: '0.85rem', marginBottom: '10px' }}>穩定軍心的心跳</div>
+                                <ul style={{ color: '#cbd5e1', fontSize: '0.9rem', lineHeight: '1.8', paddingLeft: '20px', margin: 0 }}>
+                                    <li><strong>第 2、4 拍主擊：</strong> 力度要穩，約 <span style={{ color: '#10b981' }}>100 - 115</span></li>
+                                    <li><strong>時間微調：</strong> 如果歌曲需要「往前衝」的興奮感，可以將小鼓稍微<span style={{ color: '#38bdf8' }}>提早 3-5 個 Ticks</span>。</li>
+                                </ul>
+                            </div>
+
                         </div>
                     </div>
-                </section>
+                </div>
 
                 {/* 3. 為什麼大鼓和貝斯會打架？ */}
                 <section style={{ marginBottom: '6rem' }}>
