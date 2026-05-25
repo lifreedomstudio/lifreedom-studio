@@ -58,20 +58,34 @@ export default function RootLayout({
               Lifreedom <span style={{ color: '#38bdf8' }}>Studio</span>
             </span>
           </Link>
-          {/* 右側選單：全名回歸，強制不斷行，超出版面可滑動 */}
+          {/* 右側選單：全名回歸，加入登入與方案 */}
           <div style={{
             display: 'flex',
-            gap: isMobile ? '8px' : '1.5rem',
+            gap: isMobile ? '12px' : '1.5rem',
             alignItems: 'center',
             fontSize: isMobile ? '0.75rem' : '0.85rem',
             fontWeight: 'bold',
-            whiteSpace: 'nowrap',       // 👈 補上這個：絕對不准換行，保護字體不被擠壓
-            overflowX: 'auto'           // 👈 補上這個：如果手機螢幕太窄，會變成可以左右滑動
+            whiteSpace: 'nowrap',
+            overflowX: 'auto',
+            paddingBottom: isMobile ? '4px' : '0' // 微調：讓手機版滑動條有一點空間
           }}>
             <Link href="/courses" style={{ color: '#e2e8f0', textDecoration: 'none' }}>📚 建築所</Link>
             <Link href="/incubator" style={{ color: '#e2e8f0', textDecoration: 'none' }}>🧪 實驗室</Link>
             <Link href="/glossary" style={{ color: '#e2e8f0', textDecoration: 'none' }}>📖 魔導書</Link>
             <Link href="/collection" style={{ color: '#fbbf24', textDecoration: 'none' }}>📜 卡片圖鑑</Link>
+
+            <span style={{ color: '#475569' }}>|</span> {/* 視覺分隔線 */}
+
+            <Link href="/pricing" style={{ color: '#facc15', textDecoration: 'none' }}>💎 方案</Link>
+            <Link href="/login" style={{
+              background: 'rgba(255,255,255,0.1)',
+              color: '#fff',
+              textDecoration: 'none',
+              padding: '6px 14px',
+              borderRadius: '50px'
+            }}>
+              登入
+            </Link>
           </div>
         </nav>
         {/* 🤖 懸浮 AI 聽診：膠囊化設計，更有點擊感 */}

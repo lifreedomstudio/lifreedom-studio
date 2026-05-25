@@ -17,18 +17,7 @@ export default function HomePage() {
   return (
     <div style={{ minHeight: '100vh', background: '#020617', color: '#f8fafc', fontFamily: 'sans-serif', overflowX: 'hidden' }}>
 
-      {/* 🔝 導覽列 */}
-      <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: isMobile ? '1.5rem' : '1.5rem 4rem', borderBottom: '1px solid rgba(255,255,255,0.05)', position: 'absolute', width: '100%', top: 0, zIndex: 10, boxSizing: 'border-box' }}>
-        <div style={{ fontSize: '1.2rem', fontWeight: '900', color: '#fca311', letterSpacing: '1px' }}>Lifreedom Studio</div>
-        <div style={{ display: 'flex', gap: isMobile ? '0.5rem' : '1.5rem', alignItems: 'center' }}>
-          <button onClick={() => router.push('/pricing')} style={{ background: 'transparent', color: '#facc15', border: '1px solid rgba(250, 204, 21, 0.4)', borderRadius: '50px', padding: '6px 16px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.9rem', transition: 'all 0.2s' }} onMouseOver={e => e.currentTarget.style.background = 'rgba(250, 204, 21, 0.1)'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
-            💎 訂閱方案
-          </button>
-          <button onClick={() => router.push('/login')} style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', border: 'none', padding: '8px 20px', borderRadius: '50px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.9rem' }}>
-            登入
-          </button>
-        </div>
-      </nav>
+
 
       {/* 🌟 1. 英雄視覺區 (Hero Section) */}
       <div style={{
