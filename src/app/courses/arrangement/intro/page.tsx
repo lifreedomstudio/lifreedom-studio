@@ -115,6 +115,7 @@ export default function ArrangementIntro() {
                                 <p style={{ color: '#cbd5e1', margin: 0, fontSize: '0.95rem', lineHeight: '1.5' }}>這首歌，是要讓人點頭，還是讓人掉淚？
                                     曲風與 BPM，決定的是「身體反應」。
                                     你是在做 Chill、Groove，還是衝擊力？
+
                                     👉 這一步，決定了整首歌的靈魂走向。</p>
                             </div>
                             <div style={{ background: 'rgba(0,0,0,0.4)', padding: '1.2rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
@@ -122,6 +123,7 @@ export default function ArrangementIntro() {
                                 <p style={{ color: '#cbd5e1', margin: 0, fontSize: '0.95rem', lineHeight: '1.5' }}>誰是主角？誰該退後？
                                     不是每個聲音都要大聲，
                                     而是要讓「重要的聲音被聽見」。
+
                                     👉 頻率分配做對，
                                     你會發現根本不用混音也很清楚。</p>
                             </div>
@@ -130,6 +132,7 @@ export default function ArrangementIntro() {
                                 <p style={{ color: '#cbd5e1', margin: '0 0 10px 0', fontSize: '0.95rem', lineHeight: '1.5' }}>沒有起伏的音樂，就像沒有高潮的電影。
                                     我們要做的不是一直堆東西，
                                     而是「控制能量」。
+
                                     👉 真正厲害的，是讓副歌出來那一刻，
                                     觀眾有感覺。</p>
                                 <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '8px', marginBottom: '8px' }}>
@@ -158,17 +161,15 @@ export default function ArrangementIntro() {
                             <span style={{ fontSize: '0.85rem', color: '#fca311', fontWeight: 'bold', letterSpacing: '3px' }}>INTERACTIVE STAGE DESIGN</span>
                             <h3 style={{ color: '#fff', fontSize: '1.6rem', margin: '0.5rem 0 1rem 0', fontWeight: 'bold' }}>在編寫音符之前，
                                 先學會一件更關鍵的事：
+
                                 👉「聲音要站在哪裡」</h3>
                             <p style={{ color: '#cbd5e1', margin: 0, lineHeight: '1.7', fontSize: '1.05rem' }}>
                                 很多人編曲會卡住，不是因為不會寫，
                                 而是所有聲音都擠在同一個地方。
                                 戴上耳機進來體驗：
-                                你會聽到
-                                👉 混亂 vs 清晰
+                                你會聽到    👉 混亂 vs 清晰    👉 擁擠 vs 寬廣
 
-                                👉 擁擠 vs 寬廣
-
-                                這一關，會直接改變你的耳朵。。<br />
+                                這一關，會直接改變你的耳朵。<br />
                                 戴上耳機進來玩玩看：親耳體驗所有樂器擠在中間的「頻率災難」，並感受 J-Rock LCR 擺位法帶來的震撼寬廣度。
                             </p>
                         </div>

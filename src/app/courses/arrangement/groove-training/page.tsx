@@ -240,6 +240,26 @@ export default function GrooveTraining() {
                         音樂的地基。當大鼓與貝斯成為最好的朋友，你的音樂就會開始產生強大的呼吸感。
                     </p>
                 </header>
+                <p style={{
+                    color: '#fca311',
+                    fontSize: isMobile ? '1.1rem' : '1.3rem',
+                    fontWeight: 'bold',
+                    marginBottom: '1.5rem',
+                    textAlign: 'center'
+                }}>
+                    👉 你做的 beat，為什麼「聽起來就是不會動」？
+                </p>
+                <p style={{
+                    color: '#cbd5e1',
+                    fontSize: '1.05rem',
+                    maxWidth: '700px',
+                    margin: '0 auto 2rem auto',
+                    textAlign: 'center',
+                    lineHeight: '1.7'
+                }}>
+                    問題不在音色，也不在編曲技巧。<br />
+                    而是你還沒有掌握「Groove 的核心」。
+                </p>
 
                 {/* 1. 鼓組解剖學 */}
                 <section style={{ marginBottom: '6rem' }}>
@@ -247,7 +267,9 @@ export default function GrooveTraining() {
                         1. 聽見節奏：鼓組解剖學
                     </h2>
                     <p style={{ color: '#cbd5e1', fontSize: '1.1rem', marginBottom: '2rem', lineHeight: '1.6' }}>
-                        很多新手聽歌時只注意到主唱跟吉他，卻忽略了撐起整首歌靈魂的「鼓組」。戴上耳機，點擊下方區塊來認識它們的聲音與職責：
+                        很多新手聽歌時只注意到主唱跟吉他，卻忽略了撐起整首歌靈魂的「鼓組」。戴上耳機，依序點擊下面每個聲音，試著回答：
+
+                        👉 「哪一個在負責節奏？哪一個在製造能量？」
                     </p>
 
                     <FullDrumKitVisual isMobile={isMobile} />
@@ -287,7 +309,7 @@ export default function GrooveTraining() {
                         2. 注入靈魂：MIDI 的「人味」
                     </h3>
                     <p style={{ color: '#cbd5e1', fontSize: '1.1rem', lineHeight: '1.8', marginBottom: '2rem' }}>
-                        在軟體中編輯鼓組 MIDI 時，最忌諱的就是將所有音符 100% 貼齊在網格線上。真實世界的樂手是不完美的，正是這些微小的瑕疵創造了律動。
+                        在軟體中編輯鼓組 MIDI 時，最忌諱的就是將所有音符 100% 貼齊在網格線上。真實世界的樂手是不完美的，正是這些微小的瑕疵創造了律動。👉 這就是為什麼你做的鼓「永遠像 demo」。
                     </p>
 
                     {/* 視覺化對比區塊 */}
@@ -402,7 +424,12 @@ export default function GrooveTraining() {
 
                     <AudioComparer
                         title="🎧 聽覺試煉：感受 Lock-in 的魔力"
-                        description="點擊播放，並切換兩個版本。注意聽底下那個低沉的推動力，有沒有覺得「完美鎖定」的版本聽起來比較有彈性、比較爽？"
+                        description="切換兩個版本，注意聽：
+
+👉 大鼓和貝斯「有沒有同時出現」
+👉 低頻是「一坨」還是「有彈性」
+
+當你聽懂這個差別，你就跨過 80% 新手了。"
                         badSrc="/audio/kick-bass-bad.mp3"
                         goodSrc="/audio/kick-bass-good.mp3"
                         isMobile={isMobile}
