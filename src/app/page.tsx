@@ -42,8 +42,7 @@ export default function HomePage() {
           lineHeight: 1.2, background: 'linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%)',
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textShadow: '0 10px 30px rgba(0,0,0,0.5)'
         }}>
-          你不是不會混音
-          只是從來沒「真正聽懂」
+          你不是不會混音，只是從來沒「真正聽懂」
         </h1>
 
         <p style={{
