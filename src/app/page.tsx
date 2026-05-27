@@ -46,18 +46,30 @@ export default function HomePage() {
         </h1>
 
         <p style={{
-          fontSize: isMobile ? '1rem' : '1.25rem', color: '#cbd5e1', maxWidth: '750px',
-          marginBottom: '3.5rem', lineHeight: '1.8', fontWeight: '400', textShadow: '0 2px 10px rgba(0,0,0,0.8)', wordBreak: 'keep-all'
+          fontSize: isMobile ? '1rem' : '1.25rem',
+          color: '#cbd5e1',
+          maxWidth: '750px',
+          marginBottom: '3.5rem',
+          lineHeight: '1.8',
+          fontWeight: '400',
+          textShadow: '0 2px 10px rgba(0,0,0,0.8)',
+          wordBreak: 'keep-all'
         }}>
-          看了教學卻做不出一樣的聲音？<br />
-          轉了一堆 EQ，卻不知道自己到底改了什麼？<br />
-          <span style={{ color: '#fca311', fontWeight: 'bold' }}>Lifreedom STUDIO</span> 不是教你「怎麼做」 <br />
-          而是讓你第一次真正「聽懂差別」。</p>
+          看了教學，卻做不出一樣的聲音？<br />
+          轉了一堆 EQ，卻不知道自己到底改了什麼？<br /><br />
 
+          <span style={{ color: '#fca311', fontWeight: 'bold' }}>
+            問題不是你不夠努力，
+            是你還沒有建立「聽覺判斷」。
+          </span><br /><br />
 
+          <span style={{ color: '#fca311', fontWeight: 'bold' }}>Lifreedom STUDIO</span>
+          不只是教你怎麼做，<br />
+          而是讓你開始「知道自己在做什麼」。
+        </p>
         <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexDirection: isMobile ? 'column' : 'row', width: isMobile ? '100%' : 'auto', maxWidth: '500px' }}>
           <button onClick={() => router.push('/courses')} style={{ flex: 1, padding: isMobile ? '1.2rem' : '1.2rem 3rem', background: '#fca311', color: '#000', fontSize: '1.1rem', fontWeight: '900', borderRadius: '50px', border: 'none', cursor: 'pointer', boxShadow: '0 10px 40px rgba(252, 163, 17, 0.4)' }}>
-            🚀 開始第一次「聽懂混音」
+            🚀 開始建立我的混音判斷力
           </button>
           <button onClick={() => router.push('/pricing')} style={{ flex: 1, padding: isMobile ? '1.2rem' : '1.2rem 3rem', background: 'transparent', color: '#fca311', border: '2px solid #fca311', fontSize: '1.1rem', fontWeight: '900', borderRadius: '50px', cursor: 'pointer' }}>
             💎 解鎖完整製作能力

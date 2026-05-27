@@ -83,10 +83,13 @@ export default function MixingIntroduction() {
                         混音新手村：大師見面會 (INTRO)
                     </div>
                     <h1 style={{ fontSize: isMobile ? '2.5rem' : '4.5rem', fontWeight: '900', margin: '0 0 1rem 0', background: 'linear-gradient(135deg, #38bdf8, #818cf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                        混音學：打造聲音的立體舞台
+                        混音學：把聲音從 2D 拉進 3D 世界
                     </h1>
                     <p style={{ color: '#94a3b8', fontSize: '1.1rem', maxWidth: '700px', margin: '0 auto', lineHeight: '1.6' }}>
-                        歡迎來到混音的世界！在真正開始深造各項魔法之前，讓我們先用最生活化的方式，搞懂這幾個每天都會聽到、卻總是似懂非懂的核心名詞。
+                        你可能已經會寫歌、會編曲，
+                        但只要一混音，整首歌就糊掉、扁掉、沒層次。
+                        問題不是你不夠努力，
+                        而是你還沒建立「混音的思維模型」。在真正開始深造各項魔法之前，讓我們先用最生活化的方式，搞懂這幾個每天都會聽到、卻總是似懂非懂的核心名詞。
                     </p>
                 </header>
 
@@ -97,7 +100,8 @@ export default function MixingIntroduction() {
                             🏠 什麼是「混音 (Mixing)」？
                         </h2>
                         <p style={{ color: '#cbd5e1', lineHeight: '1.8', fontSize: '1.15rem', marginBottom: '1.5rem', textAlign: 'justify' }}>
-                            新手最常犯的錯就是覺得混音就是「把每個聲音調大」。其實，混音就像是在<strong style={{ color: '#fff' }}>「佈置一間新房子」</strong>。
+                            新手最常犯的錯就是覺得混音就是「把每個聲音調大」。其實，混音就像是在<strong style={{ color: '#fff' }}>「佈置一間新房子」混音，不是讓聲音變大聲
+                                而是讓每個聲音「待在對的位置」。</strong>。
                         </p>
                         <div style={{ background: 'rgba(56, 189, 248, 0.05)', borderLeft: '4px solid #38bdf8', padding: '20px', borderRadius: '0 12px 12px 0' }}>
                             <p style={{ color: '#f8fafc', lineHeight: '1.8', fontSize: '1.1rem', margin: 0 }}>
@@ -121,7 +125,8 @@ export default function MixingIntroduction() {
                             <h4 style={{ color: '#38bdf8', fontSize: '1.2rem', margin: '0 0 10px 0' }}>🚰 白話文翻譯：水龍頭的總開關</h4>
                             <p style={{ lineHeight: '1.8', color: '#cbd5e1', fontSize: '1.05rem', margin: 0 }}>
                                 Gain 就像是廚房水龍頭的水量設定。水（聲音）要夠大你才能洗菜（掛效果器處理）；但如果水龍頭一開始就開到緊繃，水柱會噴得到處都是，把廚房弄得一團糟（<span style={{ color: '#ef4444' }}>紅燈爆音失真</span>）。<br /><br />
-                                所以我們通常會讓軌道維持在 -12dB 到 -18dB 之間，給後續的效果器留一點處理的「空間 (Headroom)」。
+                                所以我們通常會讓軌道維持在 -12dB 到 -18dB 之間，給後續的效果器留一點處理的「空間 (Headroom)」如果 Gain 一開始就錯，
+                                後面所有 EQ、Compressor 都只是在補破洞。
                             </p>
                         </div>
                     </div>
@@ -145,7 +150,8 @@ export default function MixingIntroduction() {
                         <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px dashed #10b981', padding: '20px', borderRadius: '16px' }}>
                             <h4 style={{ color: '#10b981', fontSize: '1.2rem', margin: '0 0 10px 0' }}>👮 EQ：公寓社區主委</h4>
                             <p style={{ lineHeight: '1.8', color: '#cbd5e1', fontSize: '1.05rem', margin: 0 }}>
-                                EQ 就是這棟樓的主委。如果吉他手跑到地下室佔空間（低頻太多），主委就會用 EQ 把他趕回中間樓層；如果主唱覺得房間太暗，主委就幫他把頂樓窗戶打開（提亮高頻）。<strong style={{ color: '#fff' }}>嚴格管理每個人待在對的樓層！</strong>
+                                EQ 就是這棟樓的主委。如果吉他手跑到地下室佔空間（低頻太多），主委就會用 EQ 把他趕回中間樓層；如果主唱覺得房間太暗，主委就幫他把頂樓窗戶打開（提亮高頻）。<strong style={{ color: '#fff' }}>嚴格管理每個人待在對的樓層！EQ 的本質不是「讓聲音好聽」
+                                    而是「讓每個聲音有空間活下來」</strong>
                             </p>
                         </div>
                     </div>
@@ -161,7 +167,7 @@ export default function MixingIntroduction() {
 
                     <div style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.05), rgba(245,158,11,0.1))', padding: isMobile ? '20px' : '35px', borderRadius: '24px', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
                         <h4 style={{ color: '#f59e0b', fontSize: '1.3rem', margin: '0 0 20px 0', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <span style={{ fontSize: '1.8rem' }}>😡</span> 終極白話文：正在教訓你的老爸
+                            <span style={{ fontSize: '1.8rem' }}>😡</span> 這是最白話、但業界都在用的理解方式：正在教訓你的老爸
                         </h4>
                         <p style={{ color: '#cbd5e1', fontSize: '1.1rem', marginBottom: '20px' }}>把 Compressor 想像成一個脾氣暴躁，但為了你好而在管教你的老爸：</p>
 
@@ -175,10 +181,29 @@ export default function MixingIntroduction() {
                     </div>
                 </section>
 
-                {/* 下一章 CTA */}
+                {/* 下一章 CTA 與 成就回顧 */}
                 <section style={{ textAlign: 'center', padding: '5rem 0', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+
+                    {/* 🏆 新增：你現在已學會 (成就感區塊) */}
+                    <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid #10b981', borderRadius: '16px', padding: '2rem', maxWidth: '650px', margin: '0 auto 4rem auto', textAlign: 'left', boxShadow: '0 4px 20px rgba(16, 185, 129, 0.15)' }}>
+                        <h3 style={{ color: '#10b981', fontSize: '1.3rem', margin: '0 0 1.2rem 0', display: 'flex', alignItems: 'center', gap: '10px', fontWeight: 'bold' }}>
+                            <span style={{ fontSize: '1.5rem' }}>🏆</span> 你現在已學會：
+                        </h3>
+                        <ul style={{ color: '#cbd5e1', fontSize: '1.1rem', lineHeight: '2', margin: 0, paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <li>混音的本質不是變大聲，而是<strong style={{ color: '#fff' }}>分配專屬的呼吸空間</strong>。</li>
+                            <li><strong style={{ color: '#38bdf8' }}>Gain (增益)</strong>：水龍頭總開關，控制健康音量與 Headroom。</li>
+                            <li><strong style={{ color: '#10b981' }}>EQ (等化器)</strong>：大樓主委，嚴格管理頻率，解決樂器打架。</li>
+                            <li><strong style={{ color: '#f59e0b' }}>Compressor (壓縮器)</strong>：嚴厲老爸，控制聲音動態與力量。</li>
+                        </ul>
+                    </div>
+
                     <h2 style={{ fontSize: isMobile ? '1.8rem' : '2rem', marginBottom: '1.5rem', fontWeight: 'bold' }}>概念裝備完畢，準備進入實戰！</h2>
-                    <p style={{ color: '#94a3b8', fontSize: '1.1rem', marginBottom: '2.5rem' }}>現在你已經擁有了混音師的腦袋，讓我們打好混音的第一塊地基吧。</p>
+
+                    {/* 🎯 新增：痛點引導 CTA */}
+                    <p style={{ color: '#facc15', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '2rem', textShadow: '0 2px 10px rgba(250, 204, 21, 0.3)' }}>
+                        如果你現在混音常遇到「聲音一多就糊」，下一關會直接解決這個問題 👇
+                    </p>
+
                     <button
                         onClick={() => router.push('/courses/mixing/gain-staging-training')}
                         style={{
