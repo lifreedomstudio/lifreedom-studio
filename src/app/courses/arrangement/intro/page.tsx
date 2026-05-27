@@ -71,6 +71,7 @@ export default function ArrangementIntro() {
                         lineHeight: '1.6', padding: isMobile ? '0 0.5rem' : '0'
                     }}>
                         在真正開始混音之前，你必須先學會一件更關鍵的事：
+
                         👉 讓你的音樂「一開始就不會打架」。
                         這一章，會幫你建立製作人的底層思維。
                     </p>
@@ -164,7 +165,9 @@ export default function ArrangementIntro() {
                                 戴上耳機進來體驗：
                                 你會聽到
                                 👉 混亂 vs 清晰
+
                                 👉 擁擠 vs 寬廣
+
                                 這一關，會直接改變你的耳朵。。<br />
                                 戴上耳機進來玩玩看：親耳體驗所有樂器擠在中間的「頻率災難」，並感受 J-Rock LCR 擺位法帶來的震撼寬廣度。
                             </p>
@@ -199,8 +202,7 @@ export default function ArrangementIntro() {
                             <div style={{ fontSize: isMobile ? '2.5rem' : '3.5rem', marginBottom: '1rem' }}>🥁</div>
                             <h3 style={{ color: '#fff', fontSize: '1.2rem', margin: '0 0 0.8rem 0' }}>1. Groove (節奏骨架)</h3>
                             <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>不是節奏而已，是「會讓人動的節奏」。
-                                當 Kick 跟 Bass 開始鎖在一起，
-                                你的音樂才會開始有生命。</p>
+                                當 Kick 跟 Bass 開始鎖在一起，你的音樂才會開始有生命。</p>
                         </div>
 
                         {/* 關卡 2 */}
@@ -216,8 +218,7 @@ export default function ArrangementIntro() {
                         <div style={{ ...cardStyle, borderTop: '4px solid #22c55e' }}>
                             <div style={{ fontSize: isMobile ? '2.5rem' : '3.5rem', marginBottom: '1rem' }}>🛡️</div>
                             <h3 style={{ color: '#fff', fontSize: '1.2rem', margin: '0 0 0.8rem 0' }}>3. Masking (頻率遮蔽預防)</h3>
-                            <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>問題不是 EQ 不夠強，
-                                而是你一開始就寫錯了。
+                            <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>問題不是 EQ 不夠強，而是你一開始就寫錯了。
                                 👉 這關會讓你少走 80% 混音彎路。</p>
                         </div>
 
@@ -226,8 +227,7 @@ export default function ArrangementIntro() {
                             <div style={{ fontSize: isMobile ? '2.5rem' : '3.5rem', marginBottom: '1rem' }}>🎢</div>
                             <h3 style={{ color: '#fff', fontSize: '1.2rem', margin: '0 0 0.8rem 0' }}>4. Dynamics (動態與曲式)</h3>
                             <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>讓人起雞皮疙瘩的關鍵。
-                                不是更大聲，
-                                而是「何時釋放」。</p>
+                                不是更大聲，而是「何時釋放」。</p>
                         </div>
 
                     </div>
