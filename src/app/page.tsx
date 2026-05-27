@@ -42,23 +42,26 @@ export default function HomePage() {
           lineHeight: 1.2, background: 'linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%)',
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textShadow: '0 10px 30px rgba(0,0,0,0.5)'
         }}>
-          預算有限，也值得擁有大師級的混音腦袋
+          你不是不會混音
+          只是從來沒「真正聽懂」
         </h1>
 
         <p style={{
           fontSize: isMobile ? '1rem' : '1.25rem', color: '#cbd5e1', maxWidth: '750px',
           marginBottom: '3.5rem', lineHeight: '1.8', fontWeight: '400', textShadow: '0 2px 10px rgba(0,0,0,0.8)', wordBreak: 'keep-all'
         }}>
-          找老師怕學不到想要的？看教學怕套用在自己的歌裡沒效？<br />
-          <span style={{ color: '#fca311', fontWeight: 'bold' }}>Lifreedom STUDIO</span> 首創聽覺互動教學，為你開啟業界標準的任意門。
-        </p>
+          看了教學卻做不出一樣的聲音？<br />
+          轉了一堆 EQ，卻不知道自己到底改了什麼？<br />
+          <span style={{ color: '#fca311', fontWeight: 'bold' }}>Lifreedom STUDIO</span> 不是教你「怎麼做」 <br />
+          而是讓你第一次真正「聽懂差別」。</p>
+
 
         <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexDirection: isMobile ? 'column' : 'row', width: isMobile ? '100%' : 'auto', maxWidth: '500px' }}>
           <button onClick={() => router.push('/courses')} style={{ flex: 1, padding: isMobile ? '1.2rem' : '1.2rem 3rem', background: '#fca311', color: '#000', fontSize: '1.1rem', fontWeight: '900', borderRadius: '50px', border: 'none', cursor: 'pointer', boxShadow: '0 10px 40px rgba(252, 163, 17, 0.4)' }}>
-            🚀 免費開始修煉
+            🚀 開始第一次「聽懂混音」
           </button>
           <button onClick={() => router.push('/pricing')} style={{ flex: 1, padding: isMobile ? '1.2rem' : '1.2rem 3rem', background: 'transparent', color: '#fca311', border: '2px solid #fca311', fontSize: '1.1rem', fontWeight: '900', borderRadius: '50px', cursor: 'pointer' }}>
-            💎 查看訂閱方案
+            💎 解鎖完整製作能力
           </button>
         </div>
       </div>
@@ -67,19 +70,19 @@ export default function HomePage() {
       <div style={{ padding: isMobile ? '4rem 1.5rem' : '8rem 2rem', background: '#020617' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <h2 style={{ textAlign: 'center', fontSize: isMobile ? '2rem' : '2.8rem', marginBottom: '4rem', color: '#fff' }}>
-            為什麼看了無數教學，混音還是<span style={{ color: '#ef4444' }}>糊成一團</span>？
+            為什麼你已經很努力了<br />
+            混音卻還是<span style={{ color: '#ef4444' }}>糊掉</span>？
           </h2>
-
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2.5rem' }}>
             {/* 痛點 */}
             <div style={{ background: 'rgba(239, 68, 68, 0.05)', border: '1px solid rgba(239, 68, 68, 0.2)', padding: '3rem 2rem', borderRadius: '24px' }}>
               <div style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>🥱</div>
-              <h3 style={{ color: '#ef4444', fontSize: '1.6rem', marginBottom: '1.5rem', fontWeight: 'bold' }}>找老師與看影片的致命傷</h3>
+              <h3 style={{ color: '#ef4444', fontSize: '1.6rem', marginBottom: '1.5rem', fontWeight: 'bold' }}>你不是學不會，而是卡在這裡</h3>
               <ul style={{ color: '#94a3b8', lineHeight: '2.2', fontSize: '1.1rem', paddingLeft: '20px', margin: 0 }}>
-                <li><strong style={{ color: '#cbd5e1' }}>盲盒效應：</strong> 鐘點費高昂，卻不確定老師擅長的是否是你要的曲風。</li>
-                <li><strong style={{ color: '#cbd5e1' }}>介面水土不服：</strong> 老師用的 DAW 跟幾萬塊插件，跟你家裡的完全長不一樣，回家不知從何下手。</li>
-                <li><strong style={{ color: '#cbd5e1' }}>單向輸出：</strong> 充滿「Q度」、「溫暖」等抽象名詞，無法自己拉參數聽差異。</li>
-                <li><strong style={{ color: '#cbd5e1' }}>技術死角：</strong> 老師不見得精通所有技巧，常常理論跟你的實戰脫節。</li>
+                <li><strong>盲盒學習：</strong> 花了時間和錢，卻不確定學的東西能不能用在你的音樂。</li>
+                <li><strong>設備落差：</strong> 教學裡的插件與環境，回到自己電腦完全對不上。</li>
+                <li><strong>只會形容，不會判斷：</strong> 「溫暖」「厚」這些詞，你聽過，但你調不出來。</li>
+                <li><strong>知道理論，做不出聲音：</strong> 你懂 EQ / Compressor，但聲音還是沒變好。</li>
               </ul>
             </div>
 
@@ -87,12 +90,12 @@ export default function HomePage() {
             <div style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '3rem 2rem', borderRadius: '24px', position: 'relative', overflow: 'hidden', boxShadow: '0 20px 50px rgba(16, 185, 129, 0.1)' }}>
               <div style={{ position: 'absolute', top: 0, right: 0, background: '#10b981', color: '#020617', padding: '8px 24px', borderBottomLeftRadius: '24px', fontWeight: '900', fontSize: '0.9rem', letterSpacing: '1px' }}>OUR SOLUTION</div>
               <div style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>🤖</div>
-              <h3 style={{ color: '#10b981', fontSize: '1.6rem', marginBottom: '1.5rem', fontWeight: 'bold' }}>Lifreedom 沉浸式互動系統</h3>
+              <h3 style={{ color: '#10b981', fontSize: '1.6rem', marginBottom: '1.5rem', fontWeight: 'bold' }}>我們不是教學，是「可操作的聽覺系統」</h3>
               <ul style={{ color: '#cbd5e1', lineHeight: '2.2', fontSize: '1.1rem', paddingLeft: '20px', margin: 0 }}>
-                <li><strong style={{ color: '#fff' }}>無死角 AI 聽診：</strong> 涵蓋全曲風知識庫與各大 Plugin/DAW 介面操作，傳截圖就教你調！</li>
-                <li><strong style={{ color: '#fff' }}>A/B 聽覺實驗室：</strong> 災難示範 vs 完美混音，親手一鍵切換。</li>
-                <li><strong style={{ color: '#fff' }}>大白話教學：</strong> 用「公寓主委」、「暴躁老爸」秒懂複雜理論。</li>
-                <li><strong style={{ color: '#fff' }}>破解介面限制：</strong> 教你聲學底層邏輯，換什麼軟體都能無痛接軌。</li>
+                <li><strong>AI 聽診：</strong> 丟你的混音進來，直接告訴你哪裡出問題、怎麼修。</li>
+                <li><strong>A/B 聽覺訓練：</strong> 不是看懂，是「聽到差異」並內化。</li>
+                <li><strong>翻譯複雜理論：</strong> 把艱深音訊概念變成你腦中有畫面的東西。</li>
+                <li><strong>脫離插件依賴：</strong> 不管你用什麼 DAW，都能做出正確判斷。</li>
               </ul>
             </div>
           </div>
@@ -104,13 +107,19 @@ export default function HomePage() {
         <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '3rem', alignItems: 'center' }}>
           <div style={{ flex: 1 }}>
             <span style={{ color: '#a78bfa', fontWeight: 'bold', letterSpacing: '3px', fontSize: '0.9rem' }}>NEW FEATURE</span>
-            <h2 style={{ fontSize: isMobile ? '2rem' : '2.8rem', color: '#fff', margin: '1rem 0 1.5rem 0' }}>AI 音樂很神，<br />但音質很「塑膠」？</h2>
+            <h2 style={{ fontSize: isMobile ? '2rem' : '2.8rem', color: '#fff', margin: '1rem 0 1.5rem 0' }}> AI 可以幫你做歌<br />
+              但救不了你的聲音</h2>
             <p style={{ color: '#cbd5e1', fontSize: '1.1rem', lineHeight: '1.8', marginBottom: '1.5rem' }}>
-              Suno 或 Udio 生成的歌總是聽起來悶悶的、充滿數位雜音？<br />
-              Lifreedom 特別收錄 <strong>「AI 生成音檔後期優化指南」</strong>！教你如何運用 EQ 切除數位泥淖、使用動態處理救回瞬態，並透過母帶技術將 AI 音樂推升至 Spotify 商業發行標準。
+              用 Suno / Udio 做出來的音樂，為什麼總是「差一點」？<br />
+              問題不是創作，而是<strong>聲音品質</strong>。<br /><br />
+
+              在這裡你會學會：<br />
+              ✔ 清掉 AI 音樂的數位濁感<br />
+              ✔ 把扁平聲音拉回立體<br />
+              ✔ 做出可以上架的商業音質
             </p>
             <button onClick={() => router.push('/courses')} style={{ background: '#a78bfa', color: '#020617', border: 'none', padding: '10px 24px', borderRadius: '50px', fontWeight: '900', fontSize: '1.05rem', cursor: 'pointer', boxShadow: '0 10px 20px rgba(167, 139, 250, 0.3)' }}>
-              立即解鎖優化秘技 ⚡
+              讓 AI 音樂變成「能發行的作品」 ⚡
             </button>
           </div>
           <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
@@ -135,7 +144,8 @@ export default function HomePage() {
           <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
             <span style={{ color: '#ef4444', fontWeight: 'bold', letterSpacing: '3px', fontSize: '0.9rem' }}>THE TRUTH</span>
             <h2 style={{ fontSize: isMobile ? '2rem' : '3.2rem', color: '#fff', margin: '1rem 0 1.5rem 0' }}>
-              其實，你的混音問題<br />往往出在<span style={{ color: '#38bdf8' }}>「編曲的起點」</span>
+              問題從來不在混音技巧<br />
+              而是在<span style={{ color: '#38bdf8' }}>你一開始就寫錯了</span>
             </h2>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
@@ -160,18 +170,23 @@ export default function HomePage() {
       <div style={{ padding: isMobile ? '5rem 1.5rem' : '8rem 2rem', background: '#0f172a', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           <span style={{ color: '#fca311', fontWeight: 'bold', letterSpacing: '3px', fontSize: '0.9rem' }}>OUR MISSION</span>
-          <h2 style={{ fontSize: isMobile ? '2rem' : '2.8rem', color: '#fff', margin: '1rem 0 1.5rem 0' }}>讓你不再需要我們</h2>
+          <h2 style={{ fontSize: isMobile ? '2rem' : '2.8rem', color: '#fff', margin: '1rem 0 1.5rem 0' }}>我們的目標，是讓你不再需要教學</h2>
           <p style={{ color: '#cbd5e1', fontSize: '1.1rem', lineHeight: '1.8', marginBottom: '3rem' }}>
-            我們期望你在這裡鍛鍊出大師級的直覺，成為獨當一面的專家，最終自信地「徹底畢業」。
+            當你能夠「聽出問題 → 自己修正」<br />
+            你就已經超越 90% 的創作者。<br /><br />
+
+            我們做的，不是課程<br />
+            是讓你擁有判斷聲音的能力。
           </p>
           <div style={{ background: '#020617', padding: '3rem 2rem', borderRadius: '24px', border: '1px solid rgba(252, 163, 17, 0.2)' }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>☕</div>
             <p style={{ color: '#94a3b8', fontSize: '1.05rem', lineHeight: '1.7', margin: '0 auto 2rem auto', maxWidth: '550px' }}>
-              維持高智能 AI 聽診器與伺服器運作需要龐大的成本。<br />
-              如果這些互動教學有幫助到你，<strong style={{ color: '#fca311' }}>歡迎贊助 1 美金以上</strong>，協助我們朝這個理想邁進，讓更多迷惘的音樂人受惠！
+              我們正在打造一套讓創作者真正變強的系統。<br />
+              如果它幫助過你，<br />
+              <strong style={{ color: '#fca311' }}>你的一點支持，會讓它幫助更多人。</strong>
             </p>
             <button style={{ padding: '1rem 3rem', background: 'transparent', color: '#fca311', border: '2px solid #fca311', borderRadius: '50px', fontWeight: 'bold', fontSize: '1.1rem', cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={e => e.currentTarget.style.background = 'rgba(252, 163, 17, 0.1)'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
-              ❤️ 贊助 1 美金支持開發
+              ❤️ 支持這個系統繼續存在
             </button>
           </div>
         </div>
@@ -179,9 +194,10 @@ export default function HomePage() {
 
       {/* 🚀 6. Footer CTA */}
       <div style={{ padding: isMobile ? '5rem 1.5rem' : '8rem 2rem', textAlign: 'center', background: 'radial-gradient(circle at 50% 100%, #1e293b 0%, #020617 80%)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-        <p style={{ color: '#94a3b8', marginBottom: '3rem', fontSize: '1.1rem' }}>我們孵化聲音，也孵化創作的自由。</p>
+        <p style={{ color: '#94a3b8', marginBottom: '3rem', fontSize: '1.1rem' }}>下一次打開 DAW，你會開始聽見以前沒聽過的東西。
+        </p>
         <Link href="/courses" style={{ display: 'inline-block', padding: '1.2rem 4rem', background: '#fff', color: '#020617', fontSize: '1.1rem', fontWeight: '900', borderRadius: '50px', textDecoration: 'none', boxShadow: '0 10px 30px rgba(255,255,255,0.2)' }}>
-          進入控制台
+          進入你的製作人世界
         </Link>
         <div style={{ marginTop: '5rem', color: '#475569', fontSize: '0.9rem' }}>© 2026 Lifreedom Studio. All rights reserved.</div>
       </div>
