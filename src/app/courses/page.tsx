@@ -86,8 +86,8 @@ export default function CoursesPage() {
             <div style={{ textAlign: 'center', marginBottom: '4rem', padding: isMobile ? '2rem 1.5rem' : '3rem 2.5rem', background: 'linear-gradient(145deg, #0f172a, #1e1b4b)', borderRadius: '24px', border: '1px solid #4f46e5', boxShadow: '0 10px 40px rgba(79, 70, 229, 0.2)' }}>
                 <h2 style={{ color: '#a78bfa', margin: '0 0 1rem 0', fontSize: isMobile ? '1.5rem' : '1.8rem', fontWeight: 'bold' }}>卡住了？那不是你不會
                     是你缺一個「翻譯器」</h2>
-                <p style={{ color: '#94a3b8', marginBottom: '2rem', fontSize: isMobile ? '1rem' : '1.1rem', lineHeight: '1.6' }}>所有你看不懂的專有名詞
-                    都在這裡變成「你聽得懂的東西」
+                <p style={{ color: '#94a3b8', marginBottom: '2rem', fontSize: isMobile ? '1rem' : '1.1rem', lineHeight: '1.6' }}>所有你看不懂的專有名詞，
+                    都在這裡變成「你聽得懂的東西」，
 
                     隨時查閱，隨時升級理解力</p>
                 <Link href="/glossary" style={{ display: 'inline-block', padding: '14px 32px', background: '#3b82f6', color: '#fff', textDecoration: 'none', borderRadius: '50px', fontWeight: '900', fontSize: '1.1rem', boxShadow: '0 10px 25px rgba(59, 130, 246, 0.4)', transition: 'transform 0.2s' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}>
@@ -112,10 +112,10 @@ export default function CoursesPage() {
                             <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', flex: 1 }}>從 0 到 1，不再亂堆聲音
 
                                 你會開始理解：
-                                為什麼有些歌一開始就不會打架
-                                為什麼有些歌天生就很「穩」
+                                為什麼有些歌一開始就不會打架，
+                                為什麼有些歌天生就很「穩」？
 
-                                掌握 Groove、和弦與音色選擇
+                                掌握 Groove、和弦與音色選擇，
                                 寫出真正能被混音的編曲</p>
                             <div style={{ marginTop: '1.5rem', color: '#10b981', fontWeight: 'bold' }}>開始建立你的第一個音樂骨架 ➔</div>
                         </div>
@@ -129,12 +129,12 @@ export default function CoursesPage() {
                             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎛️</div>
                             <h3 style={{ color: '#38bdf8', fontSize: '1.4rem', marginBottom: '0.5rem', fontWeight: 'bold' }}>基礎混音學</h3>
                             <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', flex: 1 }}>不是讓聲音變好聽
-                                而是讓你「知道自己在幹嘛」
+                                而是讓你「知道自己在幹嘛」，
 
                                 你會第一次聽懂：
-                                EQ 到底改了什麼
-                                Compressor 為什麼有差
-                                聲音為什麼會變乾淨
+                                EQ 到底改了什麼？
+                                Compressor 為什麼有差？
+                                聲音為什麼會變乾淨？
 
                                 從混亂 → 可控</p>
                             <div style={{ marginTop: '1.5rem', color: '#38bdf8', fontWeight: 'bold' }}>第一次真正聽懂混音 ➔</div>
@@ -153,13 +153,13 @@ export default function CoursesPage() {
                 <div style={{ flex: 1 }}>
                     <span style={{ fontSize: '0.85rem', color: '#ea580c', fontWeight: 'bold', letterSpacing: '3px' }}>TRAINING HUB</span>
                     <h2 style={{ color: '#fff', fontSize: '1.8rem', margin: '0.5rem 0 1rem 0' }}>聽覺試煉大廳</h2>
-                    <p style={{ color: '#fed7aa', margin: 0, lineHeight: '1.6', fontSize: '1.05rem' }}>看懂，不代表你會
+                    <p style={{ color: '#fed7aa', margin: 0, lineHeight: '1.6', fontSize: '1.05rem' }}>看懂，不代表你會。
 
-                        進來這裡
-                        用耳朵證明你真的學會了
+                        進來這裡，
+                        用耳朵證明你真的學會了！
 
-                        親自轉動旋鈕
-                        親自聽出差異
+                        親自轉動旋鈕，
+                        親自聽出差異，
                         把「知道」變成「能力」</p>
                 </div>
                 <Link href="/training" style={{ padding: '1.2rem 2rem', background: '#ea580c', color: '#fff', textDecoration: 'none', fontSize: '1.1rem', fontWeight: '900', borderRadius: '16px', boxShadow: '0 10px 20px rgba(234, 88, 12, 0.3)', textAlign: 'center', whiteSpace: 'nowrap' }}>
@@ -174,11 +174,11 @@ export default function CoursesPage() {
             }}>
                 <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🎓</div>
                 <h3 style={{ color: '#10b981', fontSize: '1.5rem', marginBottom: '0.5rem' }}>新手村畢業測驗</h3>
-                <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '1.5rem' }}>當你能夠判斷，而不是猜
+                <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '1.5rem' }}>當你能夠判斷，而不是猜，
 
-                    你就已經不是新手了
+                    你就已經不是新手了。
 
-                    用 12 題，確認你真的跨過那條線</p>
+                    用 12 題，確認你真的跨過那條線！</p>
                 <Link href="/certification/novice" style={{ display: 'inline-block', padding: '0.8rem 2rem', background: 'transparent', color: '#10b981', border: '2px solid #10b981', borderRadius: '50px', fontWeight: 'bold', textDecoration: 'none' }}>
                     開始你的第一次證明
                 </Link>
@@ -202,13 +202,13 @@ export default function CoursesPage() {
                             高階編曲學
                         </h3>
                         <p style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.7', marginBottom: '2rem', flex: 1 }}>
-                            問題不是混音不夠強
-                            而是你一開始就寫錯了
+                            問題不是混音不夠強，
+                            而是你一開始就寫錯了。
 
-                            學會讓聲音「自動不打架」的編曲邏輯
+                            學會讓聲音「自動不打架」的編曲邏輯，
 
-                            讓你的音樂在還沒混音前
-                            就已經贏一半
+                            讓你的音樂在還沒混音前，
+                            就已經贏一半。
                         </p>
                         <Link href="/pricing" style={{
                             padding: '1.2rem', background: '#f97316', color: '#020617', textAlign: 'center',
@@ -228,15 +228,14 @@ export default function CoursesPage() {
                             高階混音學
                         </h3>
                         <p style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.7', marginBottom: '2rem', flex: 1 }}>
-                            從「調整聲音」
-                            進入「控制空間」
+                            從「調整聲音」進入「控制空間」
 
                             你會開始掌握：
-                            前後距離
-                            空間深度
-                            聲音層次
+                            前後距離、
+                            空間深度、
+                            聲音層次。
 
-                            讓你的作品第一次有「專業感」
+                            讓你的作品第一次有「專業感」。
                         </p>
                         <Link href="/pricing" style={{
                             padding: '1.2rem', background: '#3b82f6', color: '#fff', textAlign: 'center',
@@ -257,12 +256,12 @@ export default function CoursesPage() {
             }}>
                 <span style={{ fontSize: '0.85rem', color: '#a78bfa', fontWeight: 'bold', letterSpacing: '4px' }}>MASTER EXAM</span>
                 <h2 style={{ color: '#fff', fontSize: isMobile ? '1.8rem' : '2.5rem', margin: '1rem 0', fontWeight: '900' }}>最終試煉：大師認證</h2>
-                <p style={{ color: '#e2e8f0', marginBottom: '2.5rem', fontSize: isMobile ? '0.95rem' : '1.1rem', lineHeight: '1.6' }}>這不是考試
+                <p style={{ color: '#e2e8f0', marginBottom: '2.5rem', fontSize: isMobile ? '0.95rem' : '1.1rem', lineHeight: '1.6' }}>這不是考試，
 
-                    是你是否真的「聽懂聲音」的分水嶺
+                    是你是否真的「聽懂聲音」的分水嶺，
 
-                    當你通過
-                    你已經不再需要依賴教學</p>
+                    當你通過，
+                    你已經不再需要依賴教學。</p>
                 <Link href="/certification/master" style={{ display: 'inline-block', padding: '1.2rem 3rem', background: '#a78bfa', color: '#020617', textDecoration: 'none', fontSize: isMobile ? '1rem' : '1.2rem', fontWeight: '900', borderRadius: '50px', boxShadow: '0 10px 20px rgba(167, 139, 250, 0.3)' }}>
                     👑 挑戰最終試煉
                 </Link>

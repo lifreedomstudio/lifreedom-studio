@@ -70,8 +70,7 @@ export default function ArrangementIntro() {
                         color: '#94a3b8', fontSize: isMobile ? '1rem' : '1.2rem', maxWidth: '700px', margin: '0 auto',
                         lineHeight: '1.6', padding: isMobile ? '0 0.5rem' : '0'
                     }}>
-                        在真正開始混音之前，
-                        你必須先學會一件更關鍵的事：
+                        在真正開始混音之前，你必須先學會一件更關鍵的事：
                         👉 讓你的音樂「一開始就不會打架」。
                         這一章，會幫你建立製作人的底層思維。
                     </p>
