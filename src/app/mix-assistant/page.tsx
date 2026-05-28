@@ -4,12 +4,19 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
-// 🚀 架構與狀態定義
+// 🚀 一、核心設計：模式與精準的狀態機定義
 type Mode = "free" | "guided";
+type GuidedStep = "ask_instrument" | "ask_role" | "ask_problem" | "upload_eq" | "analyzing" | "show_tasks" | "done";
+
+interface MixContext {
+  instrument: string | null;
+  role: string | null;
+  problem: string | null;
+}
 
 interface GuidedState {
-  step: number;
-  issue?: string;
+  step: GuidedStep;
+  context: MixContext;
   completedTasks: string[];
 }
 
@@ -18,6 +25,7 @@ interface AiData {
   problems: string[];
   tasks: string[];
   check: string;
+  recommended_card?: string;
 }
 
 // 🃏 傳說級卡牌資料庫
@@ -29,19 +37,66 @@ const MAGIC_CARDS = [
   { id: 'deesser', name: '蛇語者 · 齒音獵人', type: '實戰魔法', stars: 2, condition: '當歌手的『嘶』聲刺耳如蛇鳴時發動。', params: 'Freq: 5-8kHz | Range: -4dB | Threshold: 恰到好處', flavor: '「在不經意間，溫柔地按住那些尖銳的齒音。」' }
 ];
 
+// 📋 標準化選項資料
+const INSTRUMENT_OPTIONS = [
+  { label: "🎤 人聲 (Vocal)", value: "vocal" },
+  { label: "🎸 吉他 (Guitar)", value: "guitar" },
+  { label: "🥁 鼓組 (Drums)", value: "drums" },
+  { label: "🎸 貝斯 (Bass)", value: "bass" },
+  { label: "🎹 合成器 (Synth)", value: "synth" },
+  { label: "其他", value: "other" }
+];
+
+const ROLE_OPTIONS = [
+  { label: "👑 絕對主角 (Lead)", value: "lead" },
+  { label: "🧱 節奏與支撐 (Rhythm / Pad)", value: "support" },
+  { label: "✨ 穿插點綴 (FX / Fill)", value: "fx" }
+];
+
+const PROBLEM_OPTIONS = [
+  { label: "太悶 / 糊", value: "muddy" },
+  { label: "太刺 / 尖銳", value: "harsh" },
+  { label: "太薄 / 沒力", value: "thin" },
+  { label: "完全沒存在感", value: "hidden" },
+  { label: "不知道，就是怪", value: "unknown" }
+];
+
+const issueMap: Record<string, string> = {
+  muddy: "頻率重疊與低頻淤積",
+  harsh: "中高頻衝突或過度突出",
+  thin: "低頻不足或動態不佳",
+  hidden: "整體頻率被遮蔽",
+  unknown: "整體頻率分佈不均"
+};
+
 // 🧠 教練模式專屬 Prompt
-const buildGuidedPrompt = (issue: string) => `
+const buildGuidedPrompt = (context: MixContext) => `
 你是一位「混音教練」，不是分析師。
 目標：讓新手「動手調整」，而不是只看說明。
 
-使用者目前問題：${issue}
+目前資訊：
+- 樂器：${context.instrument}
+- 角色：${context.role}
+- 核心問題：${context.problem}
 
-請務必使用 JSON 格式輸出，不要加入任何其他說明文字或 Markdown 標記。格式必須嚴格如下：
+⚠️ 輸出規則（嚴格）：
+你只能輸出 JSON，不可以有任何多餘文字。
+如果格式錯誤，整個系統會壞掉。
+
+格式：
 {
-  "problems": ["問題1 (非常白話說明)", "問題2"],
-  "tasks": ["動作1 (例：把 200Hz 降 2dB)", "動作2"],
-  "check": "驗證聽覺的問題 (例：有沒有比較清楚？)"
+  "problems": string[],
+  "tasks": string[],
+  "check": string,
+  "recommended_card": string
 }
+
+rules:
+- tasks 必須是「可操作動作」（例如：把 200Hz 降 2dB）
+- 每個 task 不可超過一句話
+- 不要抽象建議
+- recommended_card 請根據痛點從以下 ID 挑選最適合的一張（無關聯填 "random"）：
+  ["pingpong", "compressor", "parallel", "ms_eq", "deesser"]
 `;
 
 function AssistantContent() {
@@ -55,6 +110,13 @@ function AssistantContent() {
 
   const [showGacha, setShowGacha] = useState(false);
   const [droppedCard, setDroppedCard] = useState<any>(null);
+  const [activeFeedbackIndex, setActiveFeedbackIndex] = useState<number | null>(null);
+
+  // 🔥 新增：錯誤判斷分支狀態 (pending -> 驗證中, success -> 成功, fail -> 失敗重調)
+  const [taskEvaluation, setTaskEvaluation] = useState<"pending" | "success" | "fail">("pending");
+
+  // 🔥 新增：使用者等級系統 (XP)
+  const [userStats, setUserStats] = useState({ level: 1, xp: 0, nextLevelXp: 100 });
 
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -63,13 +125,14 @@ function AssistantContent() {
   const searchParams = useSearchParams();
   const queryParam = searchParams.get('query');
 
-  // --- 引導模式狀態 ---
   const [mode, setMode] = useState<Mode>("free");
   const [guidedState, setGuidedState] = useState<GuidedState>({
-    step: 0,
+    step: "ask_instrument",
+    context: { instrument: null, role: null, problem: null },
     completedTasks: [],
   });
   const [aiData, setAiData] = useState<AiData | null>(null);
+  const [chatHistory, setChatHistory] = useState<{ role: string; parts: { text: string }[] }[]>([]);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -93,7 +156,7 @@ function AssistantContent() {
     const file = e.target.files?.[0];
     if (file) {
       processFile(file);
-      if (mode === 'guided' && guidedState.step === 2) {
+      if (mode === 'guided' && guidedState.step === "upload_eq") {
         handleGuidedAnalyze(file);
       }
     }
@@ -110,7 +173,6 @@ function AssistantContent() {
     }
   };
 
-  // 🦅 原有自由模式
   const handleAnalyze = async () => {
     if (!prompt.trim() && !image && !audioFile) {
       setError("請上傳圖片、音檔或輸入問題！");
@@ -124,14 +186,23 @@ function AssistantContent() {
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, image })
+        body: JSON.stringify({ prompt, image, history: chatHistory })
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
+
       setResult(data.text);
+      setChatHistory(prev => [
+        ...prev,
+        { role: "user", parts: [{ text: prompt + (image ? " [圖]" : "") }] },
+        { role: "model", parts: [{ text: data.text }] }
+      ]);
+      setPrompt('');
 
       if (Math.random() < 0.2) {
-        forceGacha();
+        const randomIndex = Math.floor(Math.random() * MAGIC_CARDS.length);
+        setDroppedCard(MAGIC_CARDS[randomIndex]);
+        setShowGacha(true);
       }
     } catch (err: any) {
       setError(err.message || '分析失敗，請稍後再試。');
@@ -140,11 +211,12 @@ function AssistantContent() {
     }
   };
 
-  // 🧪 引導模式
   const handleGuidedAnalyze = async (file: File) => {
     setLoading(true);
     setError(null);
     setAiData(null);
+    setTaskEvaluation("pending"); // 重置驗證狀態
+    setGuidedState(prev => ({ ...prev, step: "analyzing" }));
 
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -153,74 +225,106 @@ function AssistantContent() {
       setImage(base64Image);
 
       try {
+        const finalPrompt = buildGuidedPrompt(guidedState.context);
+
         const res = await fetch('/api/analyze', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            prompt: buildGuidedPrompt(guidedState.issue || 'unknown'),
-            image: base64Image
-          })
+          body: JSON.stringify({ prompt: finalPrompt, image: base64Image })
         });
         const data = await res.json();
         if (data.error) throw new Error(data.error);
 
-        // 🔒 安全解析 JSON，避免破壞 VS Code 語法樹
         const safeParse = (text: string) => {
           try {
-            const cleaned = text
-              .replace(/```json/gi, '')
-              .replace(/```/g, '')
-              .trim();
-
+            const cleaned = text.replace(/```json/gi, '').replace(/```/g, '').trim();
             return JSON.parse(cleaned);
-          } catch {
-            return null;
-          }
+          } catch { return null; }
         };
 
-        // 使用
         const parsed = safeParse(data.text);
-        if (!parsed) throw new Error("AI 格式錯誤");
+        if (!parsed) throw new Error("AI 格式錯誤，請重新上傳一次截圖讓它重想！");
 
         setAiData(parsed);
-
-        setGuidedState(prev => ({ ...prev, step: 2.5, completedTasks: [] }));
+        setGuidedState(prev => ({ ...prev, step: "show_tasks", completedTasks: [] }));
       } catch (err: any) {
-        setError('解析 AI 診斷書時發生錯誤，請重新上傳試試看。');
-        console.error("JSON Parsing Error:", err);
+        setError(err.message || '解析 AI 診斷書時發生錯誤。');
+        setGuidedState(prev => ({ ...prev, step: "upload_eq" }));
       } finally {
         setLoading(false);
       }
     };
   };
 
-  const forceGacha = () => {
-    const randomIndex = Math.floor(Math.random() * MAGIC_CARDS.length);
-    setDroppedCard(MAGIC_CARDS[randomIndex]);
+  // 🔥 領取獎勵與升級系統
+  const handleClaimReward = () => {
+    // 增加 XP
+    setUserStats(prev => {
+      let newXp = prev.xp + 40; // 完成一次任務給 40 XP
+      let newLevel = prev.level;
+      if (newXp >= prev.nextLevelXp) {
+        newLevel += 1;
+        newXp -= prev.nextLevelXp;
+      }
+      return { level: newLevel, xp: newXp, nextLevelXp: prev.nextLevelXp };
+    });
+
+    // 智能抽卡
+    let cardToDrop = null;
+    if (aiData?.recommended_card && aiData.recommended_card !== "random") {
+      cardToDrop = MAGIC_CARDS.find(c => c.id === aiData.recommended_card);
+    }
+    if (!cardToDrop) {
+      const randomIndex = Math.floor(Math.random() * MAGIC_CARDS.length);
+      cardToDrop = MAGIC_CARDS[randomIndex];
+    }
+
+    setDroppedCard(cardToDrop);
     setShowGacha(true);
+    setGuidedState(prev => ({ ...prev, step: "done" }));
+  };
+
+  const resetApp = () => {
+    setMode("free");
+    setResult(null);
+    setImage(null);
+    setAiData(null);
+    setPrompt('');
+    setChatHistory([]);
+    setTaskEvaluation("pending");
+    setGuidedState({ step: "ask_instrument", context: { instrument: null, role: null, problem: null }, completedTasks: [] });
   };
 
   const tasks = aiData?.tasks || [];
 
-  // --- 共用樣式 ---
+  // --- 樣式設定 ---
   const pillStyle = { padding: '8px 16px', borderRadius: '20px', backgroundColor: '#1a1a2e', border: '1px solid #4a4e69', color: '#e0e1dd', cursor: 'pointer', boxShadow: '0 4px 6px rgba(0,0,0,0.4)', transition: 'all 0.2s', fontSize: '0.85rem', fontWeight: 'bold' };
   const specialPillStyle = { ...pillStyle, backgroundColor: '#3c096c', borderColor: '#9d4edd', color: '#ff9e00', boxShadow: '0 0 12px rgba(157, 78, 221, 0.4)' };
   const goldenPillStyle = { ...pillStyle, border: '1px solid #fbbf24', color: '#fbbf24', background: 'rgba(251, 191, 36, 0.05)' };
   const stepContainerStyle = { background: 'rgba(255,255,255,0.05)', padding: '2.5rem', borderRadius: '1rem', border: '1px solid #4f46e5', textAlign: 'center' as const };
-  const taskButtonStyle = { display: 'block', width: '100%', padding: '1rem', marginBottom: '1rem', background: '#1e1b4b', border: '1px solid #4338ca', borderRadius: '0.5rem', color: 'white', fontSize: '1.1rem', cursor: 'pointer', transition: '0.2s' };
+  const taskButtonStyle = { display: 'block', width: '100%', padding: '1.2rem', marginBottom: '1rem', background: '#1e1b4b', border: '1px solid #4338ca', borderRadius: '0.8rem', color: 'white', fontSize: '1.15rem', cursor: 'pointer', transition: '0.2s', fontWeight: '500' };
 
   return (
     <div className="container" style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto', color: '#fff' }}>
 
-      {/* 🔝 頂部導航 */}
+      {/* 🔝 頂部導航 & 等級系統 UI */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2rem', margin: 0 }}>AI 混音助理</h1>
+        <div>
+          <h1 style={{ fontSize: '2rem', margin: '0 0 0.2rem 0' }}>AI 混音助理</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', color: '#10b981', fontWeight: 'bold' }}>
+            <span>🏆 Lv.{userStats.level} 混音學徒</span>
+            <div style={{ width: '100px', height: '6px', background: '#333', borderRadius: '3px', overflow: 'hidden' }}>
+              <div style={{ width: `${(userStats.xp / userStats.nextLevelXp) * 100}%`, background: '#10b981', height: '100%' }} />
+            </div>
+            <span style={{ fontSize: '0.75rem', color: '#6ee7b7' }}>{userStats.xp}/{userStats.nextLevelXp} XP</span>
+          </div>
+        </div>
         <div style={{ display: 'flex', gap: '12px' }}>
           <Link href="/collection" style={{ padding: '0.6rem 1.2rem', background: 'rgba(251, 191, 36, 0.1)', border: '1px solid #fbbf24', borderRadius: '8px', textDecoration: 'none', color: '#fbbf24', fontWeight: 'bold', fontSize: '0.9rem' }}>
             📜 魔法圖鑑
           </Link>
-          <button onClick={() => { setMode("free"); setResult(null); setImage(null); setAiData(null); }} style={{ padding: '0.6rem 1.2rem', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', cursor: 'pointer', color: '#fff', fontWeight: 'bold', fontSize: '0.9rem' }}>
-            🔄 重新 / 自由模式
+          <button onClick={resetApp} style={{ padding: '0.6rem 1.2rem', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', cursor: 'pointer', color: '#fff', fontWeight: 'bold', fontSize: '0.9rem' }}>
+            🔄 重置 / 自由模式
           </button>
         </div>
       </div>
@@ -233,26 +337,17 @@ function AssistantContent() {
       {mode === 'guided' && (
         <div style={{ animation: 'fadeIn 0.5s ease-in-out' }}>
 
-          {/* Step 1：選問題 */}
-          {guidedState.step === 1 && (
+          {guidedState.step === "ask_instrument" && (
             <div style={stepContainerStyle}>
               <h3 style={{ color: '#818cf8', fontSize: '1.5rem', marginBottom: '0.5rem' }}>Step 1 / 4</h3>
-              <p style={{ fontSize: '1.2rem', marginBottom: '2rem' }}>👉 哪一個最困擾你？</p>
-
-              {[
-                { label: "🌫️ 聲音很糊", value: "muddy" },
-                { label: "🎤 人聲不清楚", value: "vocal" },
-                { label: "🥁 鼓沒有力", value: "drums" },
-                { label: "🤔 不知道哪裡怪", value: "unknown" },
-              ].map((opt) => (
+              <p style={{ fontSize: '1.2rem', marginBottom: '2rem' }}>👉 我們一步一步來，先告訴我這是什麼聲音？</p>
+              {INSTRUMENT_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
                   style={taskButtonStyle}
                   onMouseOver={(e) => e.currentTarget.style.background = '#3730a3'}
                   onMouseOut={(e) => e.currentTarget.style.background = '#1e1b4b'}
-                  onClick={() => {
-                    setGuidedState((prev) => ({ ...prev, step: 2, issue: opt.value }));
-                  }}
+                  onClick={() => setGuidedState(prev => ({ ...prev, step: "ask_role", context: { ...prev.context, instrument: opt.value } }))}
                 >
                   {opt.label}
                 </button>
@@ -260,31 +355,59 @@ function AssistantContent() {
             </div>
           )}
 
-          {/* Step 2：上傳截圖 */}
-          {guidedState.step === 2 && (
+          {guidedState.step === "ask_role" && (
             <div style={stepContainerStyle}>
               <h3 style={{ color: '#818cf8', fontSize: '1.5rem', marginBottom: '0.5rem' }}>Step 2 / 4</h3>
-              <p style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>
-                👉 你現在遇到的不是「技術問題」
-              </p>
+              <p style={{ fontSize: '1.2rem', marginBottom: '2rem' }}>👉 這個聲音在歌曲裡扮演什麼角色？</p>
+              {ROLE_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  style={taskButtonStyle}
+                  onMouseOver={(e) => e.currentTarget.style.background = '#3730a3'}
+                  onMouseOut={(e) => e.currentTarget.style.background = '#1e1b4b'}
+                  onClick={() => setGuidedState(prev => ({ ...prev, step: "ask_problem", context: { ...prev.context, role: opt.value } }))}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          )}
 
-              <p style={{ fontSize: '1.3rem', marginBottom: '1rem' }}>
-                是👇
-              </p>
+          {guidedState.step === "ask_problem" && (
+            <div style={stepContainerStyle}>
+              <h3 style={{ color: '#818cf8', fontSize: '1.5rem', marginBottom: '0.5rem' }}>Step 3 / 4</h3>
+              <p style={{ fontSize: '1.2rem', marginBottom: '2rem' }}>👉 聽起來，你覺得它的問題比較接近哪一種？</p>
+              {PROBLEM_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  style={taskButtonStyle}
+                  onMouseOver={(e) => e.currentTarget.style.background = '#3730a3'}
+                  onMouseOut={(e) => e.currentTarget.style.background = '#1e1b4b'}
+                  onClick={() => setGuidedState(prev => ({ ...prev, step: "upload_eq", context: { ...prev.context, problem: opt.value } }))}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          )}
 
-              <p style={{ fontSize: '1.4rem', fontWeight: 'bold', color: '#fca311' }}>
-                {guidedState.issue === "muddy"
-                  ? "聲音在打架（頻率重疊）"
-                  : guidedState.issue === "vocal"
-                    ? "人聲被卡住（中頻衝突）"
-                    : guidedState.issue === "drums"
-                      ? "沒有打出來（動態與瞬態不足）"
-                      : "整體沒有分開（頻率分佈不均）"}
-              </p>
-              <p style={{ fontSize: '1.2rem', marginBottom: '2rem', color: '#a78bfa' }}>👉 請打開你的 EQ，拍一張截圖上傳：</p>
-
+          {(guidedState.step === "upload_eq" || guidedState.step === "analyzing") && (
+            <div style={stepContainerStyle}>
+              <h3 style={{ color: '#818cf8', fontSize: '1.5rem', marginBottom: '0.5rem' }}>Step 4 / 4</h3>
+              {!loading && (
+                <>
+                  <p style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>👍 很好，這通常跟這件事有關👇</p>
+                  <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#fca311', marginBottom: '1.5rem' }}>
+                    {issueMap[guidedState.context.problem || ""] || "整體頻率分佈"}
+                  </p>
+                  <p style={{ fontSize: '1.2rem', marginBottom: '2rem', color: '#a78bfa' }}>👉 請打開你的 EQ，拍一張截圖上傳：</p>
+                </>
+              )}
               {loading ? (
-                <div style={{ padding: '3rem', fontSize: '1.2rem', color: '#fca311' }}>教練正在分析你的 EQ 頻譜... ⏳</div>
+                <div style={{ padding: '3rem', fontSize: '1.2rem', color: '#fca311' }}>
+                  <div style={{ marginBottom: '1rem', fontSize: '2rem' }}>⚙️</div>
+                  教練正在綜合你的回報與 EQ 頻譜進行精準分析... ⏳
+                </div>
               ) : (
                 <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '1rem', padding: '3rem', cursor: 'pointer', border: '2px dashed #4f46e5' }} onClick={() => fileInputRef.current?.click()}>
                   <p style={{ fontSize: '1.2rem', margin: 0 }}>🖼️ 點此上傳你的 EQ 截圖</p>
@@ -294,36 +417,18 @@ function AssistantContent() {
             </div>
           )}
 
-          {/* Step 2.5：確認過渡 */}
-          {guidedState.step === 2.5 && aiData && (
-            <div style={stepContainerStyle}>
-              <h3 style={{ color: '#818cf8', fontSize: '1.8rem', marginBottom: '1rem' }}>🔍 診斷結果出爐</h3>
-              <p style={{ fontSize: '1.2rem', marginBottom: '1.5rem' }}>我先幫你看了一下問題 👇</p>
+          {guidedState.step === "show_tasks" && aiData && (
+            <div style={{ ...stepContainerStyle, textAlign: 'left' }}>
+              <h3 style={{ color: '#818cf8', fontSize: '1.5rem', marginBottom: '1rem' }}>🔍 診斷結果出爐</h3>
 
-              <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1.5rem', borderRadius: '0.5rem', marginBottom: '2rem', textAlign: 'left' }}>
+              <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1.5rem', borderRadius: '0.5rem', marginBottom: '2rem' }}>
                 <ul style={{ color: '#fca311', lineHeight: '1.8', paddingLeft: '1.5rem', fontSize: '1.1rem', margin: 0 }}>
                   {aiData.problems.map((p, i) => <li key={i} style={{ marginBottom: '0.5rem' }}>{p}</li>)}
                 </ul>
               </div>
 
-              <button
-                style={{ ...taskButtonStyle, background: '#4f46e5', fontWeight: 'bold' }}
-                onMouseOver={(e) => e.currentTarget.style.background = '#4338ca'}
-                onMouseOut={(e) => e.currentTarget.style.background = '#4f46e5'}
-                onClick={() => setGuidedState(prev => ({ ...prev, step: 3 }))}
-              >
-                👉 好，開始修正（進入實戰任務）
-              </button>
-            </div>
-          )}
-
-          {/* Step 3：任務清單 */}
-          {guidedState.step === 3 && aiData && (
-            <div style={{ ...stepContainerStyle, textAlign: 'left' }}>
-              <h3 style={{ color: '#818cf8', fontSize: '1.5rem', marginBottom: '1.5rem' }}>Step 3 / 4：動手時間</h3>
-
               <div style={{ marginBottom: '2rem' }}>
-                <p style={{ color: '#e2e8f0', fontWeight: 'bold', marginBottom: '0.8rem', fontSize: '1.1rem' }}>你的混音能力：{guidedState.completedTasks.length} / {tasks.length}</p>
+                <p style={{ color: '#e2e8f0', fontWeight: 'bold', marginBottom: '0.8rem', fontSize: '1.1rem' }}>你的修正進度：{guidedState.completedTasks.length} / {tasks.length}</p>
                 <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '10px', overflow: 'hidden', height: '12px' }}>
                   <div style={{
                     width: `${tasks.length > 0 ? (guidedState.completedTasks.length / tasks.length) * 100 : 0}%`,
@@ -335,85 +440,132 @@ function AssistantContent() {
                 </div>
               </div>
 
-              <p style={{ color: '#10b981', fontWeight: 'bold', fontSize: '1.2rem', marginBottom: '1rem' }}>👉 現在不要想，直接做👇
-                （做完你一定會聽出差別）</p>
+              <p style={{ color: '#10b981', fontWeight: 'bold', fontSize: '1.2rem', marginBottom: '1rem' }}>👉 現在不要想，直接照做 👇</p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
                 {tasks.map((task, i) => {
                   const isChecked = guidedState.completedTasks.includes(task);
                   return (
-                    <label key={i} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: isChecked ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255,255,255,0.05)', border: `1px solid ${isChecked ? '#10b981' : '#4a4e69'}`, borderRadius: '0.5rem', cursor: 'pointer', transition: '0.3s' }}>
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        style={{ width: '24px', height: '24px', accentColor: '#10b981', cursor: 'pointer' }}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setGuidedState((prev) => ({ ...prev, completedTasks: [...prev.completedTasks, task] }));
-                          } else {
-                            setGuidedState((prev) => ({ ...prev, completedTasks: prev.completedTasks.filter(t => t !== task) }));
-                          }
-                        }}
-                      />
-                      <span style={{ fontSize: '1.1rem', color: isChecked ? '#a7f3d0' : '#fff', textDecoration: isChecked ? 'line-through' : 'none', transition: '0.3s' }}>
-                        {task}
-                      </span>
-                    </label>
+                    <div key={i}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: isChecked ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255,255,255,0.05)', border: `1px solid ${isChecked ? '#10b981' : '#4a4e69'}`, borderRadius: '0.5rem', cursor: 'pointer', transition: '0.3s' }}>
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          style={{ width: '24px', height: '24px', accentColor: '#10b981', cursor: 'pointer' }}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setGuidedState((prev) => ({ ...prev, completedTasks: [...prev.completedTasks, task] }));
+                              try { new Audio('/click.mp3').play().catch(() => { }); } catch (err) { }
+                              setActiveFeedbackIndex(i);
+                              setTimeout(() => setActiveFeedbackIndex(null), 2500);
+                            } else {
+                              setGuidedState((prev) => ({ ...prev, completedTasks: prev.completedTasks.filter(t => t !== task) }));
+                              setActiveFeedbackIndex(null);
+                            }
+                          }}
+                        />
+                        <span style={{ fontSize: '1.1rem', color: isChecked ? '#a7f3d0' : '#fff', textDecoration: isChecked ? 'line-through' : 'none', transition: '0.3s' }}>
+                          {task}
+                        </span>
+                      </label>
+                      {/* 🔥 修正後的 UI 小彩蛋 */}
+                      {activeFeedbackIndex === i && (
+                        <div style={{ marginTop: '0.5rem', padding: '0.6rem 1rem', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid #10b981', borderRadius: '0.5rem', color: '#a7f3d0', fontSize: '0.95rem', animation: 'fadeIn 0.3s ease' }}>
+                          ✅ 很好，你剛剛已經開始在「用耳朵判斷」了
+                        </div>
+                      )}
+                    </div>
                   );
                 })}
               </div>
 
+              {/* 🔥 錯誤判斷分支與最終獎勵 UI */}
               {tasks.length > 0 && guidedState.completedTasks.length >= tasks.length && (
-                <div style={{ textAlign: 'center', animation: 'fadeIn 0.5s', padding: '2rem', background: 'rgba(251, 191, 36, 0.1)', borderRadius: '1rem', border: '1px solid #fbbf24' }}>
-                  <h3 style={{ color: '#fbbf24', fontSize: '1.8rem', marginBottom: '0.5rem' }}>{aiData.check}</h3>
-                  <p style={{ color: '#fef3c7', marginBottom: '1.5rem' }}>聽聽看，是不是很不一樣了？</p>
+                <div style={{ animation: 'fadeIn 0.5s', marginTop: '2rem' }}>
 
-                  <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1.5rem', borderRadius: '0.5rem', marginBottom: '1.5rem', textAlign: 'left' }}>
-                    <p style={{ fontSize: '1.1rem', marginBottom: '1rem', color: '#fff' }}>🔥 你剛剛做到一件很多新手做不到的事：</p>
-                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1rem 0', color: '#10b981', fontSize: '1.1rem' }}>
-                      <li style={{ marginBottom: '0.5rem' }}>✔ 分辨混濁與問題點</li>
-                      <li>✔ 主動修正頻率</li>
-                    </ul>
-                    <p style={{ fontSize: '1.2rem', margin: 0, color: '#fca311', fontWeight: 'bold' }}>👉 這就是「混音耳朵開始打開」的瞬間！</p>
-                  </div>
+                  {/* 驗證階段：讓使用者聽覺判斷 */}
+                  {taskEvaluation === "pending" && (
+                    <div style={{ textAlign: 'center', padding: '2rem', background: 'rgba(255,255,255,0.05)', borderRadius: '1rem', border: '1px solid #4f46e5' }}>
+                      <h3 style={{ color: '#818cf8', fontSize: '1.5rem', marginBottom: '1rem' }}>🎧 驗證時間</h3>
+                      <p style={{ fontSize: '1.2rem', marginBottom: '1.5rem', color: '#fff' }}>{aiData.check}</p>
+                      <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                        <button onClick={() => setTaskEvaluation("success")} style={{ padding: '0.8rem 1.5rem', background: '#10b981', color: '#000', fontWeight: 'bold', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
+                          ✅ 真的變乾淨了！
+                        </button>
+                        <button onClick={() => setTaskEvaluation("fail")} style={{ padding: '0.8rem 1.5rem', background: 'rgba(239,68,68,0.2)', color: '#fca5a5', border: '1px solid #ef4444', borderRadius: '8px', cursor: 'pointer' }}>
+                          ❌ 好像變得有點怪...
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
-                  <button
-                    onClick={() => { forceGacha(); setGuidedState((prev) => ({ ...prev, step: 4 })); }}
-                    style={{ padding: '1rem 2rem', fontSize: '1.2rem', fontWeight: 'bold', background: '#fbbf24', color: '#000', border: 'none', borderRadius: '50px', cursor: 'pointer', boxShadow: '0 0 15px rgba(251, 191, 36, 0.4)' }}
-                  >
-                    🎁 領取本次修煉獎勵
-                  </button>
+                  {/* 失敗重調分支：建立心理安全感 */}
+                  {taskEvaluation === "fail" && (
+                    <div style={{ textAlign: 'left', padding: '2rem', background: 'rgba(239,68,68,0.1)', borderRadius: '1rem', border: '1px solid #ef4444' }}>
+                      <h3 style={{ color: '#fca5a5', fontSize: '1.5rem', marginBottom: '1rem' }}>完全沒關係！這就是混音。</h3>
+                      <p style={{ fontSize: '1.1rem', color: '#fecaca', marginBottom: '0.5rem' }}>每一個大師都是從調壞聲音開始的。通常聽起來怪怪的，代表「我們下手太重了」。</p>
+                      <p style={{ fontSize: '1.1rem', color: '#fca311', fontWeight: 'bold', marginBottom: '2rem' }}>
+                        💡 教練建議：試著把你剛剛調的數值「減半」，或者把 EQ 的 Q 值調寬一點，再聽一次看看。
+                      </p>
+                      <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                        <button onClick={() => { setGuidedState(prev => ({ ...prev, completedTasks: [] })); setTaskEvaluation("pending"); }} style={{ padding: '0.8rem 1.5rem', background: 'transparent', border: '1px solid #fca5a5', color: '#fca5a5', borderRadius: '8px', cursor: 'pointer' }}>
+                          🔁 復原重調
+                        </button>
+                        <button onClick={() => setTaskEvaluation("success")} style={{ padding: '0.8rem 1.5rem', background: '#4f46e5', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
+                          👉 我大概懂了，繼續前進
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 成功破關：你提供的終極漸層 UI */}
+                  {taskEvaluation === "success" && (
+                    <div style={{ marginTop: '2rem', padding: '1.5rem', background: 'linear-gradient(135deg, rgba(16,185,129,0.2), rgba(59,130,246,0.2))', border: '1px solid #34d399', borderRadius: '0.8rem', textAlign: 'center' }}>
+                      <p style={{ fontSize: '1.3rem', fontWeight: 'bold', color: '#6ee7b7' }}>
+                        🎧 你已經完成這次調整
+                      </p>
+                      <p style={{ color: '#d1fae5', marginTop: '0.5rem' }}>
+                        👉 現在你已經能開始「聽出問題並修正」了
+                      </p>
+                      <button
+                        onClick={handleClaimReward}
+                        style={{ marginTop: '1rem', padding: '0.8rem 1.5rem', background: '#10b981', border: 'none', borderRadius: '8px', color: '#fff', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)' }}
+                      >
+                        🎁 領取你的能力獎勵 (+40 XP)
+                      </button>
+                    </div>
+                  )}
+
                 </div>
               )}
             </div>
           )}
 
-          {/* Step 4：下一步迴圈 */}
-          {guidedState.step === 4 && !showGacha && (
+          {/* 狀態 6：完成迴圈 */}
+          {guidedState.step === "done" && !showGacha && (
             <div style={stepContainerStyle}>
               <h3 style={{ color: '#10b981', fontSize: '1.8rem', marginBottom: '0.5rem' }}>修煉完成！</h3>
               <p style={{ fontSize: '1.2rem', marginBottom: '2rem' }}>👉 接下來你想優化哪裡？</p>
 
-              {["🎤 人聲更突出", "🌌 更有空間感", "🥁 鼓更有力", "🏠 回到自由模式"].map((opt) => (
+              {["繼續調整這軌的其他問題", "換一軌樂器處理", "🏠 回到首頁 (自由提問)"].map((opt) => (
                 <button
                   key={opt}
                   style={taskButtonStyle}
                   onMouseOver={(e) => e.currentTarget.style.background = '#3730a3'}
                   onMouseOut={(e) => e.currentTarget.style.background = '#1e1b4b'}
                   onClick={() => {
-                    if (opt === "🏠 回到自由模式") {
-                      setMode('free');
+                    if (opt === "🏠 回到首頁 (自由提問)") {
+                      resetApp();
+                    } else if (opt === "換一軌樂器處理") {
+                      setGuidedState({ step: "ask_instrument", context: { instrument: null, role: null, problem: null }, completedTasks: [] });
                       setImage(null);
                       setAiData(null);
+                      setTaskEvaluation("pending");
                     } else {
-                      const issueMap: Record<string, string> = {
-                        "🎤 人聲更突出": "vocal",
-                        "🌌 更有空間感": "space",
-                        "🥁 鼓更有力": "drums",
-                      };
-                      setGuidedState({ step: 2, issue: issueMap[opt], completedTasks: [] });
+                      setGuidedState(prev => ({ step: "ask_problem", context: { ...prev.context, problem: null }, completedTasks: [] }));
                       setImage(null);
                       setAiData(null);
+                      setTaskEvaluation("pending");
                     }
                   }}
                 >
@@ -426,7 +578,7 @@ function AssistantContent() {
       )}
 
       {/* ======================================= */}
-      {/* 🦅 自由模式 */}
+      {/* 🦅 自由模式 (帶記憶流) */}
       {/* ======================================= */}
       {mode === 'free' && (
         <div style={{ animation: 'fadeIn 0.5s ease-in-out' }}>
@@ -437,7 +589,7 @@ function AssistantContent() {
               <p style={{ margin: 0, color: '#c7d2fe', fontSize: '0.95rem' }}>👉 用 3 分鐘，我讓你第一次「真的聽出差別」</p>
             </div>
             <button
-              onClick={() => { setMode("guided"); setGuidedState({ step: 1, completedTasks: [] }); }}
+              onClick={() => { setMode("guided"); setGuidedState({ step: "ask_instrument", context: { instrument: null, role: null, problem: null }, completedTasks: [] }); setChatHistory([]); setTaskEvaluation("pending"); }}
               style={{ padding: '0.8rem 1.5rem', background: '#4f46e5', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '1.1rem', cursor: 'pointer', boxShadow: '0 4px 15px rgba(79, 70, 229, 0.4)' }}
             >
               👉 開始引導
@@ -471,24 +623,28 @@ function AssistantContent() {
               <button style={pillStyle} onClick={() => setPrompt('🌫️ 為什麼聲音聽起來很糊？這是我目前的設定：')}>🌫️ 為什麼聲音聽起來很糊？</button>
               <button style={pillStyle} onClick={() => setPrompt('🥁 鼓組的打擊感出不來怎麼調？')}>🥁 鼓組打擊感優化</button>
               <button style={pillStyle} onClick={() => setPrompt('💡 我目前的 Project 裡有一軌音軌，我不知道該對它做什麼處理比較好，請幫我分析：')}>💡 不知道該做什麼處理</button>
-              <button style={goldenPillStyle} onClick={() => setPrompt('📂 我現在面對一整個混音專案，完全不知道該從何下手。請擔任我的「混音導師」，從 Gain Staging 開始一步步引導我：')}>🎯 專案不知從何下手？</button>
             </div>
           </div>
 
+          {chatHistory.length > 0 && (
+            <div style={{ marginBottom: '1rem', color: '#10b981', fontSize: '0.9rem', textAlign: 'right' }}>
+              💬 助理已記住之前的 {chatHistory.length / 2} 次對話內容
+            </div>
+          )}
+
           <div style={{ marginBottom: '2rem' }}>
-            <textarea rows={4} value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="輸入問題..." style={{ width: '100%', padding: '1rem', borderRadius: '0.5rem', background: '#111', color: '#fff', border: '1px solid #333', fontSize: '1rem' }} />
+            <textarea rows={4} value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="輸入問題或回答..." style={{ width: '100%', padding: '1rem', borderRadius: '0.5rem', background: '#111', color: '#fff', border: '1px solid #333', fontSize: '1rem' }} />
           </div>
 
           <div style={{ display: 'flex', gap: '1rem' }}>
             <button onClick={handleAnalyze} disabled={loading} style={{ flex: 3, padding: '1.2rem', fontSize: '1.2rem', fontWeight: 'bold', background: '#d90429', border: 'none', borderRadius: '0.5rem', color: 'white', cursor: 'pointer' }}>
               {loading ? 'AI 聽診中...' : '發送診斷 🚀'}
             </button>
-            <button onClick={forceGacha} style={{ flex: 1, padding: '1.2rem', background: '#fbbf24', border: 'none', borderRadius: '0.5rem', fontWeight: 'bold', cursor: 'pointer' }}>🎲 測試抽卡</button>
           </div>
 
           {result && (
             <div style={{ marginTop: '2rem', background: 'rgba(255,255,255,0.05)', padding: '2rem', borderRadius: '1rem', border: '1px solid rgba(139, 92, 246, 0.3)' }}>
-              <h3 style={{ color: '#8b5cf6', marginBottom: '1rem' }}>分析結果與建議</h3>
+              <h3 style={{ color: '#8b5cf6', marginBottom: '1rem' }}>助理回應</h3>
               <div style={{ whiteSpace: 'pre-wrap', lineHeight: '1.8' }}>{result}</div>
             </div>
           )}
@@ -525,6 +681,8 @@ function AssistantContent() {
           </button>
         </div>
       )}
+
+      <audio id="click-sound" src="/click.mp3" preload="auto" style={{ display: 'none' }}></audio>
     </div>
   );
 }
