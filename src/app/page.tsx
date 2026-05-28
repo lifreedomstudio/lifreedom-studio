@@ -42,7 +42,7 @@ export default function HomePage() {
           lineHeight: 1.2, background: 'linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%)',
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textShadow: '0 10px 30px rgba(0,0,0,0.5)'
         }}>
-          你不是不會混音，只是從來沒「真正聽懂」
+          你不是不會混音，而是從來沒「真正聽懂」
         </h1>
 
         <p style={{
@@ -56,7 +56,7 @@ export default function HomePage() {
           wordBreak: 'keep-all'
         }}>
           看了教學，卻做不出一樣的聲音？<br />
-          轉了一堆 EQ，卻不知道自己到底改了什麼？<br /><br />
+          調了一堆 EQ，卻不知道自己到底改了什麼？<br /><br />
 
           <span style={{ color: '#fca311', fontWeight: 'bold' }}>
             問題不是你不夠努力，
@@ -91,8 +91,8 @@ export default function HomePage() {
               <h3 style={{ color: '#ef4444', fontSize: '1.6rem', marginBottom: '1.5rem', fontWeight: 'bold' }}>你不是學不會，而是卡在這裡</h3>
               <ul style={{ color: '#94a3b8', lineHeight: '2.2', fontSize: '1.1rem', paddingLeft: '20px', margin: 0 }}>
                 <li><strong>盲盒學習：</strong> 花了時間和錢，卻不確定學的東西能不能用在你的音樂。</li>
-                <li><strong>設備落差：</strong> 教學裡的插件與環境，回到自己電腦完全對不上。</li>
-                <li><strong>只會形容，不會判斷：</strong> 「溫暖」「厚」這些詞，你聽過，但你調不出來。</li>
+                <li><strong>設備落差：</strong> 教學裡的插件與環境，回到自己的電腦卻完全對不上。</li>
+                <li><strong>只會形容，不會判斷：</strong> 「溫暖」、「厚」這些詞，你聽過，但卻調不出來。</li>
                 <li><strong>知道理論，做不出聲音：</strong> 你懂 EQ / Compressor，但聲音還是沒變好。</li>
               </ul>
             </div>

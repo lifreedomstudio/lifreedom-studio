@@ -269,6 +269,7 @@ export default function GrooveTraining() {
                     <p style={{ color: '#cbd5e1', fontSize: '1.1rem', marginBottom: '2rem', lineHeight: '1.6' }}>
                         很多新手聽歌時只注意到主唱跟吉他，卻忽略了撐起整首歌靈魂的「鼓組」。戴上耳機，依序點擊下面每個聲音，試著回答：
 
+
                         👉 「哪一個在負責節奏？哪一個在製造能量？」
                     </p>
 
@@ -498,7 +499,7 @@ export default function GrooveTraining() {
                 <div style={{ background: 'rgba(56, 189, 248, 0.05)', border: '1px dashed #38bdf8', padding: '1.5rem', borderRadius: '16px', textAlign: 'center', marginBottom: '5rem' }}>
                     <h4 style={{ color: '#38bdf8', margin: '0 0 0.5rem 0', fontSize: '1.1rem' }}>🤖 來自混音助理的進階提示</h4>
                     <p style={{ color: '#94a3b8', fontSize: '0.95rem', margin: 0, lineHeight: '1.6' }}>
-                        如果編曲上因為某些原因無法完全對齊，混音師會使用一種叫做 <strong>「Sidechain Compression (側鏈壓縮)」</strong> 的技巧：設定成當大鼓發聲時，貝斯音量瞬間自動變小讓路。想學這招嗎？之後在《混音實戰篇》我們會詳細教你！
+                        如果編曲上因為某些原因無法完全對齊，混音師會使用一種叫做 <strong>「Sidechain Compression (側鏈壓縮)」</strong> 的技巧：設定成當大鼓發聲時，貝斯音量瞬間自動變小讓路。想學這招嗎？之後在《高階混音學》我們會詳細教你！
                     </p>
                 </div>
 

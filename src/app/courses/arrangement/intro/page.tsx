@@ -61,8 +61,7 @@ export default function ArrangementIntro() {
                         <p style={{ color: '#f8fafc', marginBottom: 0, fontSize: isMobile ? '1rem' : '1.1rem', lineHeight: '1.6' }}>
                             <strong style={{ color: '#f97316' }}>📖 字彙定義：Arrangement (編曲)</strong> 不是單純把樂器加上去，而是把「靈感」變成一套可以被聽見、被理解、被記住的聲音設計。
 
-                            從一段清唱或簡單 Demo 出發，你將學會如何決定節奏、分配樂器、安排情緒起伏，
-                            一步步把想法轉化成一首完整、具有商業水準的作品。
+                            從一段清唱或簡單 Demo 出發，你將學會如何決定節奏、分配樂器、安排情緒起伏，一步步把想法轉化成一首完整、具有商業水準的作品。
                         </p>
                     </div>
 
@@ -124,17 +123,14 @@ export default function ArrangementIntro() {
                                     不是每個聲音都要大聲，
                                     而是要讓「重要的聲音被聽見」。
 
-                                    👉 頻率分配做對，
-                                    你會發現根本不用混音也很清楚。</p>
+                                    👉 頻率分配做對，你會發現根本不用混音也很清楚。</p>
                             </div>
                             <div style={{ background: 'rgba(0,0,0,0.4)', padding: '1.2rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
                                 <h4 style={{ color: '#e2e8f0', margin: '0 0 0.5rem 0', fontSize: '1.1rem' }}>🎢 劇情轉折</h4>
                                 <p style={{ color: '#cbd5e1', margin: '0 0 10px 0', fontSize: '0.95rem', lineHeight: '1.5' }}>沒有起伏的音樂，就像沒有高潮的電影。
-                                    我們要做的不是一直堆東西，
-                                    而是「控制能量」。
+                                    我們要做的不是一直堆東西，而是「控制能量」。
 
-                                    👉 真正厲害的，是讓副歌出來那一刻，
-                                    觀眾有感覺。</p>
+                                    👉 真正厲害的，是讓副歌出來那一刻，觀眾有感覺。</p>
                                 <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '8px', marginBottom: '8px' }}>
                                     <strong style={{ color: '#38bdf8', fontSize: '0.9rem' }}>• Reverse FX (反轉音效)</strong>
                                     <p style={{ color: '#94a3b8', fontSize: '0.85rem', margin: '4px 0 0 0', lineHeight: '1.4' }}>將鈸聲或合成器倒著播放，創造一種把聽眾「吸入」下一個段落的物理拉扯感。</p>
@@ -167,7 +163,7 @@ export default function ArrangementIntro() {
                                 很多人編曲會卡住，不是因為不會寫，
                                 而是所有聲音都擠在同一個地方。
                                 戴上耳機進來體驗：
-                                你會聽到    👉 混亂 vs 清晰    👉 擁擠 vs 寬廣
+                                你會聽到   『 👉 混亂 vs 清晰 』  『 👉 擁擠 vs 寬廣 』
 
                                 這一關，會直接改變你的耳朵。<br />
                                 戴上耳機進來玩玩看：親耳體驗所有樂器擠在中間的「頻率災難」，並感受 J-Rock LCR 擺位法帶來的震撼寬廣度。
