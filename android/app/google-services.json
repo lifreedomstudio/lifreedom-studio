@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "900340633777",
+    "project_id": "mixdojo-4e2bf",
+    "storage_bucket": "mixdojo-4e2bf.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:900340633777:android:8ab7cd4e8407111071d290",
+        "android_client_info": {
+          "package_name": "com.lifreedomstudio.mixdojo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDi5OCSqgE4x08F8NHsJeD1V1RvB1Q9EM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
