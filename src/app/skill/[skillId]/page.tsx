@@ -1,35 +1,42 @@
 "use client";
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-// 引入資料
+import { useRouter, useParams } from 'next/navigation';
 import { SKILLS, LEVELS, initialProgress, UserProgressType } from '@/lib/gameData';
 
-export default function SkillWorldPage({ params }: { params: { skillId: string } }) {
+export default function SkillWorldPage() {
     const router = useRouter();
-    const skillId = params.skillId;
+    const params = useParams();
+    const skillId = params.skillId as string;
 
     const [userProgress, setUserProgress] = useState<UserProgressType>(initialProgress);
     const [skill, setSkill] = useState<any>(null);
     const [skillLevels, setSkillLevels] = useState<typeof LEVELS>([]);
+
     useEffect(() => {
-        // 1. 讀取玩家進度
-        const stored = localStorage.getItem('mix_progress');
-        if (stored) {
-            setUserProgress(JSON.parse(stored));
+        if (!skillId) return;
+
+        try {
+            const stored = localStorage.getItem('mix_progress');
+            if (stored) {
+                setUserProgress(JSON.parse(stored));
+            }
+        } catch (error) {
+            console.warn("舊進度解析失敗，已自動套用預設值", error);
+            localStorage.removeItem('mix_progress');
         }
 
-        // 2. 尋找對應的 Skill 資料
         const targetSkill = SKILLS.find(s => s.id === skillId);
         if (targetSkill) {
             setSkill(targetSkill);
+        } else {
+            console.error("找不到這張卡牌的資料：", skillId);
         }
 
-        // 3. 找出該 Skill 底下的所有 Levels，並依據 order 排序
         const levels = LEVELS.filter(l => l.skillId === skillId).sort((a, b) => a.order - b.order);
         setSkillLevels(levels);
     }, [skillId]);
 
-    if (!skill) return <div style={{ padding: '2rem', color: '#fff' }}>載入中...</div>;
+    if (!skill) return <div style={{ padding: '2rem', color: '#fff', textAlign: 'center' }}>正在解析訓練環境... <br />(如果卡住請確認網址是否正確)</div>;
 
     return (
         <div style={{ minHeight: '100vh', background: '#020617', color: '#fff', padding: '2rem 1rem', fontFamily: 'sans-serif' }}>
@@ -67,7 +74,6 @@ export default function SkillWorldPage({ params }: { params: { skillId: string }
                 <h3 style={{ color: '#f8fafc', marginBottom: '1rem', marginLeft: '10px' }}>🚀 特訓關卡</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     {skillLevels.map((level) => {
-                        // 判斷關卡狀態
                         const isCompleted = userProgress.completedLevels.includes(level.id);
                         const isUnlocked = userProgress.unlockedLevels.includes(level.id);
 
@@ -76,7 +82,6 @@ export default function SkillWorldPage({ params }: { params: { skillId: string }
                                 key={level.id}
                                 onClick={() => {
                                     if (isUnlocked || isCompleted) {
-                                        // TODO: 導向真正的 AB 盲聽遊戲頁面
                                         alert(`準備進入關卡：${level.id}\n難度：${level.difficulty}`);
                                     }
                                 }}
