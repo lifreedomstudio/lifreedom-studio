@@ -1,3 +1,10 @@
+"use client";
+import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
+
+// 📚 產品級第一套卡牌：Core 10
 const CARDS_DATA = [
     // 🟢 🥇 第一組：核心聽感（必做）
     {
@@ -77,3 +84,191 @@ const CARDS_DATA = [
         route: "/courses/mixing/eq-training"
     }
 ];
+
+export default function CollectionPage() {
+    const router = useRouter();
+    const [isMobile, setIsMobile] = useState(false);
+
+    // 記錄玩家進度
+    const [userProgress, setUserProgress] = useState<Record<string, { unlocked: boolean, progress: number, attempts: number }>>({});
+
+    useEffect(() => {
+        const checkUser = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) router.push('/login');
+        };
+        checkUser();
+
+        const stored = localStorage.getItem('mix_progress');
+        if (stored) {
+            setUserProgress(JSON.parse(stored));
+        } else {
+            // 預設解鎖第一關，以便測試
+            setUserProgress({});
+        }
+
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, [router]);
+
+    const handleStartTraining = (card: any) => {
+        const progress = userProgress[card.id] || { unlocked: false, attempts: 0 };
+        router.push(`${card.route}?mission=${card.id}`);
+    };
+
+    return (
+        <div style={{ minHeight: '100vh', background: '#020617', color: '#fff', padding: isMobile ? '2rem 1rem' : '4rem 2rem', fontFamily: 'sans-serif' }}>
+            <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+
+                <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', marginBottom: isMobile ? '2rem' : '4rem', gap: '1.5rem' }}>
+                    <div>
+                        <h1 style={{ fontSize: isMobile ? '1.8rem' : '2.5rem', margin: '0 0 0.5rem 0', background: 'linear-gradient(to right, #fbbf24, #f59e0b)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', lineHeight: '1.2' }}>
+                            📜 能力認證圖鑑與訓練地圖
+                        </h1>
+                        <p style={{ color: '#64748b', margin: 0, fontSize: isMobile ? '0.9rem' : '1rem' }}>
+                            沿著地圖挑戰你的耳朵，收集所有混音核心感知能力。
+                        </p>
+                    </div>
+                    <Link href="/courses" style={{ padding: '0.8rem 1.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', textDecoration: 'none', color: '#e2e8f0', border: '1px solid #1e293b', fontWeight: 'bold', transition: 'all 0.2s', width: isMobile ? '100%' : 'auto', textAlign: 'center' }}>
+                        ⬅️ 返回大廳
+                    </Link>
+                </div>
+
+                {/* 🗺️ Duolingo 任務地圖 */}
+                <div style={{ background: '#0f172a', borderRadius: '24px', padding: '3rem 1rem', border: '1px solid #1e293b', marginBottom: '4rem', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', overflow: 'hidden' }}>
+                    <h2 style={{ color: '#38bdf8', marginBottom: '2rem', zIndex: 2 }}>🗺️ 聽力特訓地圖</h2>
+
+                    {/* 地圖節點：利用 flex 和 margin 模擬蜿蜒路徑 */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem', position: 'relative', zIndex: 1 }}>
+                        {/* 虛線背景軌道 */}
+                        <div style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', width: '4px', background: 'url("data:image/svg+xml,%3Csvg width=\'4\' height=\'20\' viewBox=\'0 0 4 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Crect width=\'4\' height=\'10\' fill=\'%23334155\'/%3E%3C/svg%3E")', transform: 'translateX(-50%)', zIndex: 0 }}></div>
+
+                        {CARDS_DATA.map((node, index) => {
+                            const isUnlocked = userProgress[node.id]?.unlocked;
+                            // 判斷是否為「下一個可挑戰」的關卡
+                            const isPlayable = isUnlocked || index === 0 || userProgress[CARDS_DATA[index - 1].id]?.unlocked;
+
+                            // 左右錯開的排版邏輯
+                            const marginLeft = index % 2 === 0 ? '0' : '150px';
+                            const marginRight = index % 2 === 0 ? '150px' : '0';
+
+                            return (
+                                <div key={node.id} style={{ display: 'flex', alignItems: 'center', gap: '15px', zIndex: 1, marginLeft: isMobile ? '0' : marginLeft, marginRight: isMobile ? '0' : marginRight }}>
+
+                                    {/* 文字標籤 (左側或右側) */}
+                                    {index % 2 === 1 && !isMobile && (
+                                        <div style={{ width: '120px', textAlign: 'right', color: isPlayable ? node.theme : '#475569', fontWeight: 'bold' }}>{node.name}</div>
+                                    )}
+
+                                    {/* 節點本體 */}
+                                    <div
+                                        onClick={() => isPlayable && handleStartTraining(node)}
+                                        className={`map-node ${isUnlocked ? 'unlocked' : isPlayable ? 'playable' : 'locked'}`}
+                                        style={{
+                                            width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', cursor: isPlayable ? 'pointer' : 'not-allowed',
+                                            background: isUnlocked ? node.theme : isPlayable ? '#1e293b' : '#020617',
+                                            border: `4px solid ${isPlayable ? node.theme : '#1e293b'}`,
+                                            boxShadow: isUnlocked ? `0 0 30px ${node.theme}80` : isPlayable ? `0 0 15px ${node.theme}40` : 'none',
+                                            transition: 'transform 0.2s'
+                                        }}
+                                        onMouseOver={e => isPlayable && (e.currentTarget.style.transform = 'scale(1.1)')}
+                                        onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+                                    >
+                                        {isUnlocked ? '⭐' : isPlayable ? '🎯' : '🔒'}
+                                    </div>
+
+                                    {/* 文字標籤 (左側或右側) */}
+                                    {(index % 2 === 0 || isMobile) && (
+                                        <div style={{ width: '120px', textAlign: 'left', color: isPlayable ? node.theme : '#475569', fontWeight: 'bold' }}>{node.name}</div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* 🗂️ 核心卡牌網格 */}
+                <h2 style={{ color: '#f8fafc', marginBottom: '2rem', borderLeft: '4px solid #10b981', paddingLeft: '15px' }}>🎴 能力圖鑑庫</h2>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
+                    {CARDS_DATA.map((card) => {
+                        const progress = userProgress[card.id] || { unlocked: false, attempts: 0, progress: 0 };
+                        const isUnlocked = progress.unlocked;
+
+                        return (
+                            <div key={card.id} style={{
+                                background: isUnlocked ? '#0f172a' : '#020617',
+                                borderRadius: '20px',
+                                border: `2px solid ${isUnlocked ? card.theme : '#1e293b'}`,
+                                boxShadow: isUnlocked ? `0 10px 30px ${card.theme}20` : 'none',
+                                overflow: 'hidden', transition: 'all 0.3s',
+                                filter: isUnlocked ? 'none' : 'grayscale(0.8) opacity(0.8)'
+                            }}
+                            >
+                                <div style={{ background: isUnlocked ? `linear-gradient(135deg, ${card.theme}20, transparent)` : '#0f172a', padding: '1.5rem', borderBottom: `1px solid ${isUnlocked ? card.theme + '40' : '#1e293b'}` }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                                        <div>
+                                            <div style={{ fontSize: '0.75rem', color: isUnlocked ? card.theme : '#64748b', fontWeight: 'bold', letterSpacing: '1px', marginBottom: '5px' }}>
+                                                {card.tier} | {card.rarity}
+                                            </div>
+                                            <h3 style={{ margin: 0, fontSize: '1.4rem', color: isUnlocked ? '#fff' : '#64748b' }}>{card.name}</h3>
+                                        </div>
+                                        <span style={{ fontSize: '0.8rem', padding: '4px 10px', background: 'rgba(255,255,255,0.1)', color: '#94a3b8', borderRadius: '8px' }}>
+                                            {card.freq}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div style={{ padding: '1.5rem' }}>
+                                    <div style={{ marginBottom: '1.5rem' }}>
+                                        <div style={{ color: '#fff', fontSize: '0.9rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}><span>🧠</span> <strong>核心聽感</strong></div>
+                                        <div style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6' }}>{card.learn}</div>
+                                    </div>
+
+                                    <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: '12px', padding: '1rem', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '1.5rem' }}>
+                                        <div style={{ color: '#fca5a5', fontSize: '0.9rem', marginBottom: '8px', display: 'flex', gap: '8px' }}><span>❌</span> <span><strong>過多：</strong>{card.detect.tooMuch}</span></div>
+                                        <div style={{ color: '#6ee7b7', fontSize: '0.9rem', display: 'flex', gap: '8px' }}><span>✅</span> <span><strong>適當：</strong>{card.detect.reduced}</span></div>
+                                    </div>
+
+                                    {/* 🎮 成癮系統 UI */}
+                                    {isUnlocked ? (
+                                        <div style={{ borderTop: `1px dashed ${card.theme}50`, paddingTop: '1.5rem' }}>
+                                            <div style={{ color: card.theme, fontWeight: 'bold', fontSize: '0.95rem', marginBottom: '8px', display: 'flex', justifyContent: 'space-between' }}>
+                                                <span>🎁 能力賦予：</span><span style={{ color: '#a7f3d0' }}>完成度 100%</span>
+                                            </div>
+                                            <div style={{ color: '#fff', fontSize: '1.05rem', marginBottom: '1rem' }}>{card.reward}</div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <div style={{ background: `${card.theme}20`, color: card.theme, padding: '6px 12px', borderRadius: '6px', fontSize: '0.85rem', fontWeight: 'bold' }}>🚀 {card.next}</div>
+                                                <span style={{ fontSize: '0.8rem', color: '#64748b' }}>通過挑戰次數：{progress.attempts} </span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div style={{ borderTop: '1px dashed #334155', paddingTop: '1.5rem', textAlign: 'center' }}>
+                                            <div style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '8px' }}>🔒 尚未解鎖圖鑑</div>
+                                            <div style={{ color: '#94a3b8', fontSize: '0.95rem', fontWeight: 'bold', marginBottom: '10px' }}>{card.unlockBy}</div>
+
+                                            <div style={{ background: 'rgba(255,255,255,0.05)', padding: '8px', borderRadius: '8px', color: '#cbd5e1', fontSize: '0.85rem' }}>
+                                                挑戰次數：{progress.attempts}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )
+                    })}
+                </div>
+            </div>
+
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                .playable { animation: pulse 2s infinite; }
+                @keyframes pulse {
+                    0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.4); }
+                    70% { box-shadow: 0 0 0 15px rgba(56, 189, 248, 0); }
+                    100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+                }
+            `}} />
+        </div>
+    );
+}
