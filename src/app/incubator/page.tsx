@@ -115,7 +115,6 @@ export default function IncubatorPage() {
     const [currentScore, setCurrentScore] = useState<number>(0);
     const [currentLevelIdx, setCurrentLevelIdx] = useState<number>(0);
 
-    // 🔥 升級 1 & 3：連擊感與錯誤可視化狀態
     const [combo, setCombo] = useState(0);
     const [errorInsts, setErrorInsts] = useState<string[]>([]);
 
@@ -181,6 +180,16 @@ export default function IncubatorPage() {
         sourcesRef.current = {};
     };
 
+    // ✅ 新增：在元件卸載（離開頁面）時，強制拔掉虛擬混音機的電源
+    useEffect(() => {
+        return () => {
+            stopTracks(); // 停止所有音軌
+            if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') {
+                audioCtxRef.current.close(); // 徹底釋放音訊引擎的記憶體
+            }
+        };
+    }, []);
+
     const togglePlay = async () => {
         if (!isAudioReady || !audioCtxRef.current) {
             const ctx = await initAudio();
@@ -221,7 +230,6 @@ export default function IncubatorPage() {
         setPanVals(newVals);
         setActivePreset('custom');
 
-        // 使用者一動手，就重置狀態讓他們可以重新送出
         if (mode === 'challenge') {
             setChallengeStatus('pending');
             setErrorInsts([]);
@@ -242,21 +250,20 @@ export default function IncubatorPage() {
         const currentLevel = LEVELS[currentLevelIdx];
         const { score, errors } = currentLevel.evaluate(panVals);
         setCurrentScore(score);
-        setErrorInsts(errors); // 記錄錯誤的樂器
+        setErrorInsts(errors);
 
         if (score === 100) {
             setChallengeStatus("success");
-            setCombo(prev => prev + 1); // 🔥 連擊 +1
+            setCombo(prev => prev + 1);
         } else if (score >= 50) {
             setChallengeStatus("partial");
-            setCombo(0); // 斷掉連擊
+            setCombo(0);
         } else {
             setChallengeStatus("fail");
-            setCombo(0); // 斷掉連擊
+            setCombo(0);
         }
     };
 
-    // 🔥 升級 2：動態漸進提示系統
     const getHint = (score: number) => {
         if (score < 30) return "👉 還是太集中了，有東西緊緊擠在中間。";
         if (score < 60) return "👉 方向對了！試著把你覺得有干擾的樂器拉到更兩側。";
@@ -311,7 +318,6 @@ export default function IncubatorPage() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                             <h3 style={{ margin: 0, color: '#818cf8', fontSize: '1.2rem' }}>🏆 {currentLevel.title}</h3>
-                            {/* 🔥 連續成功 Combo UI */}
                             {combo > 0 && (
                                 <span style={{ color: '#fca311', fontWeight: 'bold', animation: 'pulse 1s infinite' }}>
                                     🔥 連續成功：{combo} 次
@@ -449,7 +455,6 @@ export default function IncubatorPage() {
                 ))}
             </div>
 
-            {/* 🏟️ 立體聲場視覺化舞台 */}
             <div style={{ background: '#0f172a', padding: '2rem', borderRadius: '24px', border: '1px solid #1e293b', marginBottom: '3rem', position: 'relative' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: '#64748b', fontSize: '0.9rem', marginBottom: '1.5rem', fontWeight: 'bold', letterSpacing: '2px' }}>
                     <span>LEFT</span>
@@ -465,7 +470,6 @@ export default function IncubatorPage() {
                         const leftPos = `${((panValue + 100) / 200) * 100}%`;
                         const isError = errorInsts.includes(inst.id);
 
-                        // 🔥 錯誤的樂器發出紅光
                         const glowEffect = isError
                             ? `0 0 25px rgba(239, 68, 68, 0.9)`
                             : activePreset === 'jrock' && (inst.id === 'rhythm' || inst.id === 'lead')
@@ -489,14 +493,13 @@ export default function IncubatorPage() {
                 </div>
             </div>
 
-            {/* 🎚️ 樂器滑桿控制區 */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
                 {INSTRUMENTS.map(inst => {
                     const isError = errorInsts.includes(inst.id);
                     return (
                         <div key={inst.id} style={{
                             background: '#0f172a', padding: '1.2rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '1rem',
-                            border: isError ? '1px solid #ef4444' : '1px solid #1e293b', // 🔥 錯誤框線
+                            border: isError ? '1px solid #ef4444' : '1px solid #1e293b',
                             boxShadow: isError ? '0 0 15px rgba(239, 68, 68, 0.3)' : 'none',
                             transition: 'all 0.3s'
                         }}>
