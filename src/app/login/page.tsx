@@ -56,9 +56,7 @@ export default function LoginPage() {
         <p style={{ color: '#94a3b8', marginBottom: '2rem', fontSize: '0.95rem', lineHeight: '1.6' }}>
           請設定您的專屬帳號與密碼。
         </p>
-        <p style={{ color: '#94a3b8', marginBottom: '2rem', fontSize: '0.95rem', lineHeight: '1.6' }}>
-          請設定您的專屬帳號與密碼。
-        </p>
+
 
         {/* 把 form 改成 div，避免瀏覽器預設的重新整理行為 */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
