@@ -151,7 +151,7 @@ export default function CoursesPage() {
 
             {arrow}
 
-            {/* 🔥 STEP 4 試煉 */}
+            {/* 🔥 STEP 4 试炼 */}
             <div style={stepWrapper}>
                 <Link href="/training" style={{ textDecoration: 'none', width: '100%' }}>
                     <div style={stepCard}>
