@@ -82,7 +82,8 @@ export default function SkillWorldPage() {
                                 key={level.id}
                                 onClick={() => {
                                     if (isUnlocked || isCompleted) {
-                                        alert(`準備進入關卡：${level.id}\n難度：${level.difficulty}`);
+                                        // ✅ 已經幫你把 alert 換成真正的房間跳轉邏輯了！
+                                        router.push(`/training/${level.id}`);
                                     }
                                 }}
                                 style={{
