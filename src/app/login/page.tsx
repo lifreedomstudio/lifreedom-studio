@@ -82,7 +82,21 @@ export default function LoginPage() {
               padding: '1rem', borderRadius: '12px', border: '1px solid #334155', background: '#020617', color: '#fff', fontSize: '1rem', outline: 'none'
             }}
           />
-
+          <div style={{ textAlign: 'right', marginTop: '-6px' }}>
+            <span
+              onClick={() => router.push('/forgot-password')}
+              style={{
+                fontSize: '0.8rem',
+                color: '#64748b',
+                cursor: 'pointer',
+                transition: 'color 0.2s'
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = '#38bdf8')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = '#64748b')}
+            >
+              忘記聲音通行證？
+            </span>
+          </div>
           <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
             <button
               onClick={handleSignUp}

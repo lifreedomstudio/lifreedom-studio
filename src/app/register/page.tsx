@@ -22,20 +22,7 @@ export default function RegisterPage({ searchParams }: { searchParams: Promise<{
             <label className="label" htmlFor="password">Password</label>
             <input className="input-field" id="password" name="password" type="password" required minLength={6} />
           </div>
-          {/* 💥 完美的密碼下方引導線 */}
-          <div style={{ textAlign: 'right', marginTop: '0.5rem', marginBottom: '1.5rem' }}>
-            <Link href="/forgot-password" style={{
-              fontSize: '0.8rem',
-              color: '#94a3b8',
-              textDecoration: 'none',
-              transition: 'color 0.2s'
-            }}
-              onMouseOver={(e) => e.currentTarget.style.color = '#38bdf8'}
-              onMouseOut={(e) => e.currentTarget.style.color = '#94a3b8'}
-            >
-              找回聲音通行證？
-            </Link>
-          </div>
+
           {resolvedSearchParams?.message && (
             <div style={{ color: 'var(--error-color)', marginBottom: '1rem', fontSize: '0.875rem' }}>
               {resolvedSearchParams.message}
