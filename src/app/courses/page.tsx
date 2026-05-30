@@ -9,6 +9,7 @@ export default function CoursesPage() {
     const [loading, setLoading] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
 
+    // 佈署守門員：驗證登入狀態
     useEffect(() => {
         const checkUser = async () => {
             const { data: { session } } = await supabase.auth.getSession();
@@ -21,6 +22,7 @@ export default function CoursesPage() {
         checkUser();
     }, [router]);
 
+    // 判斷手機版
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
         checkMobile();
@@ -74,7 +76,7 @@ export default function CoursesPage() {
         marginBottom: '0.5rem'
     };
 
-    // 🌟 升級版高質感 SVG 動態箭頭
+    // 高質感 SVG 動態箭頭
     const Arrow = () => (
         <div style={{ margin: '1rem 0 2rem 0', animation: 'bounce 2s infinite', color: '#475569', display: 'flex', justifyContent: 'center' }}>
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -122,6 +124,59 @@ export default function CoursesPage() {
                 </div>
             </div>
 
+            {/* 💥 HERO 爆擊區 (成功插入於 Header 與進度條中間) */}
+            <div style={{
+                marginBottom: '3rem',
+                padding: isMobile ? '2rem 1.5rem' : '3rem',
+                borderRadius: '24px',
+                background: 'linear-gradient(135deg, rgba(56,189,248,0.08), rgba(16,185,129,0.08))',
+                border: '1px solid rgba(255,255,255,0.1)',
+                textAlign: 'center'
+            }}>
+                <h2 style={{
+                    fontSize: isMobile ? '1.6rem' : '2rem',
+                    fontWeight: '900',
+                    marginBottom: '1rem',
+                    lineHeight: '1.4'
+                }}>
+                    你以為你在聽音樂<br />
+                    其實你只聽到 <span style={{ color: '#38bdf8' }}>30%</span>
+                </h2>
+
+                <p style={{
+                    color: '#94a3b8',
+                    lineHeight: '1.7',
+                    marginBottom: '2rem'
+                }}>
+                    鼓、Bass、空間、細節…<br />
+                    大部分的人從來沒真的聽過它們
+                </p>
+
+                <Link href="/courses/ear-opening/intro" style={{
+                    display: 'inline-block',
+                    padding: '1rem 2rem',
+                    borderRadius: '999px',
+                    background: 'linear-gradient(90deg,#38bdf8,#10b981)',
+                    color: '#020617',
+                    fontWeight: '900',
+                    textDecoration: 'none',
+                    fontSize: '1rem',
+                    boxShadow: '0 4px 15px rgba(56, 189, 248, 0.2)'
+                }}>
+                    🎧 讓我聽一次真的音樂
+                </Link>
+
+                {/* ⚡ Killer 心理暗示小字 */}
+                <p style={{
+                    marginTop: '1rem',
+                    fontSize: '0.85rem',
+                    color: '#64748b',
+                    letterSpacing: '1px'
+                }}>
+                    ⚠️ 多數人第一次都會嚇到
+                </p>
+            </div>
+
             {/* 🎯 總體進度條 */}
             <div style={{ marginBottom: '4rem', background: 'rgba(30,41,59,0.4)', padding: '1.5rem', borderRadius: '16px', border: '1px solid #334155' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
@@ -137,6 +192,10 @@ export default function CoursesPage() {
             <h2 style={{ textAlign: 'center', marginBottom: '3rem', fontSize: '1.8rem', color: '#fff', fontWeight: 'bold' }}>
                 不是選課，是開始聽懂聲音
             </h2>
+
+            {/* =========================================
+                🔥 新手村主軸 (Step 0 ~ Step 4)
+            ========================================= */}
 
             {/* 🎧 STEP 0: 聽覺啟蒙 */}
             <div style={stepWrapper}>
@@ -193,7 +252,6 @@ export default function CoursesPage() {
             <div style={stepWrapper}>
                 <div style={{ ...badgeStyle, color: '#f97316', borderColor: 'rgba(249, 115, 22, 0.3)' }}>STEP 3 / 實戰</div>
                 <Link href="/training" style={{ textDecoration: 'none', width: '100%' }}>
-                    {/* 這裡修復了 JSX 語法錯誤 */}
                     <div style={{ ...stepCard, background: 'linear-gradient(145deg, rgba(234, 88, 12, 0.1), rgba(15, 23, 42, 1))' }}
                         onMouseOver={e => { e.currentTarget.style.border = '1px solid #ea580c'; e.currentTarget.style.transform = 'translateY(-5px)'; }}
                         onMouseOut={e => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.1)'; e.currentTarget.style.transform = 'none'; }}>
@@ -211,7 +269,6 @@ export default function CoursesPage() {
             <div style={stepWrapper}>
                 <div style={{ ...badgeStyle, color: '#10b981', borderColor: 'rgba(16, 185, 129, 0.5)' }}>STEP 4 / 驗證</div>
                 <Link href="/certification/novice" style={{ textDecoration: 'none', width: '100%' }}>
-                    {/* 這裡修復了 JSX 語法錯誤 */}
                     <div style={{ ...stepCard, border: '1px dashed rgba(16, 185, 129, 0.5)' }}
                         onMouseOver={e => { e.currentTarget.style.border = '1px solid #10b981'; e.currentTarget.style.transform = 'translateY(-5px)'; }}
                         onMouseOut={e => { e.currentTarget.style.border = '1px dashed rgba(16, 185, 129, 0.5)'; e.currentTarget.style.transform = 'none'; }}>
