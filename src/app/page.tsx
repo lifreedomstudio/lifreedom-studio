@@ -11,6 +11,10 @@ export default function HomePage() {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
+
+    // 強制每次載入首頁時回到頂部，避免奇怪的快取位置
+    window.scrollTo(0, 0);
+
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
@@ -63,10 +67,10 @@ export default function HomePage() {
           </span>
         </p>
         <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexDirection: isMobile ? 'column' : 'row', width: isMobile ? '100%' : 'auto', maxWidth: '600px' }}>
-          <button onClick={() => router.push('/courses')} style={{ flex: 1, padding: isMobile ? '1.2rem' : '1.2rem 3rem', background: '#fca311', color: '#000', fontSize: '1.1rem', fontWeight: '900', borderRadius: '50px', border: 'none', cursor: 'pointer', boxShadow: '0 10px 40px rgba(252, 163, 17, 0.4)' }}>
+          <button onClick={() => { window.scrollTo(0, 0); router.push('/courses'); }} style={{ flex: 1, padding: isMobile ? '1.2rem' : '1.2rem 3rem', background: '#fca311', color: '#000', fontSize: '1.1rem', fontWeight: '900', borderRadius: '50px', border: 'none', cursor: 'pointer', boxShadow: '0 10px 40px rgba(252, 163, 17, 0.4)' }}>
             🚀 進入學習系統
           </button>
-          <button onClick={() => router.push('/courses')} style={{ flex: 1, padding: isMobile ? '1.2rem' : '1.2rem 3rem', background: 'transparent', color: '#fca311', border: '2px solid #fca311', fontSize: '1.1rem', fontWeight: '900', borderRadius: '50px', cursor: 'pointer' }}>
+          <button onClick={() => { window.scrollTo(0, 0); router.push('/courses'); }} style={{ flex: 1, padding: isMobile ? '1.2rem' : '1.2rem 3rem', background: 'transparent', color: '#fca311', border: '2px solid #fca311', fontSize: '1.1rem', fontWeight: '900', borderRadius: '50px', cursor: 'pointer' }}>
             查看完整課程內容
           </button>
         </div>
@@ -197,9 +201,11 @@ export default function HomePage() {
       <div style={{ padding: isMobile ? '4rem 1.5rem' : '6rem 2rem', textAlign: 'center', background: 'radial-gradient(circle at 50% 100%, #1e293b 0%, #020617 80%)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
 
         <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.2rem', color: '#fff', marginBottom: '1rem' }}>這不是單向的教學，而是一套幫助你建立音樂判斷能力的學習系統</h2>
-        <Link href="/courses" style={{ display: 'inline-block', padding: '1.2rem 4rem', background: '#fff', color: '#020617', fontSize: '1.1rem', fontWeight: '900', borderRadius: '50px', textDecoration: 'none', boxShadow: '0 10px 30px rgba(255,255,255,0.2)', margin: '2rem 0 4rem 0' }}>
+
+        {/* 🚨 修正：將 Link 替換為 button，並強制畫面置頂跳轉 */}
+        <button onClick={() => { window.scrollTo(0, 0); router.push('/courses'); }} style={{ display: 'inline-block', padding: '1.2rem 4rem', background: '#fff', color: '#020617', fontSize: '1.1rem', fontWeight: '900', borderRadius: '50px', border: 'none', cursor: 'pointer', boxShadow: '0 10px 30px rgba(255,255,255,0.2)', margin: '2rem 0 4rem 0' }}>
           開始第一步訓練
-        </Link>
+        </button>
 
         {/* ⚠️ 金流合規宣告 (最嚴謹版本) */}
         <div style={{ maxWidth: '650px', margin: '0 auto', textAlign: 'left', padding: '1.5rem', background: 'rgba(0,0,0,0.3)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
