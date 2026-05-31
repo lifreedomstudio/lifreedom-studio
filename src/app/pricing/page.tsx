@@ -49,41 +49,41 @@ export default function PricingPage() {
 
                 <header style={{ textAlign: 'center', marginBottom: '4rem' }}>
                     <h1 style={{ fontSize: isMobile ? '2.2rem' : '3.5rem', fontWeight: '900', margin: '0 0 1rem 0', color: '#fff' }}>
-                        投資你的製作人職涯
+                        從「開始聽見」到「持續聽懂」
                     </h1>
                     <p style={{ color: '#94a3b8', fontSize: '1.1rem', maxWidth: '650px', margin: '0 auto', lineHeight: '1.6' }}>
-                        業界唯一「聽覺互動式」學習系統與無死角 AI 聽診助理。<br />
-                        選擇適合你的方案，告別傳統教學的泥淖。
+                        業界唯一的「聽覺互動式」學習系統。<br />
+                        選擇適合你的方案，持續建立你的聲音判斷力。
                     </p>
                 </header>
 
                 {/* 方案卡片區塊 */}
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '2rem', alignItems: 'center' }}>
 
-                    {/* 方案 1：免費版 */}
+                    {/* 🟢 方案 1：免費體驗版 (病毒入口 + 基礎卡點) */}
                     <div style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '24px', padding: '2.5rem 2rem', textAlign: 'center', display: 'flex', flexDirection: 'column', height: '100%' }}>
-                        <h3 style={{ color: '#94a3b8', fontSize: '1.3rem', marginBottom: '1rem' }}>學徒級 (Basic)</h3>
+                        <h3 style={{ color: '#94a3b8', fontSize: '1.3rem', marginBottom: '1rem' }}>聽覺啟蒙 (Free)</h3>
                         <div style={{ fontSize: '2.5rem', fontWeight: '900', color: '#fff', marginBottom: '0.5rem' }}>
                             免費
                         </div>
-                        <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '2rem' }}>打穩地基，體驗互動威力</p>
+                        <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '2rem' }}>開始體會「聽出差異」的瞬間</p>
 
                         <ul style={{ color: '#cbd5e1', textAlign: 'left', lineHeight: '1.8', margin: '0 0 2rem 0', padding: 0, listStyle: 'none', flex: 1, fontSize: '0.95rem' }}>
-                            <li style={{ marginBottom: '10px' }}>✔️ <strong style={{ color: '#fff' }}>每日 2 次 AI 純文字發問</strong></li>
-                            <li style={{ marginBottom: '10px' }}>✔️ 基礎編曲與混音觀念全解鎖</li>
-                            <li style={{ marginBottom: '10px' }}>✔️ 新手全面認證大會考</li>
-                            <li style={{ color: '#475569', marginBottom: '10px' }}>❌ 支援 DAW 截圖上傳分析</li>
-                            <li style={{ color: '#475569' }}>❌ 高階 3D 空間處理與母帶</li>
+                            <li style={{ marginBottom: '10px' }}>✔️ <strong style={{ color: '#fff' }}>A/B 聽覺測試 (完整體驗)</strong></li>
+                            <li style={{ marginBottom: '10px' }}>✔️ 解鎖前 3 關基礎訓練體驗</li>
+                            <li style={{ marginBottom: '10px' }}>✔️ 每日 2 次 AI 輔助發問</li>
+                            <li style={{ color: '#475569', marginBottom: '10px' }}>❌ 無限制聽覺訓練與進階音檔</li>
+                            <li style={{ color: '#475569' }}>❌ 完整訓練解析與實戰內容</li>
                         </ul>
-                        <button onClick={() => router.push('/courses')} style={{ width: '100%', padding: '1rem', background: '#334155', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}>
-                            開始免費修煉
+                        <button onClick={() => router.push('/courses/ear-opening/intro')} style={{ width: '100%', padding: '1rem', background: '#334155', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}>
+                            立即體驗
                         </button>
                     </div>
 
-                    {/* 方案 2：高階進階版 (主推) */}
+                    {/* 🔵 方案 2：持續變強版 (核心收費點) */}
                     <div style={{ background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)', border: '2px solid #38bdf8', borderRadius: '24px', padding: '3rem 2rem', textAlign: 'center', display: 'flex', flexDirection: 'column', height: '100%', position: 'relative', boxShadow: '0 20px 40px rgba(56, 189, 248, 0.2)' }}>
                         <div style={{ position: 'absolute', top: '-15px', left: '50%', transform: 'translateX(-50%)', background: '#38bdf8', color: '#020617', padding: '4px 16px', borderRadius: '20px', fontWeight: '900', fontSize: '0.85rem', letterSpacing: '1px' }}>
-                            MOST POPULAR
+                            持續變強
                         </div>
                         <h3 style={{ color: '#38bdf8', fontSize: '1.5rem', marginBottom: '1rem', fontWeight: 'bold' }}>獨立製作人</h3>
 
@@ -91,21 +91,21 @@ export default function PricingPage() {
                             <span style={{ fontSize: '1.2rem', color: '#fff', fontWeight: 'bold', marginBottom: '8px' }}>NT$</span>
                             <span style={{ fontSize: '3rem', fontWeight: '900', color: '#fff', lineHeight: 1 }}>399</span>
                         </div>
-                        <p style={{ color: '#38bdf8', fontSize: '0.9rem', marginBottom: '2rem', fontWeight: 'bold' }}>/ 月 (解鎖高階技巧與圖文 AI)</p>
+                        <p style={{ color: '#38bdf8', fontSize: '0.9rem', marginBottom: '2rem', fontWeight: 'bold' }}>/ 月 (解鎖無限制訓練與完整解析)</p>
 
                         <ul style={{ color: '#e2e8f0', textAlign: 'left', lineHeight: '1.8', margin: '0 0 2rem 0', padding: 0, listStyle: 'none', flex: 1, fontSize: '0.95rem' }}>
-                            <li style={{ marginBottom: '10px' }}>🔥 <strong style={{ color: '#38bdf8' }}>每月 50 枚 AI 聽診幣</strong></li>
-                            <li style={{ marginBottom: '10px' }}>🔥 <strong style={{ color: '#fff' }}>支援上傳 DAW/Plugin 截圖</strong>，AI 直接教你調參數！</li>
-                            <li style={{ marginBottom: '10px' }}>✔️ 解鎖高階編曲 (八度音錯位)</li>
-                            <li style={{ marginBottom: '10px' }}>✔️ 解鎖高階混音 (Reverb 發送)</li>
-                            <li>✔️ 專屬 AI 音樂後期優化指南</li>
+                            <li style={{ marginBottom: '10px' }}>🔥 <strong style={{ color: '#fff' }}>解鎖所有基礎與進階聽覺訓練</strong></li>
+                            <li style={{ marginBottom: '10px' }}>🔥 <strong style={{ color: '#fff' }}>無限制重複練習與進階音檔</strong></li>
+                            <li style={{ marginBottom: '10px' }}>✔️ 解鎖每一關的「完整訓練解析」</li>
+                            <li style={{ marginBottom: '10px' }}>✔️ 支援上傳 DAW 截圖，AI 輔助分析參數</li>
+                            <li>✔️ 每月 50 次 AI 分析額度</li>
                         </ul>
                         <button onClick={() => openWaitlist('獨立製作人方案')} style={{ width: '100%', padding: '1.2rem', background: 'linear-gradient(135deg, #38bdf8, #2563eb)', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: '900', fontSize: '1.1rem', cursor: 'pointer', boxShadow: '0 10px 20px rgba(56, 189, 248, 0.3)', transition: 'transform 0.2s' }} onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}>
-                            🚀 即將推出 (加入等候名單)
+                            🚀 解鎖完整訓練 (加入等候名單)
                         </button>
                     </div>
 
-                    {/* 方案 3：大師版 */}
+                    {/* 🟣 方案 3：從會聽到會用版 (高階) */}
                     <div style={{ background: '#0f172a', border: '1px solid #a78bfa', borderRadius: '24px', padding: '2.5rem 2rem', textAlign: 'center', display: 'flex', flexDirection: 'column', height: '100%' }}>
                         <h3 style={{ color: '#a78bfa', fontSize: '1.3rem', marginBottom: '1rem' }}>好萊塢大師</h3>
 
@@ -113,16 +113,17 @@ export default function PricingPage() {
                             <span style={{ fontSize: '1.2rem', color: '#fff', fontWeight: 'bold', marginBottom: '8px' }}>NT$</span>
                             <span style={{ fontSize: '2.5rem', fontWeight: '900', color: '#fff', lineHeight: 1 }}>899</span>
                         </div>
-                        <p style={{ color: '#a78bfa', fontSize: '0.9rem', marginBottom: '2rem' }}>/ 月 (專屬指導與極致運算)</p>
+                        <p style={{ color: '#a78bfa', fontSize: '0.9rem', marginBottom: '2rem' }}>/ 月 (從聽懂到實戰應用)</p>
 
                         <ul style={{ color: '#cbd5e1', textAlign: 'left', lineHeight: '1.8', margin: '0 0 2rem 0', padding: 0, listStyle: 'none', flex: 1, fontSize: '0.95rem' }}>
-                            <li style={{ marginBottom: '10px' }}>⭐ <strong style={{ color: '#a78bfa' }}>每月 200 枚巨量 AI 聽診幣</strong></li>
-                            <li style={{ marginBottom: '10px' }}>⭐ <strong style={{ color: '#fff' }}>每月 1 次真人混音作品點評</strong> (由專業導師深度解析)</li>
-                            <li style={{ marginBottom: '10px' }}>✔️ 包含獨立製作人所有內容</li>
-                            <li>✔️ 每月專屬實戰分軌 (Stems) 下載</li>
+                            <li style={{ marginBottom: '10px' }}>⭐ <strong style={{ color: '#fff' }}>每月 1 次真人混音作品深度分析</strong></li>
+                            <li style={{ marginBottom: '10px' }}>⭐ <strong style={{ color: '#fff' }}>解鎖最高難度實戰訓練內容</strong></li>
+                            <li style={{ marginBottom: '10px' }}>✔️ 包含獨立製作人所有訓練內容</li>
+                            <li style={{ marginBottom: '10px' }}>✔️ 每月 200 次 AI 分析額度</li>
+                            <li>✔️ 每月專屬實戰分軌 (Stems) 練習</li>
                         </ul>
                         <button onClick={() => openWaitlist('好萊塢大師方案')} style={{ width: '100%', padding: '1rem', background: '#1e1b4b', color: '#a78bfa', border: '1px solid #a78bfa', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.2s' }} onMouseOver={e => e.currentTarget.style.background = '#2e1065'} onMouseOut={e => e.currentTarget.style.background = '#1e1b4b'}>
-                            🚀 即將推出 (加入等候名單)
+                            🚀 準備實戰 (加入等候名單)
                         </button>
                     </div>
 
@@ -149,7 +150,7 @@ export default function PricingPage() {
                                     {waitlistPlanType} 籌備中！
                                 </h3>
                                 <p style={{ color: '#94a3b8', fontSize: '0.95rem', textAlign: 'center', lineHeight: '1.6', marginBottom: '2rem' }}>
-                                    付費金流與進階 AI 截圖分析系統正在做最後的調校。留下 Email 加入等候名單，上線時我們將發送 <strong style={{ color: '#38bdf8' }}>首月 5 折專屬優惠碼</strong> 給你！
+                                    付費解鎖機制與進階訓練系統正在做最後的調校。留下 Email 加入等候名單，上線時我們將發送 <strong style={{ color: '#38bdf8' }}>首月 5 折專屬優惠碼</strong> 給你！
                                 </p>
                                 <form onSubmit={handleWaitlistSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                     <input type="email" required placeholder="輸入你的常用 Email" value={waitlistEmail} onChange={(e) => setWaitlistEmail(e.target.value)} style={{ padding: '1rem', borderRadius: '12px', border: '1px solid #334155', background: '#020617', color: '#fff', fontSize: '1rem', outline: 'none' }} />
@@ -162,7 +163,7 @@ export default function PricingPage() {
                             <div style={{ textAlign: 'center', padding: '1rem 0' }}>
                                 <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎉</div>
                                 <h3 style={{ color: '#10b981', fontSize: '1.5rem', marginBottom: '1rem', fontWeight: 'bold' }}>加入成功！</h3>
-                                <p style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.6' }}>感謝你的支持！專屬折扣碼已經為你預留。<br />當付費系統準備就緒時，我們會第一時間通知你。</p>
+                                <p style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.6' }}>感謝你的支持！專屬折扣碼已經為你預留。<br />當進階訓練系統準備就緒時，我們會第一時間通知你。</p>
                                 <button onClick={() => setShowWaitlistModal(false)} style={{ marginTop: '2rem', padding: '0.8rem 2rem', background: 'transparent', border: '1px solid #64748b', color: '#94a3b8', borderRadius: '50px', cursor: 'pointer', fontWeight: 'bold' }}>關閉視窗</button>
                             </div>
                         )}
