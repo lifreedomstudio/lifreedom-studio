@@ -91,7 +91,7 @@ export default function PricingPage() {
                             <span style={{ fontSize: '1.2rem', color: '#fff', fontWeight: 'bold', marginBottom: '8px' }}>NT$</span>
                             <span style={{ fontSize: '3rem', fontWeight: '900', color: '#fff', lineHeight: 1 }}>399</span>
                         </div>
-                        <p style={{ color: '#38bdf8', fontSize: '0.9rem', marginBottom: '2rem', fontWeight: 'bold' }}>/ 月 (從聽見差異 → 建立判斷能力)</p>
+                        <p style={{ color: '#38bdf8', fontSize: '0.9rem', marginBottom: '2rem', fontWeight: 'bold' }}>/ 月 (從「聽見差異」到「能做出判斷」)</p>
 
                         <ul style={{ color: '#e2e8f0', textAlign: 'left', lineHeight: '1.8', margin: '0 0 2rem 0', padding: 0, listStyle: 'none', flex: 1, fontSize: '0.95rem' }}>
                             <li style={{ marginBottom: '10px' }}>🔥 <strong style={{ color: '#fff' }}>解鎖所有基礎與進階聽覺訓練</strong></li>
