@@ -266,7 +266,7 @@ export default function EarOpeningPlayPage() {
                     </p>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        <button onClick={() => router.push('/courses/arrangement/intro')} style={{ width: '100%', padding: '1.2rem', background: 'linear-gradient(135deg, #fca311, #f97316)', color: '#020617', border: 'none', borderRadius: '50px', fontSize: '1.2rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(252, 163, 17, 0.3)' }}>
+                        <button onClick={() => router.push('/courses/ear-opening/bridge')} style={{ width: '100%', padding: '1.2rem', background: 'linear-gradient(135deg, #fca311, #f97316)', color: '#020617', border: 'none', borderRadius: '50px', fontSize: '1.2rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(252, 163, 17, 0.3)' }}>
                             🎧 進入學習系統 (開始做出自己的聲音)
                         </button>
                     </div>
