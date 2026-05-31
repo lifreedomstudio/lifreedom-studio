@@ -29,7 +29,7 @@ const basicQuestions = [
     },
     {
         id: 5, title: '陷阱 01: 聽覺的錯覺', question: '哪一個聽起來比較「好聽」？', fileA: '/audio/step0/q5_a_normal.mp3', fileB: '/audio/step0/q5_b_louder.mp3', correct: 'B',
-        acceptAny: true, // 🚨 不使用 hardcode，改用屬性標記陷阱題
+        acceptAny: true,
         feedbackCorrect: '這是專業混音師也會中招的錯覺！', feedbackIncorrect: '這是專業混音師也會中招的錯覺！',
         insight: '🎧 假好聽 = 單純的音量膨脹 (+1dB 錯覺)'
     },
@@ -79,7 +79,7 @@ export default function EarOpeningPlayPage() {
     const [currentTrack, setCurrentTrack] = useState<'A' | 'B'>('A');
     const [selectedAnswer, setSelectedAnswer] = useState<'A' | 'B' | null>(null);
     const [score, setScore] = useState(0);
-    const [showInterstitial, setShowInterstitial] = useState(false); // 🎴 知識卡彈出狀態
+    const [showInterstitial, setShowInterstitial] = useState(false);
 
     const audioARef = useRef<HTMLAudioElement | null>(null);
     const audioBRef = useRef<HTMLAudioElement | null>(null);
@@ -87,7 +87,6 @@ export default function EarOpeningPlayPage() {
     const activeQuestions = currentPhase === 'advanced' ? advancedQuestions : basicQuestions;
     const q = activeQuestions[currentIndex];
 
-    // 初始化與切換音檔
     useEffect(() => {
         if (currentPhase === 'intermediate-result' || currentPhase === 'final-result' || showInterstitial) return;
         if (audioARef.current && audioBRef.current && q) {
@@ -102,7 +101,7 @@ export default function EarOpeningPlayPage() {
         }
         setCurrentTrack('A');
         setSelectedAnswer(null);
-    }, [currentIndex, currentPhase, showInterstitial, q]);
+    }, [currentIndex, currentPhase, showInterstitial, q, isPlaying]);
 
     const togglePlay = () => {
         if (!audioARef.current || !audioBRef.current) return;
@@ -128,8 +127,7 @@ export default function EarOpeningPlayPage() {
         if (selectedAnswer) return;
         setSelectedAnswer(answer);
 
-        // 🚨 陷阱題邏輯修正：利用 q.acceptAny 讓邏輯不再 Hardcode ID
-        // @ts-ignore (確保 ts 不會因為有些物件沒有 acceptAny 報錯)
+        // @ts-ignore
         if (currentPhase === 'basic' && (answer === q.correct || q.acceptAny)) {
             setScore(prev => prev + 1);
         }
@@ -141,7 +139,6 @@ export default function EarOpeningPlayPage() {
     const handleNext = () => {
         // @ts-ignore
         if (q.interstitial && !showInterstitial) {
-            // 如果這關有掛載小知識卡，且還沒顯示過，就先彈出卡片
             setShowInterstitial(true);
             if (audioARef.current) audioARef.current.pause();
             if (audioBRef.current) audioBRef.current.pause();
@@ -149,7 +146,6 @@ export default function EarOpeningPlayPage() {
             return;
         }
 
-        // 正常前往下一關或結算
         setShowInterstitial(false);
         if (currentIndex < activeQuestions.length - 1) {
             setCurrentIndex(prev => prev + 1);
@@ -202,7 +198,7 @@ export default function EarOpeningPlayPage() {
         );
     }
 
-    // 🎬 第一階段結束 (加入學習摘要)
+    // 🎬 第一階段結束
     if (currentPhase === 'intermediate-result') {
         const level = getEarLevel();
         return (
@@ -218,7 +214,6 @@ export default function EarOpeningPlayPage() {
                         <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>{level.desc}</p>
                     </div>
 
-                    {/* 🔥 記憶錨點：你學到的事 */}
                     <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1.5rem', borderRadius: '16px', marginBottom: '2rem', textAlign: 'left', border: '1px solid rgba(255,255,255,0.05)' }}>
                         <div style={{ color: '#fca311', fontWeight: 'bold', marginBottom: '1rem', fontSize: '1.1rem' }}>🔥 你剛剛學到的 3 件事：</div>
                         <ul style={{ color: '#cbd5e1', lineHeight: '2', margin: 0, paddingLeft: '1.5rem', fontSize: '1.05rem' }}>
@@ -234,7 +229,7 @@ export default function EarOpeningPlayPage() {
                     </p>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        {/* 🚨 這裡修改了路徑！ */}
+                        {/* ✅ 這裡確保導向 bridge 頁面 */}
                         <button onClick={() => router.push('/courses/ear-opening/bridge')} style={{ width: '100%', padding: '1.2rem', background: 'linear-gradient(135deg, #10b981, #38bdf8)', color: '#020617', border: 'none', borderRadius: '50px', fontSize: '1.1rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(16, 185, 129, 0.3)' }}>
                             🎧 我想知道這些聲音怎麼做
                         </button>
@@ -267,7 +262,7 @@ export default function EarOpeningPlayPage() {
                     </p>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        {/* 🚨 這裡修改了路徑！ */}
+                        {/* ✅ 這裡確保導向 bridge 頁面 */}
                         <button onClick={() => router.push('/courses/ear-opening/bridge')} style={{ width: '100%', padding: '1.2rem', background: 'linear-gradient(135deg, #fca311, #f97316)', color: '#020617', border: 'none', borderRadius: '50px', fontSize: '1.2rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(252, 163, 17, 0.3)' }}>
                             🎧 進入學習系統 (開始做出自己的聲音)
                         </button>
