@@ -112,7 +112,7 @@ export default function EarOpeningIntroPage() {
                     </div>
 
                     <button
-                        onClick={() => router.push('/courses/ear-opening/play')} // 導向 Bass 體驗關卡
+                        onClick={() => router.push('/courses/ear-opening/play')} // 導向體驗關卡
                         style={{
                             background: 'linear-gradient(135deg, #38bdf8, #10b981)',
                             color: '#020617',
