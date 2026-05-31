@@ -49,7 +49,7 @@ export default function PricingPage() {
 
                 <header style={{ textAlign: 'center', marginBottom: '4rem' }}>
                     <h1 style={{ fontSize: isMobile ? '2.2rem' : '3.5rem', fontWeight: '900', margin: '0 0 1rem 0', color: '#fff' }}>
-                        從「開始聽見」到「持續聽懂」
+                        把耳朵訓練成一個可以做決策的工具
                     </h1>
                     <p style={{ color: '#94a3b8', fontSize: '1.1rem', maxWidth: '650px', margin: '0 auto', lineHeight: '1.6' }}>
                         業界唯一的「聽覺互動式」學習系統。<br />
@@ -60,13 +60,13 @@ export default function PricingPage() {
                 {/* 方案卡片區塊 */}
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '2rem', alignItems: 'center' }}>
 
-                    {/* 🟢 方案 1：免費體驗版 (病毒入口 + 基礎卡點) */}
+                    {/* 🟢 方案 1：免費層 (Awareness Layer) */}
                     <div style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '24px', padding: '2.5rem 2rem', textAlign: 'center', display: 'flex', flexDirection: 'column', height: '100%' }}>
-                        <h3 style={{ color: '#94a3b8', fontSize: '1.3rem', marginBottom: '1rem' }}>聽覺啟蒙 (Free)</h3>
+                        <h3 style={{ color: '#94a3b8', fontSize: '1.3rem', marginBottom: '1rem' }}>聽覺覺醒 (Awareness)</h3>
                         <div style={{ fontSize: '2.5rem', fontWeight: '900', color: '#fff', marginBottom: '0.5rem' }}>
                             免費
                         </div>
-                        <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '2rem' }}>開始體會「聽出差異」的瞬間</p>
+                        <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '2rem' }}>開始第一次「真的聽見差異」</p>
 
                         <ul style={{ color: '#cbd5e1', textAlign: 'left', lineHeight: '1.8', margin: '0 0 2rem 0', padding: 0, listStyle: 'none', flex: 1, fontSize: '0.95rem' }}>
                             <li style={{ marginBottom: '10px' }}>✔️ <strong style={{ color: '#fff' }}>A/B 聽覺測試 (完整體驗)</strong></li>
@@ -80,18 +80,18 @@ export default function PricingPage() {
                         </button>
                     </div>
 
-                    {/* 🔵 方案 2：持續變強版 (核心收費點) */}
+                    {/* 🔵 方案 2：付費核心層 (Skill Layer) */}
                     <div style={{ background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)', border: '2px solid #38bdf8', borderRadius: '24px', padding: '3rem 2rem', textAlign: 'center', display: 'flex', flexDirection: 'column', height: '100%', position: 'relative', boxShadow: '0 20px 40px rgba(56, 189, 248, 0.2)' }}>
                         <div style={{ position: 'absolute', top: '-15px', left: '50%', transform: 'translateX(-50%)', background: '#38bdf8', color: '#020617', padding: '4px 16px', borderRadius: '20px', fontWeight: '900', fontSize: '0.85rem', letterSpacing: '1px' }}>
                             持續變強
                         </div>
-                        <h3 style={{ color: '#38bdf8', fontSize: '1.5rem', marginBottom: '1rem', fontWeight: 'bold' }}>獨立製作人</h3>
+                        <h3 style={{ color: '#38bdf8', fontSize: '1.5rem', marginBottom: '1rem', fontWeight: 'bold' }}>聲音建構者</h3>
 
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: '5px', marginBottom: '0.5rem' }}>
                             <span style={{ fontSize: '1.2rem', color: '#fff', fontWeight: 'bold', marginBottom: '8px' }}>NT$</span>
                             <span style={{ fontSize: '3rem', fontWeight: '900', color: '#fff', lineHeight: 1 }}>399</span>
                         </div>
-                        <p style={{ color: '#38bdf8', fontSize: '0.9rem', marginBottom: '2rem', fontWeight: 'bold' }}>/ 月 (解鎖無限制訓練與完整解析)</p>
+                        <p style={{ color: '#38bdf8', fontSize: '0.9rem', marginBottom: '2rem', fontWeight: 'bold' }}>/ 月 (從聽見差異 → 建立判斷能力)</p>
 
                         <ul style={{ color: '#e2e8f0', textAlign: 'left', lineHeight: '1.8', margin: '0 0 2rem 0', padding: 0, listStyle: 'none', flex: 1, fontSize: '0.95rem' }}>
                             <li style={{ marginBottom: '10px' }}>🔥 <strong style={{ color: '#fff' }}>解鎖所有基礎與進階聽覺訓練</strong></li>
@@ -100,29 +100,29 @@ export default function PricingPage() {
                             <li style={{ marginBottom: '10px' }}>✔️ 支援上傳 DAW 截圖，AI 輔助分析參數</li>
                             <li>✔️ 每月 50 次 AI 分析額度</li>
                         </ul>
-                        <button onClick={() => openWaitlist('獨立製作人方案')} style={{ width: '100%', padding: '1.2rem', background: 'linear-gradient(135deg, #38bdf8, #2563eb)', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: '900', fontSize: '1.1rem', cursor: 'pointer', boxShadow: '0 10px 20px rgba(56, 189, 248, 0.3)', transition: 'transform 0.2s' }} onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}>
+                        <button onClick={() => openWaitlist('聲音建構者方案')} style={{ width: '100%', padding: '1.2rem', background: 'linear-gradient(135deg, #38bdf8, #2563eb)', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: '900', fontSize: '1.1rem', cursor: 'pointer', boxShadow: '0 10px 20px rgba(56, 189, 248, 0.3)', transition: 'transform 0.2s' }} onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}>
                             🚀 解鎖完整訓練 (加入等候名單)
                         </button>
                     </div>
 
-                    {/* 🟣 方案 3：從會聽到會用版 (高階) */}
+                    {/* 🟣 方案 3：高階層 (Pro Layer) */}
                     <div style={{ background: '#0f172a', border: '1px solid #a78bfa', borderRadius: '24px', padding: '2.5rem 2rem', textAlign: 'center', display: 'flex', flexDirection: 'column', height: '100%' }}>
-                        <h3 style={{ color: '#a78bfa', fontSize: '1.3rem', marginBottom: '1rem' }}>好萊塢大師</h3>
+                        <h3 style={{ color: '#a78bfa', fontSize: '1.3rem', marginBottom: '1rem' }}>混音實戰系統</h3>
 
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: '5px', marginBottom: '0.5rem' }}>
                             <span style={{ fontSize: '1.2rem', color: '#fff', fontWeight: 'bold', marginBottom: '8px' }}>NT$</span>
                             <span style={{ fontSize: '2.5rem', fontWeight: '900', color: '#fff', lineHeight: 1 }}>899</span>
                         </div>
-                        <p style={{ color: '#a78bfa', fontSize: '0.9rem', marginBottom: '2rem' }}>/ 月 (從聽懂到實戰應用)</p>
+                        <p style={{ color: '#a78bfa', fontSize: '0.9rem', marginBottom: '2rem' }}>/ 月 (從理解聲音 → 進入實戰決策)</p>
 
                         <ul style={{ color: '#cbd5e1', textAlign: 'left', lineHeight: '1.8', margin: '0 0 2rem 0', padding: 0, listStyle: 'none', flex: 1, fontSize: '0.95rem' }}>
                             <li style={{ marginBottom: '10px' }}>⭐ <strong style={{ color: '#fff' }}>每月 1 次真人混音作品深度分析</strong></li>
                             <li style={{ marginBottom: '10px' }}>⭐ <strong style={{ color: '#fff' }}>解鎖最高難度實戰訓練內容</strong></li>
-                            <li style={{ marginBottom: '10px' }}>✔️ 包含獨立製作人所有訓練內容</li>
+                            <li style={{ marginBottom: '10px' }}>✔️ 包含聲音建構者所有訓練內容</li>
                             <li style={{ marginBottom: '10px' }}>✔️ 每月 200 次 AI 分析額度</li>
                             <li>✔️ 每月專屬實戰分軌 (Stems) 練習</li>
                         </ul>
-                        <button onClick={() => openWaitlist('好萊塢大師方案')} style={{ width: '100%', padding: '1rem', background: '#1e1b4b', color: '#a78bfa', border: '1px solid #a78bfa', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.2s' }} onMouseOver={e => e.currentTarget.style.background = '#2e1065'} onMouseOut={e => e.currentTarget.style.background = '#1e1b4b'}>
+                        <button onClick={() => openWaitlist('混音實戰系統方案')} style={{ width: '100%', padding: '1rem', background: '#1e1b4b', color: '#a78bfa', border: '1px solid #a78bfa', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.2s' }} onMouseOver={e => e.currentTarget.style.background = '#2e1065'} onMouseOut={e => e.currentTarget.style.background = '#1e1b4b'}>
                             🚀 準備實戰 (加入等候名單)
                         </button>
                     </div>
