@@ -60,6 +60,7 @@ const UltimateDemoPlayer = ({ isMobile }: { isMobile: boolean }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
+    // 內部狀態變數維持英文（方便邏輯判斷），但顯示給學員的文字全改中文
     const [automationMode, setAutomationMode] = useState<'Dry' | 'Wide'>('Dry');
     const [tensionMode, setTensionMode] = useState<'Flat' | 'Rising'>('Flat');
     const [fillMode, setFillMode] = useState<'NoFill' | 'WithFill'>('NoFill');
@@ -123,7 +124,7 @@ const UltimateDemoPlayer = ({ isMobile }: { isMobile: boolean }) => {
                     {isLoading ? '⏳' : isPlaying ? '⏸' : '▶'}
                 </button>
                 <div style={{ textAlign: 'left', flex: 1 }}>
-                    <h4 style={{ margin: '0 0 8px 0', color: '#fff', fontSize: '1.1rem', letterSpacing: '2px', fontFamily: 'monospace' }}>DYNAMICS MATRIX SYSTEM v1</h4>
+                    <h4 style={{ margin: '0 0 8px 0', color: '#fff', fontSize: '1.2rem', letterSpacing: '2px', fontFamily: 'monospace' }}>動態矩陣控制台</h4>
                     <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6' }}>
                         這是聲音現實的操控台。當參數更動的瞬間，你不是在調整冷冰冰的數據，是在重塑聽眾內心最深處的情緒軌跡。
                     </p>
@@ -131,44 +132,47 @@ const UltimateDemoPlayer = ({ isMobile }: { isMobile: boolean }) => {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', background: '#020617', padding: '1.5rem', borderRadius: '16px', border: '1px solid #1e293b' }}>
+
+                {/* 1. 空間控制 */}
                 <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#38bdf8', fontFamily: 'monospace', letterSpacing: '1px' }}>[01] SPACE (空間自動化)</span>
+                    <span style={{ fontSize: '0.95rem', fontWeight: 'bold', color: '#38bdf8', fontFamily: 'monospace', letterSpacing: '1px' }}>[01] 空間 (Space)：殘響自動化</span>
                     <div style={{ display: 'flex', background: '#0f172a', padding: '4px', borderRadius: '8px', border: '1px solid #334155', width: isMobile ? '100%' : 'auto' }}>
                         <button onClick={() => setAutomationMode('Dry')} style={{ flex: 1, padding: '8px 16px', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 'bold', background: automationMode === 'Dry' ? '#475569' : 'transparent', color: automationMode === 'Dry' ? '#fff' : '#64748b', transition: 'all 0.2s' }}>
-                            🎤 Close & Intimate (貼臉)
+                            🎤 貼臉直白
                         </button>
                         <button onClick={() => setAutomationMode('Wide')} style={{ flex: 1, padding: '8px 16px', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 'bold', background: automationMode === 'Wide' ? '#38bdf8' : 'transparent', color: automationMode === 'Wide' ? '#020617' : '#64748b', transition: 'all 0.2s' }}>
-                            🌌 Cinematic Space (電影感)
+                            🌌 電影級寬廣
                         </button>
                     </div>
                 </div>
 
+                {/* 2. 張力控制 */}
                 <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#facc15', fontFamily: 'monospace', letterSpacing: '1px' }}>[02] TENSION (張力斜率)</span>
+                    <span style={{ fontSize: '0.95rem', fontWeight: 'bold', color: '#facc15', fontFamily: 'monospace', letterSpacing: '1px' }}>[02] 張力 (Tension)：情緒斜率</span>
                     <div style={{ display: 'flex', background: '#0f172a', padding: '4px', borderRadius: '8px', border: '1px solid #334155', width: isMobile ? '100%' : 'auto' }}>
                         <button onClick={() => setTensionMode('Flat')} style={{ flex: 1, padding: '8px 16px', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 'bold', background: tensionMode === 'Flat' ? '#475569' : 'transparent', color: tensionMode === 'Flat' ? '#fff' : '#64748b', transition: 'all 0.2s' }}>
-                            😐 Emotion Held (壓住)
+                            😐 平穩壓制
                         </button>
                         <button onClick={() => setTensionMode('Rising')} style={{ flex: 1, padding: '8px 16px', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 'bold', background: tensionMode === 'Rising' ? '#facc15' : 'transparent', color: tensionMode === 'Rising' ? '#020617' : '#64748b', transition: 'all 0.2s' }}>
-                            🔥 Emotional Build (上升)
+                            🔥 爬升蓄力
                         </button>
                     </div>
                 </div>
 
+                {/* 3. 衝擊控制 */}
                 <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#10b981', fontFamily: 'monospace', letterSpacing: '1px' }}>[03] IMPACT (衝突引爆)</span>
+                    <span style={{ fontSize: '0.95rem', fontWeight: 'bold', color: '#10b981', fontFamily: 'monospace', letterSpacing: '1px' }}>[03] 衝擊 (Impact)：瞬間引爆</span>
                     <div style={{ display: 'flex', background: '#0f172a', padding: '4px', borderRadius: '8px', border: '1px solid #334155', width: isMobile ? '100%' : 'auto' }}>
                         <button onClick={() => setFillMode('NoFill')} style={{ flex: 1, padding: '8px 16px', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 'bold', background: fillMode === 'NoFill' ? '#475569' : 'transparent', color: fillMode === 'NoFill' ? '#fff' : '#64748b', transition: 'all 0.2s' }}>
-                            🧊 Clean Impact (乾淨)
+                            🧊 直接切入
                         </button>
                         <button onClick={() => setFillMode('WithFill')} style={{ flex: 1, padding: '8px 16px', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 'bold', background: fillMode === 'WithFill' ? '#10b981' : 'transparent', color: fillMode === 'WithFill' ? '#020617' : '#64748b', transition: 'all 0.2s' }}>
-                            💥 Impact Explosion (爆破)
+                            💥 真空爆破
                         </button>
                     </div>
                 </div>
             </div>
 
-            <audio ref={audioRef} onCanPlay={() => setIsLoading(false)} onEnded={() => setIsPlaying(false)} />
         </div>
     );
 };
@@ -199,7 +203,7 @@ export default function DynamicsLabPage() {
 
                 <header style={{ textAlign: 'center' }}>
                     <div style={{ color: '#10b981', fontSize: '0.9rem', fontWeight: 'bold', letterSpacing: '4px', marginBottom: '1rem', fontFamily: 'monospace' }}>
-                        PRACTICAL TOOLBOX // MODULE 04
+                        實戰工具箱 // 模組 04
                     </div>
                     <h1 style={{ fontSize: isMobile ? '2.2rem' : '3.5rem', fontWeight: '900', margin: '0 0 1rem 0', color: '#fff' }}>
                         現在，把情緒做出來
@@ -209,7 +213,7 @@ export default function DynamicsLabPage() {
                     </p>
                 </header>
 
-                {/* 💡 修正：把聽覺驗證移到 Lab 頁面，作為實戰的第一步！ */}
+                {/* 聽覺驗證區塊 */}
                 <section style={{ background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.05), rgba(16, 185, 129, 0.05))', padding: isMobile ? '1.5rem' : '2.5rem', borderRadius: '24px', border: '1px solid rgba(56, 189, 248, 0.2)' }}>
                     <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                         <h2 style={{ fontSize: '1.5rem', fontWeight: '900', color: '#fff', margin: '0 0 8px 0' }}>🎧 聽覺驗證：真空吸力</h2>
@@ -217,16 +221,16 @@ export default function DynamicsLabPage() {
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '20px' }}>
                         <TransitionCard
-                            title="反向碎音鈸 (海水倒退)"
-                            subtitle="Reverse Crash"
+                            title="反向碎音鈸"
+                            subtitle="聲學逆向吸力"
                             desc="將打擊樂倒轉播放。聲音從微弱逐漸放大，形成強大的真空吸力，完美暗示大腦：海嘯要來了。"
                             audioSrc="/audio/reverse-crash.mp3"
                             color="#38bdf8"
                             icon="⏪"
                         />
                         <TransitionCard
-                            title="低頻滑弦 (拉緊弓弦)"
-                            subtitle="Bass Slide"
+                            title="低頻滑弦"
+                            subtitle="時間軸物理拉扯"
                             desc="在進入重拍前，讓貝斯手按住低音快速往下滑動，產生深沉的『Wrooooom』轟炸感，強行拉緊時間。"
                             audioSrc="/audio/bass-slide.mp3"
                             color="#10b981"
@@ -237,38 +241,38 @@ export default function DynamicsLabPage() {
 
                 <section style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
                     <h2 style={{ fontSize: '1.5rem', fontWeight: '900', color: '#fff', fontFamily: 'monospace', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '12px' }}>
-                        ⚙️ THE TACTICAL TOOLS
+                        ⚙️ 核心實戰工具
                     </h2>
 
                     <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '20px' }}>
                         <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                             <div>
                                 <div style={{ fontSize: '2rem', marginBottom: '10px' }}>🌪️</div>
-                                <h3 style={{ color: '#38bdf8', fontSize: '1.2rem', fontWeight: 'bold', margin: '0 0 4px 0' }}>1. Automation</h3>
+                                <h3 style={{ color: '#38bdf8', fontSize: '1.2rem', fontWeight: 'bold', margin: '0 0 4px 0' }}>1. 自動化控制 (Automation)</h3>
                                 <span style={{ fontSize: '0.8rem', color: '#64748b', display: 'block', marginBottom: '12px', fontFamily: 'monospace' }}>[ 空間縱深調配 ]</span>
-                                <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>副歌瞬間將空間殘響收乾，將所有焦距瞬間鎖死在核心主體身上。</p>
+                                <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>副歌瞬間將空間殘響收乾，強迫所有頻率凝聚在中心，將聽眾的全部焦距瞬間鎖死在核心主體身上。</p>
                             </div>
-                            <span style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 'bold', marginTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '10px', display: 'block' }}>💡 你不是在調音量，是在改聽眾的視角。</span>
+                            <span style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 'bold', marginTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '10px', display: 'block' }}>💡 核心：你不是在調整音量，是在改聽眾的凝視視角。</span>
                         </div>
 
                         <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                             <div>
                                 <div style={{ fontSize: '2rem', marginBottom: '10px' }}>⏪</div>
-                                <h3 style={{ color: '#facc15', fontSize: '1.2rem', fontWeight: 'bold', margin: '0 0 4px 0' }}>2. Reverse</h3>
-                                <span style={{ fontSize: '0.8rem', color: '#64748b', display: 'block', marginBottom: '12px', fontFamily: 'monospace' }}>[ 聲學逆向蓄積 ]</span>
-                                <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>將衝擊性素材進行倒放處理。最大能量點必須精準咬合進副歌第一拍。</p>
+                                <h3 style={{ color: '#facc15', fontSize: '1.2rem', fontWeight: 'bold', margin: '0 0 4px 0' }}>2. 反轉音效 (Reverse)</h3>
+                                <span style={{ fontSize: '0.8rem', color: '#64748b', display: 'block', marginBottom: '12px', fontFamily: 'monospace' }}>[ 聲學逆向張力蓄積 ]</span>
+                                <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>將衝擊性素材進行倒放處理。最大能量的峰值點必須精準咬合進副歌的第一個重拍，構造極致的拉扯。</p>
                             </div>
-                            <span style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 'bold', marginTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '10px', display: 'block' }}>💡 爆炸前的真空，比爆炸本身更致命。</span>
+                            <span style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 'bold', marginTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '10px', display: 'block' }}>💡 核心：爆炸前的真空引力，往往比爆炸本身更致命。</span>
                         </div>
 
                         <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                             <div>
                                 <div style={{ fontSize: '2rem', marginBottom: '10px' }}>🎸</div>
-                                <h3 style={{ color: '#10b981', fontSize: '1.2rem', fontWeight: 'bold', margin: '0 0 4px 0' }}>3. Slide / Fill</h3>
-                                <span style={{ fontSize: '0.8rem', color: '#64748b', display: 'block', marginBottom: '12px', fontFamily: 'monospace' }}>[ 物理動能推進 ]</span>
-                                <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>透過貝斯滑音或是鼓組過門，在沉悶的線性時間中強行扯出物理慣性。</p>
+                                <h3 style={{ color: '#10b981', fontSize: '1.2rem', fontWeight: 'bold', margin: '0 0 4px 0' }}>3. 滑弦與過門 (Slide & Fill)</h3>
+                                <span style={{ fontSize: '0.8rem', color: '#64748b', display: 'block', marginBottom: '12px', fontFamily: 'monospace' }}>[ 時間軸物理動能推進 ]</span>
+                                <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>透過貝斯線低沉下墜的滑音或是鼓組過門，在沉悶的線性時間中強行扯出物理慣性。</p>
                             </div>
-                            <span style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 'bold', marginTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '10px', display: 'block' }}>💡 推進感，就是時間軸被強行拉緊。</span>
+                            <span style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 'bold', marginTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '10px', display: 'block' }}>💡 核心：推進感，就是時間軸被極度強行拉緊。</span>
                         </div>
                     </div>
                 </section>
@@ -279,21 +283,22 @@ export default function DynamicsLabPage() {
 
                 <section style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '3rem' }}>
                     <h2 style={{ fontSize: '1.5rem', fontWeight: '900', color: '#fff', marginBottom: '2rem', textAlign: 'center', fontFamily: 'monospace' }}>
-                        ⚠️ CRITICAL REFRACTURING // 錯誤心智模型解剖
+                        ⚠️ 認知重寫 // 錯誤心智模型解剖
                     </h2>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+
                         <div style={{ background: 'rgba(239, 68, 68, 0.01)', borderRadius: '12px', border: openTrap === 't1' ? '1px solid #ef4444' : '1px solid rgba(255,255,255,0.05)', overflow: 'hidden', transition: 'all 0.2s' }}>
                             <div onClick={() => setOpenTrap(openTrap === 't1' ? null : 't1')} style={{ padding: '1.2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
                                 <div>
-                                    <span style={{ fontWeight: 'bold', color: '#fca5a5', fontSize: '1.05rem', display: 'block', marginBottom: '4px' }}>❌ 迷思：大聲 = 衝擊力 (Loud = Impact)</span>
+                                    <span style={{ fontWeight: 'bold', color: '#fca5a5', fontSize: '1.05rem', display: 'block', marginBottom: '4px' }}>❌ 迷思：大聲 = 衝擊力</span>
                                     <span style={{ color: '#10b981', fontWeight: 'bold', fontSize: '0.95rem' }}>👉 事實：衝擊力 = 空間對比坍塌</span>
                                 </div>
                                 <span style={{ color: '#ef4444', fontSize: '1.3rem' }}>{openTrap === 't1' ? '−' : '+'}</span>
                             </div>
                             {openTrap === 't1' && (
                                 <div style={{ padding: '0 1.2rem 1.2rem 1.2rem', color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.7', borderTop: '1px solid rgba(239,68,68,0.1)', paddingTop: '1rem' }}>
-                                    不要再盲目推高副歌音量，那只會換來廉價的疲勞。試著把主歌做得更低，副歌撞進來那一瞬間的對比坍塌，才是爆炸感的源頭。
+                                    不要再盲目去推高副歌音量，那只會換來廉價的疲勞。動態是「比較」出來的，試著把主歌做得更低、更安靜，副歌撞進來那一瞬間的對比坍塌，才是爆炸感的源頭。
                                 </div>
                             )}
                         </div>
@@ -301,14 +306,14 @@ export default function DynamicsLabPage() {
                         <div style={{ background: 'rgba(239, 68, 68, 0.01)', borderRadius: '12px', border: openTrap === 't2' ? '1px solid #ef4444' : '1px solid rgba(255,255,255,0.05)', overflow: 'hidden', transition: 'all 0.2s' }}>
                             <div onClick={() => setOpenTrap(openTrap === 't2' ? null : 't2')} style={{ padding: '1.2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
                                 <div>
-                                    <span style={{ fontWeight: 'bold', color: '#fca5a5', fontSize: '1.05rem', display: 'block', marginBottom: '4px' }}>❌ 迷思：瘋狂塞滿鼓點 (Filling Gaps)</span>
+                                    <span style={{ fontWeight: 'bold', color: '#fca5a5', fontSize: '1.05rem', display: 'block', marginBottom: '4px' }}>❌ 迷思：過門必須瘋狂塞滿鼓點</span>
                                     <span style={{ color: '#10b981', fontWeight: 'bold', fontSize: '0.95rem' }}>👉 事實：留白才是扣下板機的瞬間</span>
                                 </div>
                                 <span style={{ color: '#ef4444', fontSize: '1.3rem' }}>{openTrap === 't2' ? '−' : '+'}</span>
                             </div>
                             {openTrap === 't2' && (
                                 <div style={{ padding: '0 1.2rem 1.2rem 1.2rem', color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.7', borderTop: '1px solid rgba(239,68,68,0.1)', paddingTop: '1rem' }}>
-                                    你在愚蠢地填空，但大師在精準地留白。砸下重音前的 0.3 秒「斷片（Silence Gap）」，會強迫聽眾大腦瞬間屏息，那才是決定爆發力死活的致命開關。
+                                    很多新手在導歌結尾拼命填滿所有音符，生怕露出一點空隙。你在愚蠢地填空，但大師在精準地留白。砸下副歌重音前的 0.3 秒「真空斷片」，會強迫聽眾大腦瞬間屏息，那才是決定爆發力死活的致命開關。
                                 </div>
                             )}
                         </div>
@@ -316,17 +321,17 @@ export default function DynamicsLabPage() {
                         <div style={{ background: 'rgba(239, 68, 68, 0.01)', borderRadius: '12px', border: openTrap === 't3' ? '1px solid #ef4444' : '1px solid rgba(255,255,255,0.05)', overflow: 'hidden', transition: 'all 0.2s' }}>
                             <div onClick={() => setOpenTrap(openTrap === 't3' ? null : 't3')} style={{ padding: '1.2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
                                 <div>
-                                    <span style={{ fontWeight: 'bold', color: '#fca5a5', fontSize: '1.05rem', display: 'block', marginBottom: '4px' }}>❌ 迷思：畫死板的直角線 (Drawing Lines)</span>
+                                    <span style={{ fontWeight: 'bold', color: '#fca5a5', fontSize: '1.05rem', display: 'block', marginBottom: '4px' }}>❌ 迷思：畫死板剛硬的直角推子</span>
                                     <span style={{ color: '#10b981', fontWeight: 'bold', fontSize: '0.95rem' }}>👉 事實：大腦接收的是平滑的呼吸</span>
                                 </div>
                                 <span style={{ color: '#ef4444', fontSize: '1.3rem' }}>{openTrap === 't3' ? '−' : '+'}</span>
                             </div>
                             {openTrap === 't3' && (
                                 <div style={{ padding: '0 1.2rem 1.2rem 1.2rem', color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.7', borderTop: '1px solid rgba(239,68,68,0.1)', paddingTop: '1rem', whiteSpace: 'pre-line' }}>
-                                    在軟體裡畫自動化（Automation）如果都用直角推上去，會帶來極其粗糙的工業機械感。你以為在畫線，但聽眾敏銳的耳朵在聽曲線的起伏。
+                                    在軟體裡畫自動化控制如果都用直角推上去，會帶來極其粗糙的工業機械感。你自以為在畫線，但聽眾敏銳的耳朵在聽曲線的起伏。必須用貝茲曲線做平滑過渡。
                                     {"\n\n"}
-                                    <strong>🔥 製作人的黑盒秘密：</strong>
-                                    在業界混音中，許多資深混音師會在進副歌的那一瞬間，偷偷用 Automation 把「總輸出（Master Fader）」平滑拉高 0.5dB。這個幅度微弱到無法察覺，但大腦接收到物理能量的擴張，會主動告訴自己：「這段的情緒簡直太神了！」這就是透過錯覺操控潛意識的魔法。
+                                    <strong>🔥 製作人不會公開的黑盒秘密：</strong>
+                                    在業界混音中，許多資深混音師會在歌曲進副歌的那一瞬間，偷偷利用線性的自動化控制把「總輸出母帶推桿」平滑地往上推高 0.5dB 到 1dB。這個幅度微弱到聽眾根本無法察覺是音量變大，但他們的大腦接收到物理能量的擴張，會主動釋放多巴胺，告訴自己：「這段的情緒簡直太激昂、太神了！」這就是透過錯覺操控潛意識的聲學魔法。
                                 </div>
                             )}
                         </div>
@@ -336,7 +341,7 @@ export default function DynamicsLabPage() {
 
                 <footer style={{ textAlign: 'center', paddingBottom: '3rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '4rem' }}>
                     <div style={{ color: '#22c55e', fontSize: '0.9rem', fontWeight: 'bold', letterSpacing: '3px', marginBottom: '1rem', fontFamily: 'monospace' }}>
-                        ARRANGEMENT MODULE COMPLETE // LEVEL PASSED
+                        編配模組完成 // 成功通關
                     </div>
                     <h2 style={{ fontSize: '2rem', fontWeight: '900', color: '#fff', marginBottom: '1.5rem' }}>
                         你已成功通關「結構與編配」全模組
