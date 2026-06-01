@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 export default function MaskingIntroPage() {
     const router = useRouter();
     const [isMobile, setIsMobile] = useState(false);
+    const [showHint, setShowHint] = useState(false); // 💡 新增：控制提示顯示的狀態
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -14,7 +15,6 @@ export default function MaskingIntroPage() {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    // 順暢滾動回頂部的功能
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
@@ -28,7 +28,6 @@ export default function MaskingIntroPage() {
         }}>
             <div style={{ maxWidth: '800px', width: '100%', display: 'flex', flexDirection: 'column', gap: '4.5rem' }}>
 
-                {/* 🎬 SECTION 1: 開場 (認知破壞與修正) */}
                 <section style={{ textAlign: 'center', animation: 'fadeInUp 0.6s ease-out' }}>
                     <div style={{ color: '#f97316', fontSize: '0.9rem', fontWeight: 'bold', letterSpacing: '4px', marginBottom: '1rem' }}>
                         PHASE 03 — THE INVISIBLE CONFLICT
@@ -38,7 +37,6 @@ export default function MaskingIntroPage() {
                         第三關：看不見的衝突
                     </h1>
 
-                    {/* 💡 優化：語意修正，避免絕對化打破後的認知崩壞 */}
                     <div style={{ background: 'rgba(34, 197, 94, 0.05)', border: '1px solid rgba(34, 197, 94, 0.2)', borderRadius: '16px', padding: '2rem', marginBottom: '2rem' }}>
                         <p style={{ color: '#cbd5e1', fontSize: '1.2rem', margin: 0, lineHeight: '1.6' }}>
                             你剛剛學會了一件很重要的事：<br />
@@ -51,7 +49,6 @@ export default function MaskingIntroPage() {
                         <div style={{ fontSize: '1.5rem', animation: 'bounce 2s infinite' }}>👇</div>
                     </div>
 
-                    {/* ⚡ 痛點秒殺：認知斷點聚焦 */}
                     <div style={{ background: 'rgba(239, 68, 68, 0.03)', border: '1px solid rgba(239, 68, 68, 0.1)', padding: '2rem', borderRadius: '24px', maxWidth: '600px', margin: '0 auto', textAlign: 'left' }}>
                         <div style={{ color: '#fca5a5', fontSize: '1.25rem', lineHeight: '2', fontWeight: 'bold' }}>
                             👉 Voicing 讓聲音「不打架」<br />
@@ -60,7 +57,6 @@ export default function MaskingIntroPage() {
                     </div>
                 </section>
 
-                {/* 💥 SECTION 2: 觀念轉折 (情緒壓縮) */}
                 <section style={{ animation: 'fadeInUp 0.8s ease-out' }}>
                     <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: '24px', padding: isMobile ? '2rem 1.5rem' : '3rem', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
 
@@ -68,12 +64,10 @@ export default function MaskingIntroPage() {
                         <h2 style={{ fontSize: isMobile ? '2.2rem' : '3rem', color: '#f97316', marginBottom: '0.5rem', fontWeight: '900', letterSpacing: '2px' }}>
                             MASKING <span style={{ fontSize: '1.5rem', color: '#fb923c' }}>(頻率遮蔽)</span>
                         </h2>
-                        {/* 💡 心理轉場句 */}
                         <div style={{ color: '#ef4444', fontSize: '1rem', fontWeight: 'bold', marginBottom: '2.5rem', opacity: 0.9 }}>
                             （從這一關開始，你的既有判斷會開始失效）
                         </div>
 
-                        {/* 🔥 錯覺預告：讓玩家親身相信衝突 */}
                         <div style={{ background: 'rgba(249, 115, 22, 0.08)', padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(249,115,22,0.2)', marginBottom: '3rem', textAlign: 'left' }}>
                             <p style={{ color: '#fed7aa', fontSize: '1.1rem', margin: 0, lineHeight: '1.7' }}>
                                 <strong>🚨 聽覺錯覺預告：</strong><br />
@@ -97,7 +91,6 @@ export default function MaskingIntroPage() {
                     </div>
                 </section>
 
-                {/* 🧠 SECTION 3: 房間比喻 (大腦注意力機制升級) */}
                 <section style={{ background: '#0f172a', borderLeft: '4px solid #38bdf8', borderRadius: '0 24px 24px 0', padding: isMobile ? '2rem 1.5rem' : '3rem', animation: 'fadeInUp 0.6s ease-out' }}>
                     <h3 style={{ color: '#38bdf8', fontSize: '1.4rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <span>💡</span> 聲學物理與大腦機制的博弈：
@@ -120,10 +113,8 @@ export default function MaskingIntroPage() {
                     </div>
                 </section>
 
-                {/* 🚪 SECTION 4: 可控式路徑導向 (CTA) */}
                 <section style={{ textAlign: 'center', paddingBottom: '4rem', marginTop: '1rem', animation: 'fadeInUp 0.6s ease-out' }}>
 
-                    {/* ⚡ 心理預期破壞點 */}
                     <div style={{ background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '1.5rem', borderRadius: '16px', marginBottom: '3rem', display: 'inline-block', maxWidth: '600px', textAlign: 'left' }}>
                         <p style={{ color: '#fca5a5', margin: 0, fontSize: '1.1rem', fontWeight: 'bold', lineHeight: '1.6' }}>
                             🔥 慣性思考切斷門檻：<br />
@@ -135,10 +126,8 @@ export default function MaskingIntroPage() {
                         開局選擇：你的下一步行動
                     </h2>
 
-                    {/* 💡 產品級升級：三向可控學習路徑按鈕 */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', maxWidth: '480px', margin: '0 auto' }}>
 
-                        {/* 主要動作按鈕 */}
                         <button
                             onClick={() => router.push('/courses/arrangement/masking-game')}
                             style={{
@@ -153,7 +142,6 @@ export default function MaskingIntroPage() {
                             🎧 找出被遮住的聲音 (開始實驗) ➔
                         </button>
 
-                        {/* 輔助路徑 1：滾動回上方 */}
                         <button
                             onClick={scrollToTop}
                             style={{
@@ -167,25 +155,36 @@ export default function MaskingIntroPage() {
                             🤔 我想重新看一次概念
                         </button>
 
-                        {/* 輔助路徑 2：彈性提示 */}
-                        <button
-                            onClick={() => alert("💡 偵探提示：在即將到來的盲測中，不要去想音符有沒有撞車，而是去注意有哪個樂器『在樂曲大聲時不見，在小聲時又突然冒出來』。那就是被遮蔽的證據！")}
-                            style={{
-                                background: 'transparent', color: '#38bdf8',
-                                border: '1px dashed rgba(56, 189, 248, 0.3)', padding: '1rem 2rem', fontSize: '0.95rem', fontWeight: 'bold',
-                                borderRadius: '50px', cursor: 'pointer', transition: 'all 0.2s', width: '100%'
-                            }}
-                            onMouseOver={e => e.currentTarget.style.background = 'rgba(56, 189, 248, 0.05)'}
-                            onMouseOut={e => e.currentTarget.style.background = 'transparent'}
-                        >
-                            🧠 我需要一些作弊提示
-                        </button>
+                        {/* 🧠 修正點：改為狀態切換顯示 */}
+                        <div style={{ width: '100%' }}>
+                            <button
+                                onClick={() => setShowHint(!showHint)}
+                                style={{
+                                    background: 'transparent', color: '#38bdf8',
+                                    border: '1px dashed rgba(56, 189, 248, 0.3)', padding: '1rem 2rem', fontSize: '0.95rem', fontWeight: 'bold',
+                                    borderRadius: '50px', cursor: 'pointer', transition: 'all 0.2s', width: '100%'
+                                }}
+                                onMouseOver={e => e.currentTarget.style.background = 'rgba(56, 189, 248, 0.05)'}
+                                onMouseOut={e => e.currentTarget.style.background = 'transparent'}
+                            >
+                                🧠 {showHint ? "隱藏提示" : "我需要一些作弊提示"}
+                            </button>
+
+                            {/* 💡 提示內容直接顯示在按鈕下方 */}
+                            {showHint && (
+                                <div style={{
+                                    marginTop: '1rem', padding: '1.2rem', border: '1px solid #38bdf8',
+                                    borderRadius: '12px', background: 'rgba(56, 189, 248, 0.05)',
+                                    color: '#bae6fd', textAlign: 'left', animation: 'fadeInUp 0.3s ease-out'
+                                }}>
+                                    💡 <strong>偵探提示：</strong>在即將到來的盲測中，不要去想音符有沒有撞車，而是去注意有哪個樂器「在樂曲大聲時不見，在小聲時又突然冒出來」。那就是被遮蔽的證據！
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </section>
-
             </div>
 
-            {/* 🎨 高級感調校：大幅減少連續震盪動畫，保留純淨的高級感 */}
             <style dangerouslySetInnerHTML={{
                 __html: `
                 @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
