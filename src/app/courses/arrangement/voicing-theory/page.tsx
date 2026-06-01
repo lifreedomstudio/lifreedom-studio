@@ -374,7 +374,7 @@ export default function VoicingTraining() {
                         錯開樓層後，接下來要處理「隱形的衝突」
                     </p>
                     <button
-                        onClick={() => router.push('/courses/arrangement/masking-training')}
+                        onClick={() => router.push('/courses/arrangement/voicing-lab')}
                         style={{
                             background: 'linear-gradient(135deg, #22c55e, #16a34a)', color: '#fff', border: 'none',
                             padding: isMobile ? '1.2rem 1.5rem' : '1.5rem 4rem', fontSize: isMobile ? '1.1rem' : '1.3rem',
