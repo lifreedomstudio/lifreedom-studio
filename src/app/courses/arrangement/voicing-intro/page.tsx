@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function FrequencyShiftPage() {
+export default function VoicingIntroPage() {
     const router = useRouter();
     const [isMobile, setIsMobile] = useState(false);
 
@@ -29,12 +29,12 @@ export default function FrequencyShiftPage() {
                 {/* 🎉 SECTION 1: 成就結算 (強化版) */}
                 <section style={{ textAlign: 'center', animation: 'fadeInDown 0.8s ease-out' }}>
                     <div style={{ color: '#10b981', fontSize: '0.9rem', fontWeight: 'bold', letterSpacing: '4px', marginBottom: '1rem' }}>
-                        SYSTEM STATUS: STABILIZED
+                        系統狀態：已穩定
                     </div>
 
                     <h1 style={{ fontSize: isMobile ? '2.2rem' : '3.5rem', fontWeight: '900', margin: '0 0 1rem 0', color: '#10b981', textShadow: '0 0 30px rgba(16, 185, 129, 0.4)' }}>
-                        MISSION COMPLETE<br />
-                        <span style={{ color: '#fff', fontSize: isMobile ? '1.5rem' : '2rem' }}>GROOVE REPAIR</span>
+                        任務完成<br />
+                        <span style={{ color: '#fff', fontSize: isMobile ? '1.5rem' : '2rem' }}>GROOVE 節奏修復</span>
                     </h1>
 
                     <p style={{ color: '#cbd5e1', fontSize: '1.2rem', marginBottom: '2.5rem', lineHeight: '1.6' }}>
@@ -106,7 +106,7 @@ export default function FrequencyShiftPage() {
 
                         <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '1rem', alignItems: 'stretch' }}>
                             <div style={{ flex: 1, background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '1.5rem', borderRadius: '16px' }}>
-                                <div style={{ color: '#fca5a5', fontSize: '0.9rem', letterSpacing: '2px', marginBottom: '10px' }}>HORIZONTAL (水平)</div>
+                                <div style={{ color: '#fca5a5', fontSize: '0.9rem', letterSpacing: '2px', marginBottom: '10px' }}>水平維度 (Horizontal)</div>
                                 <div style={{ color: '#ef4444', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '5px' }}>⏱️ 時間軸</div>
                                 <div style={{ color: '#cbd5e1' }}>Kick + Bass 何時發聲<br />(Groove 思維)</div>
                             </div>
@@ -116,7 +116,7 @@ export default function FrequencyShiftPage() {
                             </div>
 
                             <div style={{ flex: 1, background: 'rgba(56, 189, 248, 0.1)', border: '1px solid rgba(56, 189, 248, 0.3)', padding: '1.5rem', borderRadius: '16px', boxShadow: '0 0 30px rgba(56, 189, 248, 0.2)' }}>
-                                <div style={{ color: '#bae6fd', fontSize: '0.9rem', letterSpacing: '2px', marginBottom: '10px' }}>VERTICAL (垂直)</div>
+                                <div style={{ color: '#bae6fd', fontSize: '0.9rem', letterSpacing: '2px', marginBottom: '10px' }}>垂直維度 (Vertical)</div>
                                 <div style={{ color: '#38bdf8', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '5px' }}>🏢 空間區塊</div>
                                 <div style={{ color: '#cbd5e1' }}>吉他與鋼琴站在哪裡<br />(Voicing 思維)</div>
                             </div>
@@ -127,10 +127,10 @@ export default function FrequencyShiftPage() {
                 {/* 🧭 SECTION 3: 世界切換動畫 (強化) */}
                 <section style={{ textAlign: 'center', padding: '2rem 0', position: 'relative' }}>
                     <div style={{ color: '#a78bfa', fontSize: '1.2rem', fontWeight: '900', letterSpacing: '6px', marginBottom: '1rem', animation: 'glitch 2s infinite' }}>
-                        SYSTEM SHIFTING...
+                        系統思維切換中...
                     </div>
                     <h2 style={{ fontSize: isMobile ? '2rem' : '3rem', color: '#fff', fontWeight: '900', margin: '0 0 2rem 0', textShadow: '0 0 20px rgba(167, 139, 250, 0.5)' }}>
-                        NEW DIMENSION UNLOCKED
+                        解鎖全新維度
                     </h2>
                     <p style={{ color: '#cbd5e1', fontSize: '1.2rem', lineHeight: '1.8' }}>
                         在 Groove 的世界裡，你在修「時間」。<br />
@@ -178,14 +178,17 @@ export default function FrequencyShiftPage() {
                     {selectedAnswer && (
                         <div style={{ marginTop: '2rem', animation: 'fadeInUp 0.3s' }}>
                             {selectedAnswer === 'C' ? (
-                                <div style={{ color: '#a78bfa', fontSize: '1.2rem', fontWeight: 'bold' }}>
-                                    🎯 正確。你已經開始進入「空間編曲」思維。
-                                    A：全部一起彈 (結果：聲音糊成一團)
-                                    B：錯開時間 (Groove 思維)
-                                    C：錯開「音高區域與位置」 (Voicing 思維)
+                                <div style={{ color: '#a78bfa', fontSize: '1.2rem', fontWeight: 'bold', textAlign: 'left', background: 'rgba(167, 139, 250, 0.1)', padding: '1.5rem', borderRadius: '12px', display: 'inline-block' }}>
+                                    🎯 正確。你已經開始進入「空間編曲」思維。<br /><br />
+                                    <span style={{ fontSize: '1rem', color: '#cbd5e1', fontWeight: 'normal', lineHeight: '1.8', display: 'block' }}>
+                                        💡 剛剛的選項代表什麼？<br />
+                                        • <strong>A：全部一起彈</strong> ➔ 結果：聲音糊成一團 (車禍現場)<br />
+                                        • <strong>B：錯開時間</strong> ➔ 這是上一章的 Groove 思維<br />
+                                        • <strong style={{ color: '#fff' }}>C：錯開音高區域</strong> ➔ 這是接下來要學的 Voicing 思維
+                                    </span>
                                 </div>
                             ) : (
-                                <div style={{ color: '#ef4444', fontSize: '1.1rem', fontWeight: 'bold' }}>
+                                <div style={{ color: '#ef4444', fontSize: '1.1rem', fontWeight: 'bold', padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '12px', display: 'inline-block' }}>
                                     還停留在「時間控制」。真正的關鍵是空間分配。
                                 </div>
                             )}
@@ -216,14 +219,14 @@ export default function FrequencyShiftPage() {
                     </div>
 
                     <div style={{ color: '#a78bfa', fontSize: '0.9rem', fontWeight: 'bold', letterSpacing: '4px', marginBottom: '1rem' }}>
-                        WELCOME TO
+                        準備進入
                     </div>
                     <h2 style={{ fontSize: isMobile ? '2.5rem' : '3.5rem', fontWeight: '900', color: '#fff', margin: '0 0 1.5rem 0' }}>
-                        VOICING LAB
+                        VOICING 空間實驗室
                     </h2>
 
                     <button
-                        onClick={() => router.push('/courses/arrangement/voicing-training')}
+                        onClick={() => router.push('/courses/arrangement/voicing-game')}
                         disabled={!selectedAnswer}
                         style={{
                             background: selectedAnswer ? 'linear-gradient(135deg, #a78bfa, #7c3aed)' : '#1e293b',
@@ -235,7 +238,7 @@ export default function FrequencyShiftPage() {
                             transition: 'all 0.3s', width: isMobile ? '100%' : 'auto', marginTop: '1rem'
                         }}
                     >
-                        {selectedAnswer ? '🚀 進入 Voicing 空間戰場 ➔' : '🔒 請先完成製作人思維測驗'}
+                        {selectedAnswer ? '🚀 前往空間戰場測驗 ➔' : '🔒 請先完成製作人思維測驗'}
                     </button>
                 </section>
 

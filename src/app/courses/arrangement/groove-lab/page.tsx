@@ -118,7 +118,7 @@ export default function GrooveCorrectionLabPage() {
             {/* 🧠 HEADER (認知重置) */}
             <header style={{ width: '100%', maxWidth: '700px', textAlign: 'center', marginBottom: '2rem' }}>
                 <h1 style={{ fontSize: isMobile ? '2rem' : '2.8rem', fontWeight: '900', margin: '0 0 1rem 0', letterSpacing: '2px', color: '#f8fafc' }}>
-                    GROOVE CORRECTION LAB
+                    GROOVE 修正實驗室
                 </h1>
 
                 <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', display: 'inline-block', marginBottom: '1.5rem' }}>
@@ -174,9 +174,9 @@ export default function GrooveCorrectionLabPage() {
                         <h3 style={{ textAlign: 'center', fontSize: '1.3rem', color: '#fca311', marginBottom: '1.5rem', fontWeight: 'bold' }}>聽完了嗎？你覺得問題在哪？</h3>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             {[
-                                { id: 'A', text: 'Kick 跟 Bass 沒有鎖在一起 (散)' },
-                                { id: 'B', text: '節奏太死，沒有 Human feel (死)' },
-                                { id: 'C', text: 'Hi-hat 沒有推進感 (平)' }
+                                { id: 'A', text: 'Kick 跟 Bass 沒有鎖在一起 ' },
+                                { id: 'B', text: '節奏太死，沒有 Human feel(人味) ' },
+                                { id: 'C', text: 'Hi-hat 沒有推進感 ' }
                             ].map((opt) => (
                                 <button key={opt.id} onClick={() => handleDiagnose(opt.id)} style={{ background: selectedDiagnosis === opt.id ? 'rgba(56, 189, 248, 0.1)' : '#1e293b', border: selectedDiagnosis === opt.id ? '1px solid #38bdf8' : '1px solid transparent', padding: '1.2rem', borderRadius: '16px', color: '#fff', fontSize: '1.1rem', textAlign: 'left', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', gap: '1rem' }}>
                                     <span style={{ color: selectedDiagnosis === opt.id ? '#38bdf8' : '#64748b', fontWeight: 'bold' }}>{opt.id}.</span> {opt.text}
