@@ -235,7 +235,7 @@ export default function ArrangementIntro() {
                     </p>
 
                     <button
-                        onClick={() => router.push('/courses/arrangement/groove-training')}
+                        onClick={() => router.push('/courses/arrangement/groove-game')}
                         style={{
                             background: 'linear-gradient(135deg, #ea580c, #c2410c)', color: '#fff', border: 'none',
                             padding: isMobile ? '1.2rem 1.5rem' : '1.5rem 4rem',
