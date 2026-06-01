@@ -49,16 +49,16 @@ export default function GrooveGamePage() {
     const [currentTrack, setCurrentTrack] = useState<'A' | 'B'>('A');
     const [selectedAnswer, setSelectedAnswer] = useState<'A' | 'B' | null>(null);
     const [score, setScore] = useState(0);
-    const [streak, setStreak] = useState(0); // 🔥 連續命中系統
+    const [streak, setStreak] = useState(0);
     const [showResult, setShowResult] = useState(false);
 
-    // 狀態：是否正在進行自動 A/B 對比展示
     const [isAutoContrasting, setIsAutoContrasting] = useState(false);
-    const [isFastSwitching, setIsFastSwitching] = useState(false);
+    const [cheatMode, setCheatMode] = useState<'idle' | 'slow' | 'fast'>('idle');
 
     const audioARef = useRef<HTMLAudioElement | null>(null);
     const audioBRef = useRef<HTMLAudioElement | null>(null);
     const isMounted = useRef(true);
+    const activeSequence = useRef(0);
 
     const q = grooveQuestions[currentIndex];
 
@@ -82,6 +82,10 @@ export default function GrooveGamePage() {
     useEffect(() => {
         if (showResult) return;
         if (audioARef.current && audioBRef.current && q) {
+            // 🔥 關鍵升級：音量自動對齊，防範大聲=好聽的錯覺
+            audioARef.current.volume = 0.8;
+            audioBRef.current.volume = 0.8;
+
             audioARef.current.src = q.fileA;
             audioBRef.current.src = q.fileB;
             audioARef.current.load();
@@ -93,7 +97,8 @@ export default function GrooveGamePage() {
         }
         setCurrentTrack('A');
         setSelectedAnswer(null);
-    }, [currentIndex, showResult, q]); // isPlaying 移除，避免重複 load
+        setCheatMode('idle');
+    }, [currentIndex, showResult, q]);
 
     const togglePlay = () => {
         if (!audioARef.current || !audioBRef.current) return;
@@ -116,41 +121,54 @@ export default function GrooveGamePage() {
         }
     };
 
-    // ⚡ 作弊級功能：自動快速 A/B 瞬切
+    // ⚡ 兩段式作弊按鈕 (上癮探索機制)
     const handleFastSwitch = async () => {
-        if (isFastSwitching || selectedAnswer) return;
-        setIsFastSwitching(true);
+        if (selectedAnswer || isAutoContrasting || !isPlaying) return;
+
+        let speed = 800;
+        if (cheatMode === 'idle') {
+            setCheatMode('slow');
+            speed = 800;
+        } else if (cheatMode === 'slow') {
+            setCheatMode('fast');
+            speed = 400;
+        } else {
+            return; // 已經是最快，忽略點擊
+        }
+
+        const seq = Date.now();
+        activeSequence.current = seq;
         const originalTrack = currentTrack;
 
-        switchTrack('A'); await delay(800); if (!isMounted.current) return;
-        switchTrack('B'); await delay(800); if (!isMounted.current) return;
-        switchTrack('A'); await delay(800); if (!isMounted.current) return;
-        switchTrack('B'); await delay(800); if (!isMounted.current) return;
+        switchTrack('A'); await delay(speed); if (activeSequence.current !== seq || !isMounted.current) return;
+        switchTrack('B'); await delay(speed); if (activeSequence.current !== seq || !isMounted.current) return;
+        switchTrack('A'); await delay(speed); if (activeSequence.current !== seq || !isMounted.current) return;
+        switchTrack('B'); await delay(speed); if (activeSequence.current !== seq || !isMounted.current) return;
 
         switchTrack(originalTrack);
-        setIsFastSwitching(false);
+        setCheatMode('idle');
     };
 
-    // 🎯 答題與爆點瞬間 (Aha Moment)
+    // 🎯 答題與不對等時間爆點對比
     const handleSelect = async (answer: 'A' | 'B') => {
-        if (selectedAnswer || isAutoContrasting || isFastSwitching) return;
+        if (selectedAnswer || isAutoContrasting || cheatMode !== 'idle') return;
         setSelectedAnswer(answer);
 
         if (answer === q.correct) {
             setScore(prev => prev + 1);
-            setStreak(prev => prev + 1); // 連續命中 +1
+            setStreak(prev => prev + 1);
         } else {
-            setStreak(0); // 答錯歸零
+            setStreak(0);
         }
 
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
 
-        // 💥 強制對比瞬間 (讓玩家聽出差異)
+        // 💥 強制不對等時間對比瞬間：A(0.7) -> B(0.7) -> A(0.7) -> B(1.2)
         setIsAutoContrasting(true);
-        switchTrack('A'); await delay(1000); if (!isMounted.current) return;
-        switchTrack('B'); await delay(1000); if (!isMounted.current) return;
-        switchTrack('A'); await delay(1000); if (!isMounted.current) return;
-        switchTrack('B'); await delay(1000); if (!isMounted.current) return;
+        switchTrack('A'); await delay(700); if (!isMounted.current) return;
+        switchTrack('B'); await delay(700); if (!isMounted.current) return;
+        switchTrack('A'); await delay(700); if (!isMounted.current) return;
+        switchTrack('B'); await delay(1200); if (!isMounted.current) return;
 
         // 最後停留在正確答案上
         switchTrack(q.correct as 'A' | 'B');
@@ -174,7 +192,14 @@ export default function GrooveGamePage() {
         setShowResult(false);
     };
 
-    // 🎬 結算畫面 (轉換引爆點)
+    const getStreakMessage = () => {
+        if (streak === 2) return "不錯喔，耳朵有點東西";
+        if (streak === 3) return "👉 你開始穩了";
+        if (streak >= 4) return "👉 這不是運氣了";
+        return "";
+    };
+
+    // 🎬 結算畫面
     if (showResult) {
         return (
             <div style={{ minHeight: '100vh', background: '#020617', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem' }}>
@@ -192,7 +217,6 @@ export default function GrooveGamePage() {
                             <strong style={{ color: '#fff', fontSize: '1.3rem' }}>你已經開始「感覺到 Groove」了。</strong>
                         </p>
 
-                        {/* 🔥 對比身份 (核彈級轉換) */}
                         <div style={{ background: 'rgba(0,0,0,0.4)', padding: '1.2rem', borderRadius: '12px', borderLeft: '4px solid #f97316', marginBottom: '1.5rem' }}>
                             <p style={{ color: '#94a3b8', margin: '0 0 0.5rem 0', fontSize: '1rem' }}>一般人：聽歌 = 聽背景音樂</p>
                             <p style={{ color: '#fca311', margin: 0, fontSize: '1.1rem', fontWeight: 'bold' }}>你現在：開始聽到裡面的「動力」</p>
@@ -201,10 +225,19 @@ export default function GrooveGamePage() {
                         <p style={{ color: '#ef4444', fontSize: '1.1rem', margin: '0 0 1rem 0', fontWeight: 'bold' }}>
                             但，你的直覺還不穩定。
                         </p>
-
                         <p style={{ color: '#94a3b8', fontSize: '1.05rem', margin: 0, lineHeight: '1.6' }}>
                             這也就是為什麼，你做出來的 Beat 有時候聽起來很讚，有時候卻覺得哪裡怪怪的，但你不知道怎麼修。
                         </p>
+                    </div>
+
+                    {/* 🔥 未來預告 (具體化價值轉換) */}
+                    <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1.5rem', borderRadius: '16px', margin: '0 0 2rem 0', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'left' }}>
+                        <p style={{ color: '#fca311', fontWeight: 'bold', margin: '0 0 1rem 0', fontSize: '1.1rem' }}>接下來你會學到：</p>
+                        <ul style={{ color: '#cbd5e1', lineHeight: '2', margin: 0, paddingLeft: '1.5rem', fontSize: '1.05rem' }}>
+                            <li>✔ 怎麼讓鼓跟貝斯鎖在一起</li>
+                            <li>✔ 怎麼做出會讓人點頭的節奏</li>
+                            <li>✔ 為什麼你的 Beat 有時候會「垮掉」</li>
+                        </ul>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -236,7 +269,8 @@ export default function GrooveGamePage() {
                 {/* 🔥 連續命中系統 UI */}
                 {streak >= 2 && (
                     <div style={{ color: '#fca311', fontWeight: '900', fontSize: '1.1rem', marginBottom: '1rem', animation: 'popIn 0.3s' }}>
-                        🔥 連續命中：{streak}
+                        🔥 連續命中：{streak} <br />
+                        <span style={{ fontSize: '0.9rem', opacity: 0.8 }}>{getStreakMessage()}</span>
                     </div>
                 )}
 
@@ -249,7 +283,7 @@ export default function GrooveGamePage() {
                 </div>
             </div>
 
-            {/* ⚠️ 降低挫折感的提醒 (僅在第一題顯示) */}
+            {/* ⚠️ 降低挫折感的提醒 */}
             {currentIndex === 0 && !selectedAnswer && (
                 <div style={{ maxWidth: '500px', width: '100%', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#fca311', padding: '1rem', borderRadius: '12px', textAlign: 'center', marginBottom: '1.5rem', fontSize: '0.95rem', lineHeight: '1.5' }}>
                     <strong>⚠️ 提醒：</strong> 大部分人第一題都會選錯。<br />
@@ -263,19 +297,18 @@ export default function GrooveGamePage() {
                     {q?.question}
                 </h1>
 
-                {/* 狀態式播放按鈕 UX */}
                 <div style={{ marginBottom: '2rem' }}>
                     <button onClick={togglePlay} style={{ background: isPlaying ? '#1e293b' : '#fff', color: isPlaying ? '#38bdf8' : '#000', border: isPlaying ? '1px solid #475569' : 'none', padding: '1rem 3rem', fontSize: '1.2rem', fontWeight: 'bold', borderRadius: '50px', cursor: 'pointer', boxShadow: isPlaying ? 'none' : '0 10px 20px rgba(255,255,255,0.2)' }}>
                         {isPlaying ? '🔁 持續播放中' : '▶ 開始聽'}
                     </button>
                 </div>
 
-                {/* 🎧 第一層：純聆聽切換區 (不觸發答題) */}
+                {/* 🎧 聽力切換區 (純聽不作答) */}
                 <div style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '0.8rem' }}>👉 點擊切換聆聽，兩者在「同一時間點」播放</div>
                 <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginBottom: '1.5rem' }}>
                     <button
                         onClick={() => switchTrack('A')}
-                        disabled={isAutoContrasting || isFastSwitching}
+                        disabled={isAutoContrasting || cheatMode !== 'idle'}
                         style={{
                             flex: 1, padding: '1.5rem 0', fontSize: '1.3rem', fontWeight: 'bold', borderRadius: '16px', cursor: 'pointer', transition: 'all 0.2s',
                             background: currentTrack === 'A' ? '#334155' : '#0f172a',
@@ -283,11 +316,11 @@ export default function GrooveGamePage() {
                             border: currentTrack === 'A' ? '2px solid #f97316' : '1px solid #334155',
                         }}
                     >
-                        🎵 聽 A 版
+                        🎵 A（版本一）
                     </button>
                     <button
                         onClick={() => switchTrack('B')}
-                        disabled={isAutoContrasting || isFastSwitching}
+                        disabled={isAutoContrasting || cheatMode !== 'idle'}
                         style={{
                             flex: 1, padding: '1.5rem 0', fontSize: '1.3rem', fontWeight: 'bold', borderRadius: '16px', cursor: 'pointer', transition: 'all 0.2s',
                             background: currentTrack === 'B' ? '#334155' : '#0f172a',
@@ -295,37 +328,36 @@ export default function GrooveGamePage() {
                             border: currentTrack === 'B' ? '2px solid #a78bfa' : '1px solid #334155',
                         }}
                     >
-                        🎵 聽 B 版
+                        🎵 B（版本二）
                     </button>
                 </div>
 
-                {/* ⚡ 作弊按鈕：快速 A/B 對比 */}
+                {/* ⚡ 兩段式作弊按鈕 */}
                 {!selectedAnswer && (
                     <button
                         onClick={handleFastSwitch}
-                        disabled={isFastSwitching || !isPlaying}
+                        disabled={cheatMode === 'fast' || !isPlaying}
                         style={{ background: 'transparent', color: '#fca311', border: '1px dashed #fca311', padding: '0.8rem', borderRadius: '50px', fontSize: '0.9rem', fontWeight: 'bold', cursor: 'pointer', marginBottom: '2.5rem', opacity: isPlaying ? 1 : 0.5 }}
                     >
-                        {isFastSwitching ? '👂 自動對比中...' : '🔄 幫我快速 A/B 瞬切對比'}
+                        {cheatMode === 'idle' ? '🔄 幫我對比（慢）' : cheatMode === 'slow' ? '⚡ 極速對比（快）' : '👂 自動對比中...'}
                     </button>
                 )}
 
-                {/* 🎯 第二層：作答區 */}
+                {/* 🎯 作答區 */}
                 {!selectedAnswer ? (
                     <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '2rem' }}>
                         <div style={{ color: '#fff', fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '1rem' }}>決定好了嗎？</div>
                         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                            <button onClick={() => handleSelect('A')} disabled={isFastSwitching} style={{ flex: 1, padding: '1rem 0', fontSize: '1.1rem', fontWeight: 'bold', borderRadius: '50px', background: '#f97316', color: '#000', border: 'none', cursor: 'pointer' }}>👉 我選 A</button>
-                            <button onClick={() => handleSelect('B')} disabled={isFastSwitching} style={{ flex: 1, padding: '1rem 0', fontSize: '1.1rem', fontWeight: 'bold', borderRadius: '50px', background: '#a78bfa', color: '#000', border: 'none', cursor: 'pointer' }}>👉 我選 B</button>
+                            <button onClick={() => handleSelect('A')} disabled={cheatMode !== 'idle'} style={{ flex: 1, padding: '1rem 0', fontSize: '1.1rem', fontWeight: 'bold', borderRadius: '50px', background: '#f97316', color: '#000', border: 'none', cursor: 'pointer' }}>👉 我選 A</button>
+                            <button onClick={() => handleSelect('B')} disabled={cheatMode !== 'idle'} style={{ flex: 1, padding: '1rem 0', fontSize: '1.1rem', fontWeight: 'bold', borderRadius: '50px', background: '#a78bfa', color: '#000', border: 'none', cursor: 'pointer' }}>👉 我選 B</button>
                         </div>
                     </div>
                 ) : (
-                    /* 回饋區 & 強制對比特效 */
                     <div style={{ marginTop: 'auto', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '1.5rem', borderRadius: '20px', animation: 'fadeIn 0.3s' }}>
 
                         {isAutoContrasting ? (
                             <div style={{ color: '#38bdf8', fontSize: '1.2rem', fontWeight: 'bold', padding: '2rem 0', animation: 'pulseText 1s infinite' }}>
-                                🤯 仔細聽！自動對比差異中...
+                                🤯 仔細聽！抓到差異了嗎...
                             </div>
                         ) : (
                             <>
