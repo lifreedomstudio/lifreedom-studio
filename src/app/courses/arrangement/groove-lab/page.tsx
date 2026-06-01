@@ -267,7 +267,7 @@ export default function GrooveCorrectionLabPage() {
                                     <strong style={{ color: '#fff' }}>👉 「中高頻聲音放在哪裡，才不會打架？」</strong>
                                 </p>
 
-                                <button onClick={() => router.push('/courses/arrangement/frequency-shift')} style={{ width: '100%', padding: '1.2rem', background: 'linear-gradient(135deg, #a78bfa, #7c3aed)', color: '#fff', border: 'none', borderRadius: '50px', fontSize: '1.2rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(124, 58, 237, 0.4)' }}>
+                                <button onClick={() => router.push('/courses/arrangement/voicing-intro')} style={{ width: '100%', padding: '1.2rem', background: 'linear-gradient(135deg, #a78bfa, #7c3aed)', color: '#fff', border: 'none', borderRadius: '50px', fontSize: '1.2rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(124, 58, 237, 0.4)' }}>
                                     🚀 進入 Voicing 實驗室 ➔
                                 </button>
                             </div>

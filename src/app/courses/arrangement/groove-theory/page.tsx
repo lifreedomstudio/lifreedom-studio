@@ -464,7 +464,7 @@ export default function GrooveTraining() {
 
                     {/* 🚨 這裡已經修正導向 Groove Chapter (實驗室) */}
                     <button
-                        onClick={() => { window.scrollTo(0, 0); router.push('/courses/arrangement/groove-chapter'); }}
+                        onClick={() => { window.scrollTo(0, 0); router.push('/courses/arrangement/groove-lab'); }}
                         style={{
                             background: 'linear-gradient(135deg, #facc15, #ca8a04)', color: '#020617', border: 'none',
                             padding: isMobile ? '1.2rem 1.5rem' : '1.5rem 4rem', fontSize: isMobile ? '1.1rem' : '1.3rem',
