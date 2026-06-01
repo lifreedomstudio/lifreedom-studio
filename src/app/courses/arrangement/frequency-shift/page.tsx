@@ -159,19 +159,19 @@ export default function FrequencyShiftPage() {
                             onClick={() => setSelectedAnswer('A')}
                             style={{ padding: '1.2rem', borderRadius: '12px', background: selectedAnswer === 'A' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255,255,255,0.03)', border: selectedAnswer === 'A' ? '1px solid #ef4444' : '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '1.05rem', cursor: 'pointer', transition: 'all 0.2s' }}
                         >
-                            A：全部一起彈 (結果：聲音糊成一團)
+                            A：全部一起彈
                         </button>
                         <button
                             onClick={() => setSelectedAnswer('B')}
                             style={{ padding: '1.2rem', borderRadius: '12px', background: selectedAnswer === 'B' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255,255,255,0.03)', border: selectedAnswer === 'B' ? '1px solid #ef4444' : '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '1.05rem', cursor: 'pointer', transition: 'all 0.2s' }}
                         >
-                            B：錯開時間 (Groove 思維)
+                            B：錯開時間
                         </button>
                         <button
                             onClick={() => setSelectedAnswer('C')}
                             style={{ padding: '1.2rem', borderRadius: '12px', background: selectedAnswer === 'C' ? 'rgba(167, 139, 250, 0.2)' : 'rgba(255,255,255,0.03)', border: selectedAnswer === 'C' ? '1px solid #a78bfa' : '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '1.05rem', cursor: 'pointer', transition: 'all 0.2s' }}
                         >
-                            C：錯開「音高區域與位置」 (Voicing 思維)
+                            C：錯開「音高區域與位置」
                         </button>
                     </div>
 
@@ -180,6 +180,9 @@ export default function FrequencyShiftPage() {
                             {selectedAnswer === 'C' ? (
                                 <div style={{ color: '#a78bfa', fontSize: '1.2rem', fontWeight: 'bold' }}>
                                     🎯 正確。你已經開始進入「空間編曲」思維。
+                                    A：全部一起彈 (結果：聲音糊成一團)
+                                    B：錯開時間 (Groove 思維)
+                                    C：錯開「音高區域與位置」 (Voicing 思維)
                                 </div>
                             ) : (
                                 <div style={{ color: '#ef4444', fontSize: '1.1rem', fontWeight: 'bold' }}>
