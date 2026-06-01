@@ -90,15 +90,11 @@ const AudioComparer = ({ title, description, badSrc, goodSrc, isMobile }: { titl
 // --- 🖼️ 全鼓組標註大圖 ---
 const FullDrumKitVisual = ({ isMobile }: { isMobile: boolean }) => (
     <div style={{ position: 'relative', width: '100%', maxWidth: '850px', margin: '0 auto 2.5rem auto', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 15px 40px rgba(0,0,0,0.5)' }}>
-        {/* 🚨 修正：移除 padding-bottom 固定比例容器，移除 object-fit: 'cover'，
-           直接使用 img 標籤自然展開，確保整張圖（包含上方標籤）都能顯示 */}
         <img src="/images/full drum-kit.jpg" alt="Full Drum Kit" style={{ width: '100%', height: 'auto', display: 'block', borderRadius: '24px' }} />
-
-        {/* 🚨 移除所有 position: 'absolute' 的部件標籤疊加層，圖片上不應再有點擊事件 */}
     </div>
 );
 
-// --- 🥁 互動式按鈕 (支援播放/暫停與排他性) ---
+// --- 🥁 互動式按鈕 ---
 const DrumPad = ({ name, engName, desc, imgSrc, color, isPlaying, onToggle }: { name: string, engName: string, desc: string, imgSrc: string, color: string, isPlaying: boolean, onToggle: () => void }) => {
     return (
         <div
@@ -124,53 +120,22 @@ const DrumPad = ({ name, engName, desc, imgSrc, color, isPlaying, onToggle }: { 
     );
 };
 
-// --- 🎹 MIDI 人味對照圖 ---
-const MidiHumanizeVisual = ({ isMobile }: { isMobile: boolean }) => (
-    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '20px', width: '100%' }}>
-        <div style={{ flex: 1, background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '20px' }}>
-            <p style={{ color: '#ef4444', fontWeight: 'bold', marginBottom: '15px', textAlign: 'center' }}><i className="fa-solid fa-robot"></i> 死板的機器人 (100% 對齊)</p>
-            <svg viewBox="0 0 300 100" style={{ width: '100%', height: 'auto', background: 'rgba(0,0,0,0.3)', borderRadius: '8px' }}>
-                <line x1="50" y1="0" x2="50" y2="100" stroke="#334155" strokeWidth="1" />
-                <line x1="150" y1="0" x2="150" y2="100" stroke="#334155" strokeWidth="1" />
-                <line x1="250" y1="0" x2="250" y2="100" stroke="#334155" strokeWidth="1" />
-                <rect x="50" y="20" width="30" height="15" fill="#ef4444" rx="2" />
-                <rect x="150" y="20" width="30" height="15" fill="#ef4444" rx="2" />
-                <rect x="250" y="20" width="30" height="15" fill="#ef4444" rx="2" />
-            </svg>
-            <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginTop: '15px', textAlign: 'justify', lineHeight: '1.5' }}>每個音符都完美貼在網格線上，且力度完全一樣。聽起來像機關槍，毫無律動感。</p>
-        </div>
-
-        <div style={{ flex: 1, background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: '16px', padding: '20px' }}>
-            <p style={{ color: '#10b981', fontWeight: 'bold', marginBottom: '15px', textAlign: 'center' }}><i className="fa-solid fa-person"></i> 注入人味 (Humanized)</p>
-            <svg viewBox="0 0 300 100" style={{ width: '100%', height: 'auto', background: 'rgba(0,0,0,0.3)', borderRadius: '8px' }}>
-                <line x1="50" y1="0" x2="50" y2="100" stroke="#334155" strokeWidth="1" strokeDasharray="4 4" />
-                <line x1="150" y1="0" x2="150" y2="100" stroke="#334155" strokeWidth="1" strokeDasharray="4 4" />
-                <line x1="250" y1="0" x2="250" y2="100" stroke="#334155" strokeWidth="1" strokeDasharray="4 4" />
-                <rect x="53" y="20" width="30" height="15" fill="#10b981" rx="2" opacity="1" />
-                <rect x="148" y="20" width="30" height="15" fill="#10b981" rx="2" opacity="0.5" />
-                <rect x="255" y="20" width="30" height="15" fill="#10b981" rx="2" opacity="0.8" />
-            </svg>
-            <p style={{ color: '#f8fafc', fontSize: '0.9rem', marginTop: '15px', textAlign: 'justify', lineHeight: '1.5' }}>時間有微小的偏差 (稍微提早或延遲)，且打擊力度 (Velocity) 有輕重之分，這才是人類打鼓的真實呼吸感。</p>
-        </div>
-    </div>
-);
-
 // --- 📖 課程主頁面 ---
 export default function GrooveTraining() {
     const router = useRouter();
     const [isMobile, setIsMobile] = useState(false);
     const [showBassAnswer, setShowBassAnswer] = useState(false);
 
-    // 音訊播放狀態管理 (確保一次只播一個)
+    // 音訊播放狀態管理
     const [playingDrumId, setPlayingDrumId] = useState<string | null>(null);
     const drumAudioRefs = useRef<{ [key: string]: HTMLAudioElement }>({});
 
     useEffect(() => {
+        window.scrollTo(0, 0); // 確保每次進入頁面都在最上方
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
         checkMobile();
         window.addEventListener('resize', checkMobile);
 
-        // 初始化鼓組音檔
         const drums = [
             { id: 'kick', src: '/audio/kick.mp3' },
             { id: 'snare', src: '/audio/snare.mp3' },
@@ -195,12 +160,10 @@ export default function GrooveTraining() {
         if (!currentAudio) return;
 
         if (playingDrumId === id) {
-            // 如果點擊正在播放的 -> 暫停並重置時間
             currentAudio.pause();
             currentAudio.currentTime = 0;
             setPlayingDrumId(null);
         } else {
-            // 點擊別的 -> 暫停前一個，播放新的
             if (playingDrumId && drumAudioRefs.current[playingDrumId]) {
                 drumAudioRefs.current[playingDrumId].pause();
                 drumAudioRefs.current[playingDrumId].currentTime = 0;
@@ -304,6 +267,7 @@ export default function GrooveTraining() {
                     </div>
                 </section>
 
+                {/* 2. 注入靈魂：MIDI 的「人味」 */}
                 <div style={{ marginBottom: '4rem' }}>
                     <h3 style={{ fontSize: '1.8rem', color: '#ea580c', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <span style={{ background: '#ea580c', width: '6px', height: '30px', borderRadius: '4px' }}></span>
@@ -313,18 +277,13 @@ export default function GrooveTraining() {
                         在軟體中編輯鼓組 MIDI 時，最忌諱的就是將所有音符 100% 貼齊在網格線上。真實世界的樂手是不完美的，正是這些微小的瑕疵創造了律動。👉 這就是為什麼你做的鼓「永遠像 demo」。
                     </p>
 
-                    {/* 視覺化對比區塊 */}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
-
-                        {/* NG 示範：死板機器人 */}
+                        {/* NG 示範 */}
                         <div style={{ background: 'rgba(15, 23, 42, 0.6)', borderRadius: '16px', padding: '1.5rem', border: '1px solid rgba(255,255,255,0.05)' }}>
                             <div style={{ textAlign: 'center', color: '#ef4444', fontWeight: 'bold', marginBottom: '1.5rem' }}>死板的機器人 (100% 對齊)</div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', borderLeft: '1px dashed #334155', borderRight: '1px dashed #334155', padding: '20px 0', position: 'relative' }}>
-                                {/* 中間的網格線 */}
                                 <div style={{ position: 'absolute', left: '33%', top: 0, bottom: 0, borderLeft: '1px dashed #334155' }}></div>
                                 <div style={{ position: 'absolute', left: '66%', top: 0, bottom: 0, borderLeft: '1px dashed #334155' }}></div>
-
-                                {/* 完美的音符 */}
                                 <div style={{ width: '40px', height: '20px', background: '#ef4444', borderRadius: '4px', zIndex: 1 }}></div>
                                 <div style={{ width: '40px', height: '20px', background: '#ef4444', borderRadius: '4px', zIndex: 1, position: 'absolute', left: '33%' }}></div>
                                 <div style={{ width: '40px', height: '20px', background: '#ef4444', borderRadius: '4px', zIndex: 1, position: 'absolute', left: '66%' }}></div>
@@ -334,18 +293,15 @@ export default function GrooveTraining() {
                             </p>
                         </div>
 
-                        {/* OK 示範：注入人味 */}
+                        {/* OK 示範 */}
                         <div style={{ background: 'rgba(16, 185, 129, 0.05)', borderRadius: '16px', padding: '1.5rem', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
                             <div style={{ textAlign: 'center', color: '#10b981', fontWeight: 'bold', marginBottom: '1.5rem' }}>注入人味 (Humanized)</div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', borderLeft: '1px dashed #334155', borderRight: '1px dashed #334155', padding: '20px 0', position: 'relative' }}>
-                                {/* 中間的網格線 */}
                                 <div style={{ position: 'absolute', left: '33%', top: 0, bottom: 0, borderLeft: '1px dashed #334155' }}></div>
                                 <div style={{ position: 'absolute', left: '66%', top: 0, bottom: 0, borderLeft: '1px dashed #334155' }}></div>
-
-                                {/* 刻意不準的音符 (高度代表力度，左右代表時間偏移) */}
                                 <div style={{ width: '40px', height: '20px', background: '#10b981', borderRadius: '4px', zIndex: 1 }}></div>
-                                <div style={{ width: '40px', height: '12px', background: 'rgba(16, 185, 129, 0.6)', borderRadius: '4px', zIndex: 1, position: 'absolute', left: '33%', transform: 'translateX(18px) translateY(4px)' }}></div> {/* 刻意延遲且變小 */}
-                                <div style={{ width: '40px', height: '16px', background: 'rgba(16, 185, 129, 0.8)', borderRadius: '4px', zIndex: 1, position: 'absolute', left: '66%', transform: 'translateX(-10px) translateY(2px)' }}></div> {/* 刻意提早 */}
+                                <div style={{ width: '40px', height: '12px', background: 'rgba(16, 185, 129, 0.6)', borderRadius: '4px', zIndex: 1, position: 'absolute', left: '33%', transform: 'translateX(18px) translateY(4px)' }}></div>
+                                <div style={{ width: '40px', height: '16px', background: 'rgba(16, 185, 129, 0.8)', borderRadius: '4px', zIndex: 1, position: 'absolute', left: '66%', transform: 'translateX(-10px) translateY(2px)' }}></div>
                             </div>
                             <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginTop: '1.5rem', lineHeight: '1.6' }}>
                                 時間有微小的偏差（明顯看到方塊偏離虛線），且視覺高度代表打擊力度（Velocity）有輕重之分，這才是人類打鼓的呼吸感。
@@ -353,14 +309,12 @@ export default function GrooveTraining() {
                         </div>
                     </div>
 
-                    {/* 具體數值建議區 (新增) */}
+                    {/* 具體數值建議區 */}
                     <div style={{ background: '#0f172a', padding: '2rem', borderRadius: '16px', borderLeft: '4px solid #38bdf8' }}>
                         <h4 style={{ color: '#38bdf8', fontSize: '1.2rem', marginBottom: '1rem', fontWeight: 'bold' }}>🥁 各部件實戰數值參考 (以常見 8-Beat 為例)</h4>
                         <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '1.5rem' }}>* MIDI 力度值範圍為 0-127，以下數值為建議起點，請依曲風微調：</p>
 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
-
-                            {/* Hi-hat */}
                             <div style={{ background: '#020617', padding: '1.5rem', borderRadius: '12px' }}>
                                 <h5 style={{ color: '#e2e8f0', fontSize: '1.1rem', marginBottom: '0.5rem' }}>Hi-Hat (雙面鈸)</h5>
                                 <div style={{ color: '#fca311', fontSize: '0.85rem', marginBottom: '10px' }}>律動的靈魂，絕對不能一樣大聲</div>
@@ -370,8 +324,6 @@ export default function GrooveTraining() {
                                     <li><strong>時間微調：</strong> 讓所有 Hi-Hat 稍微<span style={{ color: '#ef4444' }}>延遲 5-10 個 Ticks</span>，能創造慵懶的 Laid-back 感。</li>
                                 </ul>
                             </div>
-
-                            {/* Kick */}
                             <div style={{ background: '#020617', padding: '1.5rem', borderRadius: '12px' }}>
                                 <h5 style={{ color: '#e2e8f0', fontSize: '1.1rem', marginBottom: '0.5rem' }}>Kick (大鼓)</h5>
                                 <div style={{ color: '#fca311', fontSize: '0.85rem', marginBottom: '10px' }}>整首歌的底盤，與 Bass 緊密咬合</div>
@@ -380,8 +332,6 @@ export default function GrooveTraining() {
                                     <li><strong>過門裝飾音 (Ghost Note)：</strong> 藏在正拍之前的連續雙踩，力度降至 <span style={{ color: '#10b981' }}>40 - 65</span>，創造推動感。</li>
                                 </ul>
                             </div>
-
-                            {/* Snare */}
                             <div style={{ background: '#020617', padding: '1.5rem', borderRadius: '12px' }}>
                                 <h5 style={{ color: '#e2e8f0', fontSize: '1.1rem', marginBottom: '0.5rem' }}>Snare (小鼓)</h5>
                                 <div style={{ color: '#fca311', fontSize: '0.85rem', marginBottom: '10px' }}>穩定軍心的心跳</div>
@@ -390,7 +340,6 @@ export default function GrooveTraining() {
                                     <li><strong>時間微調：</strong> 如果歌曲需要「往前衝」的興奮感，可以將小鼓稍微<span style={{ color: '#38bdf8' }}>提早 3-5 個 Ticks</span>。</li>
                                 </ul>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -437,7 +386,7 @@ export default function GrooveTraining() {
                     />
                 </section>
 
-                {/* 5. Bass 的雙重人格：節奏與和聲的橋樑 */}
+                {/* 5. Bass 的雙重人格 */}
                 <section style={{ marginBottom: '6rem' }}>
                     <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.5rem', color: '#ea580c', marginBottom: '1rem', borderLeft: '8px solid #c2410c', paddingLeft: '20px' }}>
                         5. Bass 的雙重人格：節奏與和聲的橋樑
@@ -503,13 +452,19 @@ export default function GrooveTraining() {
                     </p>
                 </div>
 
-                {/* --- 下一關 CTA --- */}
+                {/* --- 🔥 核心轉換：進入修復實驗室 CTA --- */}
                 <section style={{ textAlign: 'center', paddingBottom: '4rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '4rem' }}>
-                    <p style={{ color: '#f8fafc', fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>
-                        搞定地基了，接下來往中頻公寓前進！
+                    <div style={{ color: '#facc15', fontWeight: 'bold', letterSpacing: '2px', fontSize: '0.9rem', marginBottom: '1rem' }}>NEXT PHASE</div>
+                    <p style={{ color: '#f8fafc', fontSize: '1.4rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+                        理論學完了。
                     </p>
+                    <p style={{ color: '#cbd5e1', fontSize: '1.1rem', marginBottom: '2rem' }}>
+                        現在，是時候動手<strong style={{ color: '#fca311' }}>修好一段崩壞的 Groove</strong> 了。
+                    </p>
+
+                    {/* 🚨 這裡已經修正導向 Groove Chapter (實驗室) */}
                     <button
-                        onClick={() => router.push('/courses/arrangement/voicing-training')}
+                        onClick={() => { window.scrollTo(0, 0); router.push('/courses/arrangement/groove-chapter'); }}
                         style={{
                             background: 'linear-gradient(135deg, #facc15, #ca8a04)', color: '#020617', border: 'none',
                             padding: isMobile ? '1.2rem 1.5rem' : '1.5rem 4rem', fontSize: isMobile ? '1.1rem' : '1.3rem',
@@ -519,7 +474,7 @@ export default function GrooveTraining() {
                         onMouseOver={(e) => e.currentTarget.style.transform = isMobile ? 'scale(1)' : 'scale(1.05)'}
                         onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
                     >
-                        進入 2. Voicing (把位與音區) ➔
+                        進入 Groove 修正實驗室 ➔
                     </button>
                 </section>
 
