@@ -25,7 +25,7 @@ export default function DynamicsIntroPage() {
 
                 {/* 章節標題 */}
                 <div style={{ color: '#38bdf8', fontSize: '1.1rem', fontWeight: 'bold', letterSpacing: '4px', marginBottom: '3rem' }}>
-                    PHASE 04 — THE BREATH OF SOUND
+                    PHASE 04 — 聲音的呼吸
                 </div>
 
                 {/* 已知回顧 */}

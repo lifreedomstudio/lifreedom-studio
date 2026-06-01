@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
-// --- 🎧 盲測 A/B 試聽播放器 ---
+// --- 🎧 盲測 A/B 試聽播放器 (完美無縫切換版) ---
 const AudioBlindTest = ({ title, description, badSrc, goodSrc, isMobile }: { title: string, description: string, badSrc: string, goodSrc: string, isMobile: boolean }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [isB, setIsB] = useState(false); // false = A (Bad), true = B (Good)
@@ -104,6 +104,39 @@ const SimplifiedSpectrumMap = ({ isMobile }: { isMobile: boolean }) => (
     </div>
 );
 
+// --- 🛠️ 合成器 (Synth) 頻譜佔用與 ADSR 圖卡 (全新加入) ---
+const SynthVisualCard = ({ isMobile }: { isMobile: boolean }) => (
+    <div style={{ background: 'linear-gradient(145deg, #1e1b4b, #0f172a)', border: '1px solid rgba(167, 139, 250, 0.3)', padding: isMobile ? '1.5rem' : '2rem', borderRadius: '24px', marginTop: '2.5rem' }}>
+        <h4 style={{ color: '#a78bfa', fontSize: '1.2rem', margin: '0 0 1rem 0', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>🎛️</span> 製作人核心：合成器 (Synth) 的頻率侵略性
+        </h4>
+        <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6', margin: '0 0 1.5rem 0' }}>
+            傳統樂器（如木吉他）的頻率通常很固定。但<strong>合成器 (Synth)</strong> 是靠振盪器產生波形，它具備極度豐富的泛音，寬度能直接橫跨「中頻到高頻」。如果沒有做好外殼動態 (ADSR) 與濾波器控制，它一進場就會化身為音頻海嘯，把人聲遮蔽得一乾二淨。
+        </p>
+        <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '1.5rem', background: 'rgba(0,0,0,0.3)', padding: '1.5rem', borderRadius: '16px' }}>
+            <div style={{ flex: 1, textAlign: 'center' }}>
+                <div style={{ fontSize: '0.85rem', color: '#a78bfa', marginBottom: '10px', fontWeight: 'bold' }}>【 鋸齒波 Sawtooth 泛音分佈 】</div>
+                <svg viewBox="0 0 300 100" style={{ width: '100%', height: 'auto' }}>
+                    {/* 模擬合成器豐富的鋸齒泛音 */}
+                    <line x1="20" y1="90" x2="20" y2="20" stroke="#a78bfa" strokeWidth="3" />
+                    <line x1="60" y1="90" x2="60" y2="40" stroke="#a78bfa" strokeWidth="2" />
+                    <line x1="100" y1="90" x2="100" y2="55" stroke="#a78bfa" strokeWidth="2" />
+                    <line x1="140" y1="90" x2="140" y2="65" stroke="#a78bfa" strokeWidth="1.5" />
+                    <line x1="180" y1="90" x2="180" y2="75" stroke="#a78bfa" strokeWidth="1.5" />
+                    <line x1="220" y1="90" x2="220" y2="82" stroke="#a78bfa" strokeWidth="1" />
+                    <line x1="260" y1="90" x2="260" y2="87" stroke="#a78bfa" strokeWidth="1" />
+                    <line x1="10" y1="90" x2="290" y2="90" stroke="#475569" strokeWidth="2" />
+                </svg>
+                <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '5px' }}>基音與密密麻麻的霸道泛音牆</div>
+            </div>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '6px', fontSize: '0.85rem', color: '#cbd5e1' }}>
+                <div>• <strong>音色特性：</strong> 鋸齒波 (Saw) / 方波 (Square) 帶有強烈的包圍感。</div>
+                <div>• <strong>遮蔽風險：</strong> 鋪底合成器 (Pad) 容易吃掉人聲厚度；主奏合成器 (Lead) 容易搶走主唱歌詞的清晰度。</div>
+            </div>
+        </div>
+    </div>
+);
+
 // --- 🛠️ 2. 中頻擁擠與人聲領空 ---
 const MidFreqJamVisual = ({ isMobile }: { isMobile: boolean }) => (
     <div style={{ background: 'rgba(15, 23, 42, 0.4)', padding: isMobile ? '15px' : '25px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)' }}>
@@ -130,7 +163,7 @@ const MidFreqJamVisual = ({ isMobile }: { isMobile: boolean }) => (
 
             <rect x="350" y="160" width="300" height="120" fill="rgba(16, 185, 129, 0.1)" stroke="#10b981" strokeWidth="4" rx="15" />
             <text x="500" y="215" textAnchor="middle" fill="#f8fafc" fontWeight="900" fontSize="24">人聲領空 (Vocal)</text>
-            <text x="500" y="250" textAnchor="middle" fill="#10b981" fontWeight="bold" fontSize="16">神聖不可侵犯區</text>
+            <text x="500" y="250" textAnchor="middle" fill="#10b981" fontWeight="bold" fontSize="16">神幕核心安全區</text>
         </svg>
     </div>
 );
@@ -138,10 +171,10 @@ const MidFreqJamVisual = ({ isMobile }: { isMobile: boolean }) => (
 // --- 🛠️ 3. 檢查流程 Timeline ---
 const MaskingTimeline = ({ isMobile }: { isMobile: boolean }) => {
     const steps = [
-        { title: "1. 選色 (Tone)", desc: "挑選本質互補的音色。", example: "❌ 兩把木吉他刷扣 \n✅ 木吉他 + Pad 合成器", pos: "top" },
-        { title: "2. 佈局 (Layout)", desc: "分配到不同音域。", example: "❌ 鋼琴吉他都在 C3 \n✅ 鋼琴上二樓", pos: "bottom" },
-        { title: "3. 節奏 (Rhythm)", desc: "確保節奏互補。", example: "❌ 貝斯大鼓各彈各的 \n✅ 音符貼齊大鼓", pos: "top" },
-        { title: "4. 修整 (Trim)", desc: "刪除多餘裝飾。", example: "❌ 每件樂器都在 Solo \n✅ 抽掉複雜的過弦", pos: "bottom" },
+        { title: "1. 選色 (Tone)", desc: "挑選本質互補的音色。", example: "❌ 兩把木吉他同時齊刷\n✅ 木吉他 + Pad 合成器鋪底", pos: "top" },
+        { title: "2. 佈局 (Layout)", desc: "分配到不同音域。", example: "❌ 鋼琴吉他都在 C3 音域區\n✅ 鋼琴移高八度上二樓", pos: "bottom" },
+        { title: "3. 節奏 (Rhythm)", desc: "確保節奏互補。", example: "❌ 貝斯大鼓各做各的\n✅ 音符貼齊大鼓", pos: "top" },
+        { title: "4. 修整 (Trim)", desc: "刪除多餘裝飾，保留敘事主線。", example: "❌ 每件樂器都在 Solo\n✅ 簡化複雜的伴奏插音與樂器過門", pos: "bottom" }, // 💡 優化：精準白話名詞替換
     ];
 
     return (
@@ -167,8 +200,6 @@ const MaskingTimeline = ({ isMobile }: { isMobile: boolean }) => {
 export default function MaskingTheoryPage() {
     const router = useRouter();
     const [isMobile, setIsMobile] = useState(false);
-
-    // 💡 Mini Challenge 狀態
     const [challengeAnswer, setChallengeAnswer] = useState<string | null>(null);
 
     useEffect(() => {
@@ -200,6 +231,13 @@ export default function MaskingTheoryPage() {
                     </h1>
                 </header>
 
+                <section style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: isMobile ? '2rem 1rem' : '3rem', borderRadius: '24px', marginBottom: '4rem', textAlign: 'center' }}>
+                    <h2 style={{ fontSize: isMobile ? '1.5rem' : '2.5rem', color: '#10b981', marginBottom: '1.5rem' }}>別讓樂器「卡門」了！</h2>
+                    <p style={{ fontSize: isMobile ? '1.1rem' : '1.2rem', color: '#cbd5e1', lineHeight: '1.8', maxWidth: '850px', margin: '0 auto' }}>
+                        「多個同頻樂器同時彈奏，就像五個人同時要過一個門。結果就是誰也出不去，觀眾聽起來就是一團糊。」
+                    </p>
+                </section>
+
                 {/* 1. 頻段口袋學 */}
                 <section style={{ marginBottom: '5rem' }}>
                     <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '1.5rem' : '3rem', alignItems: 'center' }}>
@@ -211,13 +249,17 @@ export default function MaskingTheoryPage() {
                             <ul style={{ listStyle: 'none', padding: 0 }}>
                                 <li style={{ marginBottom: '15px' }}><strong style={{ color: '#ea580c' }}>🟠 地基層 (20-100Hz):</strong> 專屬大鼓與 Bass。</li>
                                 <li style={{ marginBottom: '15px' }}><strong style={{ color: '#facc15' }}>🟡 擁擠層 (300-2kHz):</strong> 災難現場。</li>
-                                <li><strong style={{ color: '#38bdf8' }}>🔵 空氣層 (7k-20kHz):</strong> 弦樂高音與銅鈸的亮點區。</li>
+                                <li style={{ marginBottom: '15px' }}><strong style={{ color: '#38bdf8' }}>🔵 空氣層 (7k-20kHz):</strong> 弦樂高音與空氣感。</li>
+                                <li style={{ marginBottom: '15px' }}><strong style={{ color: '#a78bfa' }}>🔮 空間變色龍 (Synth):</strong> 橫跨多重頻段，最易遮蔽主唱。</li>
                             </ul>
                         </div>
                         <div style={{ flex: 1.2, width: '100%' }}>
                             <SimplifiedSpectrumMap isMobile={isMobile} />
                         </div>
                     </div>
+
+                    {/* 💡 帶有視覺圖的合成器說明卡片 */}
+                    <SynthVisualCard isMobile={isMobile} />
                 </section>
 
                 {/* 2. 捍衛人聲領空 */}
@@ -232,7 +274,7 @@ export default function MaskingTheoryPage() {
 
                     <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.2rem', color: '#10b981', marginBottom: '1.5rem' }}>2. 捍衛人聲領空</h2>
                     <p style={{ color: '#cbd5e1', lineHeight: '1.8', fontSize: '1.1rem', marginBottom: '2rem' }}>
-                        300Hz 到 2kHz 為什麼叫擁擠層？因為這是**人耳最敏感的區域**，也是人聲 (Vocal) 最核心的領空。偏偏吉他、鋼琴、合成器最肥厚的聲音也都擠在這裡。
+                        300Hz 到 2kHz 為什麼叫擁擠層？因為這是人耳最敏感的區域，也是人聲 (Vocal) 最核心的領空。偏偏吉他、鋼琴、合成器最肥厚的聲音也都擠在這裡。
                     </p>
 
                     <MidFreqJamVisual isMobile={isMobile} />
@@ -256,7 +298,7 @@ export default function MaskingTheoryPage() {
                     <MaskingTimeline isMobile={isMobile} />
                 </section>
 
-                {/* 🚀 Mini Challenge 收束區塊 */}
+                {/* 🚀 Mini Challenge 盲測收束 */}
                 <section style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '4rem', paddingBottom: '4rem' }}>
                     <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                         <div style={{ color: '#facc15', fontSize: '1.1rem', fontWeight: 'bold', letterSpacing: '5px', marginBottom: '1rem' }}>FINAL CHECK</div>
@@ -265,7 +307,6 @@ export default function MaskingTheoryPage() {
                     </div>
 
                     <div style={{ maxWidth: '700px', margin: '0 auto' }}>
-                        {/* 盲測播放器 */}
                         <AudioBlindTest
                             title="🎧 空間切割盲測"
                             description="播放以下兩段音軌，找出已經做過「空間切割 (EQ Carving)」的版本。"
@@ -274,7 +315,6 @@ export default function MaskingTheoryPage() {
                             isMobile={isMobile}
                         />
 
-                        {/* 選擇區 */}
                         <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', flexDirection: isMobile ? 'column' : 'row' }}>
                             <button
                                 onClick={() => setChallengeAnswer('A')}
@@ -290,7 +330,6 @@ export default function MaskingTheoryPage() {
                             </button>
                         </div>
 
-                        {/* 判斷回饋 */}
                         {challengeAnswer && (
                             <div style={{ marginTop: '2rem', padding: '1.5rem', borderRadius: '16px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', animation: 'fadeInUp 0.4s' }}>
                                 {challengeAnswer === 'A' ? (
@@ -300,7 +339,7 @@ export default function MaskingTheoryPage() {
                                             聲音「聽起來很多、很滿」≠「聽得清楚」。<br />
                                             A 版本的吉他和合成器把中頻全堆滿了，導致主唱的聲音完全被吃掉。
                                         </p>
-                                        <button onClick={() => setChallengeAnswer(null)} style={{ background: 'transparent', border: '1px dashed #ef4444', color: '#fca5a5', padding: '8px 20px', borderRadius: '50px', cursor: 'pointer' }}>🔄 再聽一次</button>
+                                        <button onClick={() => setChallengeAnswer(null)} style={{ background: 'transparent', border: '1px dashed #ef4444', color: '#fca5a5', padding: '8px 20px', borderRadius: '50px', cursor: 'pointer' }}>🔄 再試一次，直到做出工程師級選擇</button>
                                     </div>
                                 ) : (
                                     <div style={{ textAlign: 'center' }}>
@@ -315,25 +354,22 @@ export default function MaskingTheoryPage() {
                     </div>
                 </section>
 
-                {/* 🎯 解鎖與下一步 (僅在答對時顯示) */}
+                {/* 🎯 解鎖與下一步 (僅在答對 B 時解鎖) */}
                 {challengeAnswer === 'B' && (
                     <section style={{ animation: 'fadeInUp 0.8s', paddingBottom: '4rem', textAlign: 'center' }}>
-
-                        {/* 技能解鎖 */}
                         <div style={{ marginBottom: '4rem' }}>
                             <div style={{ display: 'inline-block', background: 'linear-gradient(135deg, rgba(250, 204, 21, 0.1), rgba(249, 115, 22, 0.1))', border: '1px solid #facc15', padding: '1.5rem 3rem', borderRadius: '24px', boxShadow: '0 4px 20px rgba(250, 204, 21, 0.2)' }}>
                                 <div style={{ color: '#facc15', fontWeight: '900', letterSpacing: '2px', marginBottom: '10px' }}>🎯 新技能解鎖</div>
                                 <div style={{ color: '#fff', fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '10px' }}>🔓 「Masking Detection Lv.1」</div>
                                 <div style={{ color: '#cbd5e1', fontSize: '1rem', textAlign: 'left', lineHeight: '1.8' }}>
                                     你現在可以：<br />
-                                    ✔ 聽出人聲被壓住<br />
-                                    ✔ 發現中頻過度擁擠<br />
+                                    ✔ 聽出人聲被壓住的「悶感」<br />
+                                    ✔ 發現中頻過度擁擠造成的「模糊」<br />
                                     ✔ 理解「不是不夠亮，而是太多一起亮」
                                 </div>
                             </div>
                         </div>
 
-                        {/* CTA - 前往動態導論頁 */}
                         <button
                             onClick={() => router.push('/courses/arrangement/dynamics-intro')}
                             style={{
