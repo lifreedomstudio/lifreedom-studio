@@ -139,7 +139,7 @@ export default function MaskingIntroPage() {
                             onMouseOver={e => e.currentTarget.style.transform = "scale(1.03)"}
                             onMouseOut={e => e.currentTarget.style.transform = "scale(1)"}
                         >
-                            🎧 找出被遮住的聲音 (開始實驗) ➔
+                            🎧 找出被遮住的聲音 ➔
                         </button>
 
                         <button
