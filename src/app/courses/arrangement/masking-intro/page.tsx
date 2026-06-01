@@ -129,7 +129,7 @@ export default function MaskingIntroPage() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', maxWidth: '480px', margin: '0 auto' }}>
 
                         <button
-                            onClick={() => router.push('/courses/arrangement/masking-game')}
+                            onClick={() => router.push('/courses/arrangement/masking-theory')}
                             style={{
                                 background: 'linear-gradient(135deg, #f97316, #ea580c)', color: '#fff',
                                 border: 'none', padding: '1.2rem 2rem', fontSize: '1.2rem', fontWeight: '900',
