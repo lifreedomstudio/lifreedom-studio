@@ -384,7 +384,7 @@ export default function VoicingTraining() {
                         onMouseOver={(e) => e.currentTarget.style.transform = isMobile ? 'scale(1)' : 'scale(1.05)'}
                         onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
                     >
-                        前往下一關：3. Masking 頻率遮蔽預防 ➔
+                        前往下一關：3. voicing 空間分配實驗室 ➔
                     </button>
                 </section>
 
