@@ -247,7 +247,7 @@ export default function GrooveGamePage() {
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        <button onClick={() => router.push('/courses/arrangement/groove-chapter')} style={{ width: '100%', padding: '1.2rem', background: 'linear-gradient(135deg, #f97316, #ea580c)', color: '#fff', border: 'none', borderRadius: '50px', fontSize: '1.2rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(234, 88, 12, 0.4)' }}>
+                        <button onClick={() => router.push('/courses/arrangement/groove-training')} style={{ width: '100%', padding: '1.2rem', background: 'linear-gradient(135deg, #f97316, #ea580c)', color: '#fff', border: 'none', borderRadius: '50px', fontSize: '1.2rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(234, 88, 12, 0.4)' }}>
                             🚀 我要變穩 (進入正式訓練) ➔
                         </button>
 
