@@ -2,156 +2,152 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
-// --- 🛠️ 1. 情緒曲線圖 ---
-const EmotionCurveChart = () => (
-    <svg viewBox="0 0 1000 200" style={{ width: '100%', height: 'auto', overflow: 'visible', maxWidth: '900px', margin: '0 auto 20px', display: 'block' }}>
-        <defs>
-            <linearGradient id="curve-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" style={{ stopColor: '#10b981', stopOpacity: 0.5 }}></stop>
-                <stop offset="100%" style={{ stopColor: '#10b981', stopOpacity: 0 }}></stop>
-            </linearGradient>
-        </defs>
-        <path d="M 0 180 L 150 150 L 350 165 L 500 60 L 750 20 L 1000 30 L 1000 200 L 0 200 Z" fill="url(#curve-grad)" opacity="0.6"></path>
-        <polyline points="0,180 150,150 350,165 500,60 750,20 1000,30" fill="none" stroke="#10b981" strokeWidth="5"></polyline>
-        <g fill="#94a3b8" fontSize="12" fontFamily="Urbanist" fontWeight="bold">
-            <text x="0" y="195">INTRO</text> <text x="140" y="195">VERSE</text> <text x="325" y="195">PRE-CHO</text> <text x="485" y="195">CHORUS</text> <text x="735" y="195">BRIDGE</text> <text x="940" y="195">OUTRO</text>
-        </g>
-    </svg>
-);
+// --- 🎬 核心優化：Scrollytelling 高階流暢動畫導覽引擎 ---
+const ScrollytellingHero = ({ isMobile }: { isMobile: boolean }) => {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [progress, setProgress] = useState(0);
 
-// --- 🛠️ 2. Reverse 波形視覺圖 ---
-const ReverseWaveformVisual = ({ isMobile }: { isMobile: boolean }) => (
-    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '20px', alignItems: 'center', width: '100%' }}>
-        {/* Normal Waveform */}
-        <div style={{ flex: 1, background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '20px', width: '100%' }}>
-            <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '10px', textAlign: 'center' }}>原始音檔 (如銅鈸 Crash)</p>
-            <svg viewBox="0 0 200 80" style={{ width: '100%', height: '80px' }}>
-                <path d="M10,40 Q20,10 30,40 T50,40 T70,40 T100,40 T140,40 T190,40" fill="none" stroke="#64748b" strokeWidth="2" opacity="0.5" />
-                <path d="M10,40 L15,15 L20,65 L25,20 L30,60 L35,25 L40,55 L50,30 L60,50 L80,35 L100,45 L130,38 L190,40" fill="none" stroke="#94a3b8" strokeWidth="3" />
-            </svg>
-            <p style={{ color: '#f8fafc', fontSize: '0.85rem', marginTop: '10px', textAlign: 'center' }}>一擊即逝 (Attack 強，無蓄力感)</p>
-        </div>
-
-        <div style={{ color: '#10b981', fontSize: '24px', transform: isMobile ? 'rotate(90deg)' : 'none' }}>
-            <i className="fa-solid fa-arrow-right"></i>
-        </div>
-
-        {/* Reversed Waveform */}
-        <div style={{ flex: 1, background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: '16px', padding: '20px', width: '100%' }}>
-            <p style={{ color: '#10b981', fontSize: '0.9rem', marginBottom: '10px', textAlign: 'center', fontWeight: 'bold' }}>Reverse 處理後</p>
-            <svg viewBox="0 0 200 80" style={{ width: '100%', height: '80px' }}>
-                <path d="M10,40 L70,42 L100,45 L120,35 L140,50 L150,30 L160,55 L165,25 L170,60 L175,20 L180,65 L185,15 L190,40" fill="none" stroke="#10b981" strokeWidth="3" />
-                <line x1="190" y1="0" x2="190" y2="80" stroke="#facc15" strokeWidth="2" strokeDasharray="4 4" />
-                <text x="135" y="15" fill="#facc15" fontSize="12" fontWeight="bold">對齊重拍</text>
-            </svg>
-            <p style={{ color: '#f8fafc', fontSize: '0.85rem', marginTop: '10px', textAlign: 'center' }}>強大的「吸吮感」直到爆發</p>
-        </div>
-    </div>
-);
-
-// --- 🌪️ 3. 過門與推進力音效卡片 ---
-const TransitionCard = ({ title, subtitle, desc, audioSrc, color, icon }: { title: string, subtitle: string, desc: string, audioSrc: string, color: string, icon: string }) => {
-    const [isPlaying, setIsPlaying] = useState(false);
-    const audioRef = useRef<HTMLAudioElement>(null);
-
-    const togglePlay = () => {
-        if (audioRef.current) {
-            if (isPlaying) {
-                audioRef.current.pause();
-                audioRef.current.currentTime = 0;
-            } else {
-                audioRef.current.play().catch(e => console.log("等待音檔置入"));
+    useEffect(() => {
+        // 💡 優化 1：使用 requestAnimationFrame 鎖定重繪頻率，杜絕 CPU 抖動
+        let ticking = false;
+        const handleScroll = () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    if (containerRef.current) {
+                        const rect = containerRef.current.getBoundingClientRect();
+                        const windowH = window.innerHeight;
+                        const scrollable = rect.height - windowH;
+                        const p = Math.max(0, Math.min(1, -rect.top / scrollable));
+                        setProgress(p);
+                    }
+                    ticking = false;
+                });
+                ticking = true;
             }
-            setIsPlaying(!isPlaying);
-        }
-    };
+        };
+        window.addEventListener('scroll', handleScroll);
+        handleScroll();
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    // 隨滾動進度動態運算
+    const peakY = 200 - (progress * 150);
+    const spaceOpacity = Math.max(0, 1 - (progress * 2));
+    const burstIntensity = Math.max(0, (progress - 0.7) * 3.33);
+    const glowSize = burstIntensity * 100;
+
+    const dynamicPath = `M 0 200 L 200 200 C 350 200, 400 ${peakY}, 550 ${peakY} L 750 ${peakY} C 850 ${peakY}, 900 200, 1000 200`;
+    const phase = progress < 0.35 ? 'space' : progress < 0.75 ? 'motion' : 'burst';
 
     return (
-        <div style={{
-            background: 'rgba(15, 23, 42, 0.6)', border: `1px solid ${isPlaying ? color : 'rgba(255,255,255,0.05)'}`,
-            borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '15px',
-            boxShadow: isPlaying ? `0 0 20px ${color}40` : 'none', transition: 'all 0.3s ease'
-        }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                <button
-                    onClick={togglePlay}
-                    style={{
-                        width: '50px', height: '50px', borderRadius: '50%', background: isPlaying ? color : 'rgba(255,255,255,0.1)',
-                        color: isPlaying ? '#000' : color, border: `2px solid ${color}`, fontSize: '1.2rem',
-                        cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', transition: 'all 0.2s'
-                    }}
-                >
-                    {isPlaying ? '⏸' : '▶'}
-                </button>
-                <div>
-                    <h4 style={{ color: '#fff', fontSize: '1.2rem', margin: '0 0 4px 0', fontWeight: 'bold' }}>
-                        {icon} {title}
-                    </h4>
-                    <span style={{ color: color, fontSize: '0.85rem', fontWeight: 'bold', background: `${color}20`, padding: '2px 8px', borderRadius: '12px' }}>
-                        {subtitle}
-                    </span>
+        <div ref={containerRef} style={{ position: 'relative', height: '300vh', width: '100%', marginBottom: '2rem' }}>
+
+            {/* 📌 固定黏性視窗 */}
+            <div style={{ position: 'sticky', top: 0, height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+
+                {/* 標題與核心公式 */}
+                <div style={{ position: 'absolute', top: isMobile ? '10%' : '15%', textAlign: 'center', zIndex: 10 }}>
+                    <div style={{ color: '#38bdf8', fontSize: '0.9rem', fontWeight: 'bold', letterSpacing: '4px', marginBottom: '1rem' }}>
+                        THE CORE MODEL
+                    </div>
+                    <h1 style={{ fontSize: isMobile ? '2rem' : '3rem', fontWeight: '900', margin: '0 0 1rem 0', color: '#fff' }}>
+                        Dynamics = 呼吸控制
+                    </h1>
+                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '10px 20px', borderRadius: '50px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <span style={{ color: '#fca311', fontWeight: 'bold', letterSpacing: '1px', fontSize: isMobile ? '0.9rem' : '1.1rem' }}>
+                            Silence × Contrast × Motion
+                        </span>
+                    </div>
                 </div>
+
+                {/* 動態文字疊加區 */}
+                <div style={{ position: 'absolute', top: '42%', zIndex: 10, textAlign: 'center', width: '100%', padding: '0 1rem', height: '160px' }}>
+
+                    {/* 💡 優化 2：結合 translateY 與 0.6s transition 創造 Apple 懸浮滑行過渡 */}
+                    {/* 🫁 Phase 1: Space */}
+                    <div style={{
+                        position: 'absolute', width: '100%', left: '50%', pointerEvents: 'none',
+                        opacity: phase === 'space' ? 1 : 0,
+                        transform: phase === 'space' ? 'translate(-50%, -50%)' : 'translate(-50%, calc(-50% + 20px))',
+                        transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
+                    }}>
+                        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🫁</div>
+                        <h2 style={{ fontSize: isMobile ? '1.5rem' : '2rem', color: '#10b981', fontWeight: '900', margin: '0 0 1rem 0' }}>Space（呼吸）：有沒有空？</h2>
+                        <p style={{ color: '#cbd5e1', fontSize: '1.2rem', fontWeight: 'bold', textShadow: '0 2px 10px #000' }}>「空白，才是推動情緒的力量。」</p>
+                        <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '1.5rem' }}>向下滾動，看見情緒的堆疊 ⬇</p>
+                    </div>
+
+                    {/* 🚀 Phase 2: Motion & Contrast */}
+                    <div style={{
+                        position: 'absolute', width: '100%', left: '50%', pointerEvents: 'none',
+                        opacity: phase === 'motion' ? 1 : 0,
+                        transform: phase === 'motion' ? 'translate(-50%, -50%)' : 'translate(-50%, calc(-50% + 20px))',
+                        transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
+                    }}>
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '1rem' }}>
+                            <div style={{ fontSize: '2.5rem' }}>⚖️</div>
+                            <div style={{ fontSize: '2.5rem' }}>🚀</div>
+                        </div>
+                        <h2 style={{ fontSize: isMobile ? '1.5rem' : '2rem', color: '#facc15', fontWeight: '900', margin: '0 0 1rem 0' }}>Contrast & Motion</h2>
+                        <p style={{ color: '#cbd5e1', fontSize: '1.2rem', fontWeight: 'bold', textShadow: '0 2px 10px #000' }}>「情緒不是跳躍，是被推上去的。」</p>
+                        <p style={{ color: '#fca311', fontSize: '1rem', marginTop: '1rem', fontWeight: 'bold' }}>拉開落差，製造蓄力感...</p>
+                    </div>
+
+                    {/* 💥 Phase 3: Chorus Burst */}
+                    <div style={{
+                        position: 'absolute', width: '100%', left: '50%', pointerEvents: 'none',
+                        opacity: phase === 'burst' ? 1 : 0,
+                        transform: phase === 'burst' ? 'translate(-50%, -50%)' : 'translate(-50%, calc(-50% + 20px))',
+                        transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
+                    }}>
+                        <div style={{ fontSize: '3rem', marginBottom: '1rem', animation: phase === 'burst' ? 'pulseText 1s infinite alternate' : 'none' }}>💥</div>
+                        <h2 style={{ fontSize: isMobile ? '2rem' : '2.8rem', color: '#fff', fontWeight: '900', margin: '0 0 1rem 0', textShadow: `0 0 ${glowSize}px #38bdf8` }}>
+                            CHORUS 爆發
+                        </h2>
+                        <p style={{ color: '#bae6fd', fontSize: '1.3rem', fontWeight: '900', textShadow: '0 2px 10px #000' }}>「沒有前面的安靜，就沒有現在的爆炸。」</p>
+                    </div>
+                </div>
+
+                {/* 〰️ 核心 SVG 渲染引擎 */}
+                <div style={{ width: '100%', maxWidth: '1000px', position: 'absolute', bottom: '15%' }}>
+                    {/* 空間粒子 */}
+                    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: spaceOpacity, backgroundImage: 'radial-gradient(#475569 1px, transparent 1px)', backgroundSize: '30px 30px', transition: 'opacity 0.1s' }} />
+
+                    {/* 高潮發光 */}
+                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '400px', height: '200px', background: '#38bdf8', opacity: burstIntensity * 0.3, filter: `blur(${glowSize}px)`, transition: 'opacity 0.1s' }} />
+
+                    <svg viewBox="0 0 1000 250" style={{ width: '100%', height: 'auto', overflow: 'visible' }}>
+                        <defs>
+                            <linearGradient id="curve-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stopColor={phase === 'burst' ? '#38bdf8' : '#10b981'} stopOpacity={0.6 + burstIntensity * 0.4}></stop>
+                                <stop offset="100%" stopColor={phase === 'burst' ? '#38bdf8' : '#10b981'} stopOpacity={0}></stop>
+                            </linearGradient>
+                        </defs>
+
+                        {/* 💡 優化 3：加入對照灰色基準線，凸顯動態能量的物理對比 */}
+                        <path d="M 0 200 L 1000 200" stroke="#334155" strokeWidth="2" strokeDasharray="6 4" />
+
+                        {/* 動態曲線 */}
+                        <path d={`${dynamicPath} L 1000 250 L 0 250 Z`} fill="url(#curve-grad)" style={{ transition: 'all 0.05s linear' }} />
+                        <path d={dynamicPath} fill="none" stroke={phase === 'burst' ? '#fff' : '#10b981'} strokeWidth={4 + burstIntensity * 3} style={{ transition: 'all 0.05s linear', filter: `drop-shadow(0 0 ${glowSize / 2}px #38bdf8)` }} />
+
+                        <g fill={phase === 'burst' ? '#fff' : "#64748b"} fontSize="12" fontFamily="sans-serif" fontWeight="bold" style={{ transition: 'fill 0.5s' }}>
+                            <text x="50" y="240">VERSE</text>
+                            <text x="350" y="240">PRE-CHORUS</text>
+                            <text x="600" y="240">CHORUS</text>
+                        </g>
+                    </svg>
+                </div>
+
             </div>
-            <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>
-                {desc}
-            </p>
-            <audio ref={audioRef} src={audioSrc} onEnded={() => setIsPlaying(false)} />
         </div>
     );
 };
 
-// --- 🛠️ 4. 極簡實戰音檔播放器 ---
-const TransitionAudioPlayer = ({ isMobile }: { isMobile: boolean }) => {
-    const [isPlaying, setIsPlaying] = useState(false);
-    const audioRef = useRef<HTMLAudioElement | null>(null);
-
-    const togglePlay = () => {
-        if (!audioRef.current) return;
-        if (isPlaying) {
-            audioRef.current.pause();
-        } else {
-            audioRef.current.play();
-        }
-        setIsPlaying(!isPlaying);
-    };
-
-    const handleEnded = () => setIsPlaying(false);
-
-    return (
-        <div style={{
-            background: '#0f172a', border: '2px solid #334155', borderRadius: '40px',
-            padding: isMobile ? '20px' : '20px 40px', display: 'flex', alignItems: 'center',
-            justifyContent: 'center', gap: '20px', width: '100%', maxWidth: '400px',
-            margin: '30px auto', boxShadow: '0 15px 30px rgba(0,0,0,0.3)'
-        }}>
-            <audio
-                ref={audioRef}
-                src="/audio/reverse-sweep.mp3"
-                onEnded={handleEnded}
-                onPause={() => setIsPlaying(false)}
-                onPlay={() => setIsPlaying(true)}
-            />
-
-            <div onClick={togglePlay} style={{
-                minWidth: '60px', height: '60px', background: '#10b981', borderRadius: '50%',
-                display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#020617',
-                fontSize: '24px', cursor: 'pointer', boxShadow: isPlaying ? '0 0 20px #10b981' : 'none',
-                transition: 'all 0.2s'
-            }}>
-                <i className={`fa-solid ${isPlaying ? 'fa-pause' : 'fa-play'}`}></i>
-            </div>
-
-            <div style={{ color: '#f8fafc', fontWeight: 'bold', fontSize: '1.2rem', letterSpacing: '2px', width: '120px', textAlign: 'left' }}>
-                {isPlaying ? 'PLAYING...' : 'LISTEN'}
-            </div>
-        </div>
-    );
-};
-
-// --- 📖 課程主頁面 ---
-export default function DynamicsTraining() {
+export default function DynamicsTheoryPage() {
     const router = useRouter();
     const [isMobile, setIsMobile] = useState(false);
+    const [openCard, setOpenCard] = useState<string | null>(null);
 
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -160,278 +156,121 @@ export default function DynamicsTraining() {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
+    const toggleCard = (id: string) => setOpenCard(openCard === id ? null : id);
+
     return (
-        <div style={{ minHeight: '100vh', background: '#020617', color: '#f8fafc', padding: isMobile ? '1.5rem 0.5rem' : '4rem 2rem', fontFamily: 'sans-serif', overflowX: 'hidden' }}>
-            <div style={{ maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
+        <div style={{ minHeight: '100vh', background: '#020617', color: '#f8fafc', fontFamily: 'sans-serif', overflowX: 'hidden' }}>
 
-                {/* Header */}
-                <header style={{ textAlign: 'center', marginBottom: '5rem' }}>
-                    <div style={{ display: 'inline-block', border: '1px solid rgba(16, 185, 129, 0.5)', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', padding: '6px 20px', borderRadius: '30px', fontSize: '0.85rem', letterSpacing: '3px', marginBottom: '1.5rem', fontWeight: 'bold' }}>
-                        PHASE 04 : EMOTION & IMPACT
+            {/* 🌟 滾動敘事導覽視窗 */}
+            <ScrollytellingHero isMobile={isMobile} />
+
+            <div style={{ maxWidth: '850px', margin: '0 auto', width: '100%', padding: isMobile ? '2rem 1rem' : '0 2rem 5rem 2rem', display: 'flex', flexDirection: 'column', gap: '5rem' }}>
+
+                {/* 🔵 曲式結構 */}
+                <section style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', padding: isMobile ? '1.5rem' : '2.5rem', borderRadius: '24px' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                        <h2 style={{ fontSize: '1.6rem', fontWeight: '900', color: '#fff', margin: '0 0 8px 0' }}>🎬 曲式，只是情緒的載體</h2>
+                        <p style={{ color: '#94a3b8', fontSize: '1rem', margin: 0 }}>它不是死板的樂理，它是用來裝載能量起伏的容器。</p>
                     </div>
-                    <h1 style={{ fontSize: isMobile ? '2.5rem' : '4.5rem', fontWeight: '900', margin: '0 0 1.5rem 0', background: 'linear-gradient(135deg, #10b981, #34d399)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                        Dynamics<br />動態：音樂的劇本
-                    </h1>
 
-                    <div style={{ background: 'rgba(15, 23, 42, 0.9)', border: '1px solid rgba(16, 185, 129, 0.4)', padding: '22px', borderRadius: '14px', width: '100%', maxWidth: '850px', margin: '0 auto', textAlign: 'left' }}>
-                        <p style={{ color: '#f8fafc', marginBottom: 0, fontSize: isMobile ? '1rem' : '1.1rem', lineHeight: '1.6' }}>
-                            <strong style={{ color: '#10b981' }}>📖 字彙定義：Dynamics (動態)</strong> 指的是音樂中的「強弱變化」與「能量管理」。它是透過樂器編制、音量控制與空間感，來設計並引導聽眾情緒起伏的核心技術。
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <div style={{ background: 'rgba(15, 23, 42, 0.6)', padding: '1.2rem 1.5rem', borderRadius: '12px', borderLeft: '4px solid #10b981', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div><span style={{ fontWeight: 'bold', color: '#fff', fontSize: '1.1rem' }}>Verse (主歌)</span><br /><span style={{ color: '#94a3b8', fontSize: '0.9rem' }}>穩定敘事，鋪陳情節</span></div>
+                            <span style={{ fontWeight: '900', color: '#10b981' }}>📉 壓低能量</span>
+                        </div>
+
+                        <div style={{ background: 'rgba(15, 23, 42, 0.6)', padding: '1.2rem 1.5rem', borderRadius: '12px', borderLeft: '4px solid #facc15', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div><span style={{ fontWeight: 'bold', color: '#fff', fontSize: '1.1rem' }}>Pre-Chorus (導歌)</span><br /><span style={{ color: '#94a3b8', fontSize: '0.9rem' }}>堆疊懸念，製造渴望</span></div>
+                            <span style={{ fontWeight: '900', color: '#facc15' }}>📈 拉高張力</span>
+                        </div>
+
+                        <div style={{ background: 'rgba(15, 23, 42, 0.6)', padding: '1.2rem 1.5rem', borderRadius: '12px', borderLeft: '4px solid #38bdf8', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div><span style={{ fontWeight: 'bold', color: '#fff', fontSize: '1.1rem' }}>Chorus (副歌)</span><br /><span style={{ color: '#94a3b8', fontSize: '0.9rem' }}>核心主題釋放，音場全開</span></div>
+                            <span style={{ fontWeight: '900', color: '#38bdf8' }}>💥 能量爆發</span>
+                        </div>
+                    </div>
+
+                    {/* 次要摺疊區 */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginTop: '1rem' }}>
+                        {[
+                            { id: 'intro', title: 'Intro (前奏)', desc: '建立世界觀。定調整部音樂的第一氣氛。' },
+                            { id: 'bridge', title: 'Bridge (橋段)', desc: '迎來劇情大反轉。通常和弦走向會劇烈改變或節奏瞬間慢下，提供新鮮感。' },
+                            { id: 'outro', title: 'Outro (尾奏)', desc: '故事終章消散。樂器一件件有序抽離，引導大腦情緒平復。' }
+                        ].map((item) => {
+                            const isOpen = openCard === item.id;
+                            return (
+                                <div key={item.id} style={{ background: 'rgba(255,255,255,0.01)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.03)', overflow: 'hidden' }}>
+                                    <div onClick={() => toggleCard(item.id)} style={{ padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
+                                        <span style={{ fontWeight: 'bold', color: '#64748b', fontSize: '1rem' }}>{item.title}</span>
+                                        <span style={{ color: '#475569', fontSize: '1rem' }}>{isOpen ? '−' : '＋'}</span>
+                                    </div>
+                                    {isOpen && (
+                                        <div style={{ padding: '0 1.5rem 1.2rem 1.5rem', color: '#cbd5e1', fontSize: '0.95rem', borderTop: '1px solid rgba(255,255,255,0.02)', paddingTop: '1rem', animation: 'fadeInUp 0.2s' }}>
+                                            {item.desc}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </section>
+
+                {/* 🔴 核心轉化：🧲 真空理論 */}
+                <section style={{ background: 'linear-gradient(135deg, #4c0519, #0f172a)', border: '1px solid #9f1239', padding: isMobile ? '2rem 1.5rem' : '3.5rem', borderRadius: '24px', boxShadow: '0 20px 50px rgba(159, 18, 57, 0.15)' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+                        <div style={{ color: '#fb7185', fontSize: '0.85rem', fontWeight: '900', letterSpacing: '4px', marginBottom: '8px' }}>SIGNATURE THEORY</div>
+                        <h3 style={{ fontSize: isMobile ? '1.8rem' : '2.2rem', fontWeight: '900', color: '#fff', margin: 0 }}>
+                            🧲 能量轟炸的「真空理論」
+                        </h3>
+                    </div>
+
+                    <div style={{ background: 'rgba(0,0,0,0.4)', padding: '1.5rem', borderRadius: '16px', textAlign: 'center', marginBottom: '3rem', borderLeft: '4px solid #fb7185' }}>
+                        <p style={{ color: '#fff', fontSize: '1.3rem', fontWeight: 'bold', margin: 0, letterSpacing: '1px' }}>
+                            「音樂爆炸不是推上去的，是『被吸過去的』」
                         </p>
                     </div>
-                </header>
 
-                {/* 1. 情緒劇本 & 曲式定義 */}
-                <section style={{ marginBottom: '6rem' }}>
-                    <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.5rem', color: '#10b981', marginBottom: '2rem', borderLeft: '8px solid #059669', paddingLeft: '20px' }}>1. 設計你的情緒劇本 (Story Script)</h2>
-                    <div style={{ background: 'rgba(15,23,42,0.4)', padding: isMobile ? '20px 10px' : '40px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                        <EmotionCurveChart />
-
-                        {/* 🎬 升級版：曲式結構與劇本解析卡片 */}
-                        <div style={{ marginTop: '2rem' }}>
-                            <p style={{ color: '#10b981', fontWeight: 'bold', fontSize: '1.2rem', marginBottom: '15px', borderBottom: '1px solid rgba(16, 185, 129, 0.3)', paddingBottom: '10px' }}>
-                                <i className="fa-solid fa-book-open"></i> 曲式劇本完全解析 (Arrangement Terms)
-                            </p>
-
-                            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '20px' }}>
-                                {/* Intro */}
-                                <div style={{ background: 'rgba(15, 23, 42, 0.8)', padding: '20px', borderRadius: '12px', borderLeft: '4px solid #facc15' }}>
-                                    <h4 style={{ color: '#facc15', fontSize: '1.1rem', margin: '0 0 10px 0' }}>Intro (前奏)</h4>
-                                    <p style={{ color: '#f8fafc', fontSize: '0.95rem', margin: '0 0 10px 0' }}>引導進入歌曲氛圍的開場。</p>
-                                    <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '8px', fontSize: '0.85rem' }}>
-                                        <p style={{ color: '#cbd5e1', margin: '0 0 5px 0' }}><b>🎬 劇本比喻：</b> 電影一開場的風景空鏡頭，定調整部片的氣氛。</p>
-                                        <p style={{ color: '#94a3b8', margin: 0 }}><b>🎧 聽覺特徵：</b> 通常只有單一樂器（例如木吉他或鋼琴），或是截取副歌的一小段無人聲旋律。</p>
-                                    </div>
-                                </div>
-
-                                {/* Verse */}
-                                <div style={{ background: 'rgba(15, 23, 42, 0.8)', padding: '20px', borderRadius: '12px', borderLeft: '4px solid #38bdf8' }}>
-                                    <h4 style={{ color: '#38bdf8', fontSize: '1.1rem', margin: '0 0 10px 0' }}>Verse (主歌)</h4>
-                                    <p style={{ color: '#f8fafc', fontSize: '0.95rem', margin: '0 0 10px 0' }}>建立背景與敘事的情節核心。</p>
-                                    <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '8px', fontSize: '0.85rem' }}>
-                                        <p style={{ color: '#cbd5e1', margin: '0 0 5px 0' }}><b>🎬 劇本比喻：</b> 主角登場，開始用平穩的語氣講述故事背景。</p>
-                                        <p style={{ color: '#94a3b8', margin: 0 }}><b>🎧 聽覺特徵：</b> 人聲進場，伴奏通常很克制。大鼓跟 Bass 通常還沒完全加入，留給歌手說故事的空間。</p>
-                                    </div>
-                                </div>
-
-                                {/* Pre-Chorus */}
-                                <div style={{ background: 'rgba(15, 23, 42, 0.8)', padding: '20px', borderRadius: '12px', borderLeft: '4px solid #a78bfa' }}>
-                                    <h4 style={{ color: '#a78bfa', fontSize: '1.1rem', margin: '0 0 10px 0' }}>Pre-Chorus (導歌)</h4>
-                                    <p style={{ color: '#f8fafc', fontSize: '0.95rem', margin: '0 0 10px 0' }}>連結主副歌，創造上行張力。</p>
-                                    <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '8px', fontSize: '0.85rem' }}>
-                                        <p style={{ color: '#cbd5e1', margin: '0 0 5px 0' }}><b>🎬 劇本比喻：</b> 暴風雨前的寧靜，或是慢慢爬升的雲霄飛車。</p>
-                                        <p style={{ color: '#94a3b8', margin: 0 }}><b>🎧 聽覺特徵：</b> 節奏開始變密集（如小鼓加速），或 Bass 開始走上升/下行階梯，暗示情緒即將爆發。</p>
-                                    </div>
-                                </div>
-
-                                {/* Chorus */}
-                                <div style={{ background: 'rgba(15, 23, 42, 0.8)', padding: '20px', borderRadius: '12px', borderLeft: '4px solid #10b981' }}>
-                                    <h4 style={{ color: '#10b981', fontSize: '1.1rem', margin: '0 0 10px 0' }}>Chorus (副歌)</h4>
-                                    <p style={{ color: '#f8fafc', fontSize: '0.95rem', margin: '0 0 10px 0' }}>能量最高點，重複性強的主題。</p>
-                                    <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '8px', fontSize: '0.85rem' }}>
-                                        <p style={{ color: '#cbd5e1', margin: '0 0 5px 0' }}><b>🎬 劇本比喻：</b> 電影最高潮的爆破戲、激烈爭吵或深情告白。</p>
-                                        <p style={{ color: '#94a3b8', margin: 0 }}><b>🎧 聽覺特徵：</b> 所有樂器 (Full Band) 全下！音場最寬，頻率最滿，是全曲最好記的段落。</p>
-                                    </div>
-                                </div>
-
-                                {/* Bridge */}
-                                <div style={{ background: 'rgba(15, 23, 42, 0.8)', padding: '20px', borderRadius: '12px', borderLeft: '4px solid #ef4444' }}>
-                                    <h4 style={{ color: '#ef4444', fontSize: '1.1rem', margin: '0 0 10px 0' }}>Bridge (橋段)</h4>
-                                    <p style={{ color: '#f8fafc', fontSize: '0.95rem', margin: '0 0 10px 0' }}>提供對比與新鮮感的過渡。</p>
-                                    <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '8px', fontSize: '0.85rem' }}>
-                                        <p style={{ color: '#cbd5e1', margin: '0 0 5px 0' }}><b>🎬 劇本比喻：</b> 劇情突然大反轉，或是主角陷入絕望的內心獨白。</p>
-                                        <p style={{ color: '#94a3b8', margin: 0 }}><b>🎧 聽覺特徵：</b> 發生在第二次副歌之後。通常和弦走向會完全改變，節奏可能瞬間放慢，或接上一段吉他 Solo。</p>
-                                    </div>
-                                </div>
-
-                                {/* Outro */}
-                                <div style={{ background: 'rgba(15, 23, 42, 0.8)', padding: '20px', borderRadius: '12px', borderLeft: '4px solid #64748b' }}>
-                                    <h4 style={{ color: '#64748b', fontSize: '1.1rem', margin: '0 0 10px 0' }}>Outro (尾奏)</h4>
-                                    <p style={{ color: '#f8fafc', fontSize: '0.95rem', margin: '0 0 10px 0' }}>故事終章，引導情緒平復。</p>
-                                    <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '8px', fontSize: '0.85rem' }}>
-                                        <p style={{ color: '#cbd5e1', margin: '0 0 5px 0' }}><b>🎬 劇本比喻：</b> 電影結局後，伴隨著滾動字幕的餘韻。</p>
-                                        <p style={{ color: '#94a3b8', margin: 0 }}><b>🎧 聽覺特徵：</b> 樂器一件一件收掉，或是用 Fade out (漸弱) 的方式讓音樂慢慢消失在空氣中。</p>
-                                    </div>
-                                </div>
-                            </div>
+                    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '1.5rem' }}>
+                        <div style={{ flex: 1, background: 'rgba(255,255,255,0.03)', padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                            <div style={{ color: '#ef4444', fontWeight: '900', marginBottom: '10px', fontSize: '1.1rem' }}>1. Silence Gap (呼吸瞬切)</div>
+                            <span style={{ fontSize: '0.95rem', color: '#94a3b8', lineHeight: 1.6, display: 'block' }}>在重拍砸下前，狠心抽乾背景 0.3 秒，製造讓大腦瞬間屏息的失重引力。</span>
                         </div>
-
-                    </div>
-                </section>
-
-                {/* 2. 黃金法則留白 */}
-                <section style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '3rem', alignItems: 'center', marginBottom: '6rem' }}>
-                    <div style={{ textAlign: 'center', flex: 1 }}>
-                        <div style={{ fontSize: isMobile ? '6rem' : '8rem', fontWeight: '900', color: '#10b981', lineHeight: '1' }}>30%</div>
-                        <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#f8fafc', marginTop: '10px' }}>關鍵時刻的「留白」</div>
-                    </div>
-                    <div style={{ flex: 1.5, background: 'rgba(16, 185, 129, 0.05)', padding: '2.5rem', borderRadius: '24px', border: '2px solid rgba(16,185,129,0.3)' }}>
-                        <h3 style={{ color: '#10b981', fontSize: '1.5rem', marginBottom: '1rem' }}>退一步，進兩步</h3>
-                        <p style={{ color: '#f1f5f9', lineHeight: '1.8', fontSize: '1.1rem', marginBottom: '1rem' }}>
-                            在進入大副歌的前一刻，試著將所有背景音樂「抽乾」約 200-500 毫秒，<strong style={{ color: '#10b981' }}>讓所有聲響瞬間消失。</strong>
-                        </p>
-                        <p style={{ color: '#f1f5f9', lineHeight: '1.8', fontSize: '1.1rem', margin: 0 }}>
-                            這種真空狀態，會讓聽眾產生強烈的補償心理，使隨後爆發的音浪具備無比震撼的撞擊力。
-                        </p>
-                    </div>
-                </section>
-
-                {/* 3. Automation 與 Reverb 的聯動 */}
-                <section style={{ marginBottom: '6rem' }}>
-                    <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.5rem', color: '#10b981', marginBottom: '2rem', borderLeft: '8px solid #059669', paddingLeft: '20px' }}>2. Automation：賦予空間靈魂</h2>
-                    <p style={{ color: '#f8fafc', fontSize: '1.1rem', marginBottom: '1rem', lineHeight: '1.6' }}>
-                        <strong>Automation (自動化控制)</strong> 是混音中非常重要的動態技巧，它允許我們在 DAW 中畫一條線，讓參數「隨著時間自動改變」。
-                    </p>
-                    <p style={{ color: '#cbd5e1', fontSize: '1.1rem', marginBottom: '2rem', lineHeight: '1.6' }}>
-                        例如，我們可以利用 Automation 畫一條線，在進入副歌的瞬間，將 Reverb (空間殘響) 的乾濕比自動「拉乾」，這能確保主唱在龐大樂團中依然保持極強的穿透力：
-                    </p>
-
-                    <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', background: 'rgba(15,23,42,0.6)', borderRadius: '15px', overflow: 'hidden', minWidth: '600px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                            <thead>
-                                <tr style={{ background: 'rgba(16, 185, 129, 0.15)' }}>
-                                    <th style={{ padding: '20px', textAlign: 'left', color: '#10b981', fontSize: '1.1rem' }}>時間軸 (Timeline)</th>
-                                    <th style={{ padding: '20px', textAlign: 'left', color: '#10b981', fontSize: '1.1rem' }}>Automation 自動化設定</th>
-                                    <th style={{ padding: '20px', textAlign: 'left', color: '#10b981', fontSize: '1.1rem' }}>空間戰術 (Tactics)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td style={{ padding: '20px', borderBottom: '1px solid rgba(255,255,255,0.05)', fontWeight: 'bold', color: '#f8fafc' }}>主歌 (Verse) 期間</td>
-                                    <td style={{ padding: '20px', borderBottom: '1px solid rgba(255,255,255,0.05)', color: '#f8fafc' }}>維持在 25% - 30%</td>
-                                    <td style={{ padding: '20px', borderBottom: '1px solid rgba(255,255,255,0.05)', color: '#cbd5e1' }}>利用較「濕」的空間營造孤獨與親暱氛圍。</td>
-                                </tr>
-                                <tr>
-                                    <td style={{ padding: '20px', fontWeight: 'bold', color: '#10b981' }}>進入副歌 (Chorus) 瞬間</td>
-                                    <td style={{ padding: '20px', color: '#10b981', fontWeight: 'bold' }}>自動向下降至 18% - 20%</td>
-                                    <td style={{ padding: '20px', color: '#cbd5e1' }}>調「乾」讓主唱跳到最前面，清晰且具備能量權威。</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-
-                {/* 4. 轉場魔法：製造真空吸力 */}
-                <section style={{ marginBottom: '6rem' }}>
-                    <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.5rem', color: '#10b981', marginBottom: '2rem', borderLeft: '8px solid #059669', paddingLeft: '20px' }}>3. 轉場魔法：製造真空吸力</h2>
-
-                    <p style={{ color: '#f8fafc', fontSize: '1.1rem', marginBottom: '2rem', lineHeight: '1.6' }}>
-                        當主歌準備進入副歌時，我們需要給聽眾一種「要爆發了！」的期待感。除了讓鼓手打一串精彩的過門 (Fills) 之外，現代音樂製作最常用的兩個秘密武器就是 <strong>Reverse (反轉音效)</strong> 與 <strong>Bass Slide (貝斯滑音)</strong>。把它們疊加在一起，能創造出如同黑洞般的強大吸力！
-                    </p>
-
-                    {/* Reverse 視覺解說 */}
-                    <div style={{ marginBottom: '3rem' }}>
-                        <div style={{ background: 'rgba(15,23,42,0.4)', padding: isMobile ? '20px' : '30px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                            <h3 style={{ color: '#10b981', fontSize: '1.3rem', marginBottom: '20px' }}><i className="fa-solid fa-wrench"></i> Reverse 製作三步驟：</h3>
-                            <ul style={{ color: '#cbd5e1', lineHeight: '1.8', fontSize: '1.05rem', paddingLeft: '20px', marginBottom: '30px' }}>
-                                <li style={{ marginBottom: '10px' }}><strong>Step 1. 找素材：</strong> 挑選一個打擊感強烈且尾音長的聲音（例如銅鈸 Crash 或合成器 Sweep）。</li>
-                                <li style={{ marginBottom: '10px' }}><strong>Step 2. 倒放處理：</strong> 使用軟體中的 Reverse 功能將音頻波形完全倒轉。原本「碰——斯」的聲音會變成「斯——碰」。</li>
-                                <li><strong style={{ color: '#facc15' }}>Step 3. 對齊重拍：</strong> 將反轉後聲音的<strong>「最大音量點 (Peak)」</strong>，精準對齊到進入副歌的第一拍 (Downbeat) 上。</li>
-                            </ul>
-
-                            <ReverseWaveformVisual isMobile={isMobile} />
+                        <div style={{ flex: 1, background: 'rgba(255,255,255,0.03)', padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                            <div style={{ color: '#facc15', fontWeight: '900', marginBottom: '10px', fontSize: '1.1rem' }}>2. Anticipation (預期引導)</div>
+                            <span style={{ fontSize: '0.95rem', color: '#94a3b8', lineHeight: 1.6, display: 'block' }}>利用反轉音效 (Reverse) 給予耳朵暗示，讓大腦知道海嘯即將撲來。</span>
                         </div>
-                    </div>
-
-                    {/* 互動音效展示區 */}
-                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '20px', marginBottom: '3rem' }}>
-                        <TransitionCard
-                            title="低頻 / 吉他滑弦"
-                            subtitle="Bass / Guitar Slide"
-                            desc="在進入重拍前，讓樂手按住低音弦快速往下滑動，產生深沉的『Wrooooom』轟炸感。💡 實戰密技：其實很多震撼的滑音是用「電吉他」彈奏最低音弦做出來的！搭配破音效果器，下墜的撕裂感一樣生猛！"
-                            audioSrc="/audio/bass-slide.mp3"
-                            color="#10b981"
-                            icon="🎸"
-                        />
-                        <TransitionCard
-                            title="反向碎音鈸"
-                            subtitle="Reverse Crash"
-                            desc="將一般打擊 Crash 的聲音『倒轉』過來播放。聲音會從微弱的嘶嘶聲逐漸放大，形成一個強大的真空吸力，然後在第一拍完美銜接真實的 Crash 爆炸聲。"
-                            audioSrc="/audio/reverse-crash.mp3"
-                            color="#38bdf8"
-                            icon="⏪"
-                        />
-                    </div>
-
-                    {/* 🚨 這裡接回你原本的左右耳 Pan 實戰示範區塊！ */}
-                    <div style={{ background: 'rgba(30, 41, 59, 0.4)', padding: isMobile ? '2rem 1rem' : '4rem', borderRadius: '32px', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
-                        <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.2rem', color: '#fff', marginBottom: '1rem' }}>🎧 轉場綜合實戰示範：Pan 的左右拉扯</h2>
-                        <p style={{ color: '#cbd5e1', fontSize: '1.1rem', maxWidth: '650px', margin: '0 auto', lineHeight: '1.6' }}>
-                            這是一段實戰音檔。戴上耳機，注意聽進入副歌前，背景的 Reverse 效果結合了 <strong>Pan (聲道轉向)</strong>，從左耳一路拉扯到右耳，接著瞬間引爆副歌的所有樂器！
-                        </p>
-
-                        <TransitionAudioPlayer isMobile={isMobile} />
-                    </div>
-                </section>
-
-                {/* --- 🆕 4. 製作人常見 Q&A 與實戰地雷 --- */}
-                <section style={{ marginBottom: '6rem' }}>
-                    <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.5rem', color: '#10b981', marginBottom: '2rem', borderLeft: '8px solid #059669', paddingLeft: '20px' }}>4. 製作人常見地雷與 Q&A</h2>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                        {/* Q1: 牆壁音量迷思 */}
-                        <div style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '20px', padding: isMobile ? '1.5rem' : '2rem' }}>
-                            <h3 style={{ color: '#ef4444', fontSize: '1.2rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <span>💣 地雷一：</span> 「我的副歌不夠炸，所以我把副歌音量推到最大？」
-                            </h3>
-                            <p style={{ color: '#cbd5e1', lineHeight: '1.7', marginBottom: '1.5rem', fontSize: '1rem' }}>
-                                動態是「比較」出來的。如果整首歌從頭到尾都很大聲（像一堵音牆），聽眾的耳朵很快就會疲勞。把副歌推到爆軌，只會讓混音變得很刺耳。
-                            </p>
-                            <div style={{ background: 'rgba(16, 185, 129, 0.1)', borderLeft: '4px solid #10b981', padding: '1rem 1.5rem', borderRadius: '0 12px 12px 0' }}>
-                                <p style={{ color: '#10b981', fontWeight: 'bold', margin: '0 0 5px 0' }}>💡 大師心法：做減法</p>
-                                <p style={{ color: '#f8fafc', margin: 0, lineHeight: '1.6', fontSize: '0.95rem' }}>不要去動副歌的音量，而是回頭把**主歌 (Verse) 變小聲，或者減少主歌的樂器數量**。當主歌夠安靜，副歌原封不動撞進來時，就會顯得無比巨大！</p>
-                            </div>
-                        </div>
-
-                        {/* Q2: 過門塞太滿 */}
-                        <div style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '20px', padding: isMobile ? '1.5rem' : '2rem' }}>
-                            <h3 style={{ color: '#ef4444', fontSize: '1.2rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <span>💣 地雷二：</span> 「進副歌前的 Drum Fill (過門) 塞了滿滿的鼓點，為什麼副歌第一拍還是軟掉？」
-                            </h3>
-                            <p style={{ color: '#cbd5e1', lineHeight: '1.7', marginBottom: '1.5rem', fontSize: '1rem' }}>
-                                很多新手喜歡在 Pre-Chorus 最後一拍瘋狂打小鼓跟中鼓（Tom），把頻率跟空間都塞滿了，導致副歌第一拍的大鼓和 Crash 砸下來時，聽覺上沒有任何「落差感」。
-                            </p>
-                            <div style={{ background: 'rgba(16, 185, 129, 0.1)', borderLeft: '4px solid #10b981', padding: '1rem 1.5rem', borderRadius: '0 12px 12px 0' }}>
-                                <p style={{ color: '#10b981', fontWeight: 'bold', margin: '0 0 5px 0' }}>💡 大師心法：刻意斷片 (The Drop)</p>
-                                <p style={{ color: '#f8fafc', margin: 0, lineHeight: '1.6', fontSize: '0.95rem' }}>試著在進入第一拍前（例如第四拍的後半拍），將所有樂器**完全靜音 (Mute)** 瞬間製造一個真空狀態。就像跳水前要先深吸一口氣，那瞬間的安靜，會讓接下來的爆炸充滿毀滅性。</p>
-                            </div>
-                        </div>
-
-                        {/* Q3: Automation 畫太死 */}
-                        <div style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '20px', padding: isMobile ? '1.5rem' : '2rem' }}>
-                            <h3 style={{ color: '#ef4444', fontSize: '1.2rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <span>💣 地雷三：</span> 「我畫了 Automation，但聽起來很不自然，像是一節一節的？」
-                            </h3>
-                            <p style={{ color: '#cbd5e1', lineHeight: '1.7', marginBottom: '1.5rem', fontSize: '1rem' }}>
-                                在 DAW 裡畫音量 Automation 時，如果都畫成「直角（瞬間把音量拉高）」，會讓聽眾意識到有人在推 fader，破壞了聽歌的沉浸感。
-                            </p>
-                            <div style={{ background: 'rgba(16, 185, 129, 0.1)', borderLeft: '4px solid #10b981', padding: '1rem 1.5rem', borderRadius: '0 12px 12px 0' }}>
-                                <p style={{ color: '#10b981', fontWeight: 'bold', margin: '0 0 5px 0' }}>💡 大師心法：偷拉 Master Fader</p>
-                                <p style={{ color: '#f8fafc', margin: 0, lineHeight: '1.6', fontSize: '0.95rem' }}>使用曲線 (Curve) 讓參數平滑過渡。一個業界不能說的秘密：很多混音師會在進入副歌時，偷偷用 Automation 將總輸出 (Master) 的音量**平滑推高 0.5dB 到 1dB**。聽眾根本察覺不出音量變大，大腦只會告訴他們「這段情緒好激昂」！</p>
-                            </div>
+                        <div style={{ flex: 1, background: 'rgba(255,255,255,0.03)', padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                            <div style={{ color: '#38bdf8', fontWeight: '900', marginBottom: '10px', fontSize: '1.1rem' }}>3. Tension Pull (張力拉扯)</div>
+                            <span style={{ fontSize: '0.95rem', color: '#94a3b8', lineHeight: 1.6, display: 'block' }}>將頻率與能量像拉弓一樣往後拉緊，直到極限，蓄積重拍落下的反彈衝力。</span>
                         </div>
                     </div>
                 </section>
 
-                {/* 結訓 CTA */}
-                <section style={{ textAlign: 'center', padding: '5rem 0', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                    <h2 style={{ fontSize: isMobile ? '2.5rem' : '4rem', color: '#10b981', marginBottom: '1.5rem' }}>編曲修煉達成</h2>
-                    <p style={{ color: '#cbd5e1', fontSize: '1.2rem', marginBottom: '4rem' }}>你已經掌握了：架構、佈局、領空與情緒劇本。</p>
+                {/* 🧭 前往實戰 CTA */}
+                <footer style={{ textAlign: 'center', marginTop: '1rem', paddingBottom: '3rem' }}>
+                    <p style={{ color: '#94a3b8', fontSize: '1.1rem', marginBottom: '2rem' }}>心智模型已建立。現在，讓我們進軟體把這個手感做出來。</p>
                     <button
-                        onClick={() => router.push('/courses')}
+                        onClick={() => router.push('/courses/arrangement/dynamics-lab')}
                         style={{
-                            background: '#f8fafc', color: '#0f172a', border: 'none',
-                            padding: isMobile ? '1.2rem 2rem' : '1.2rem 4rem', fontSize: '1.2rem',
-                            fontWeight: '900', borderRadius: '50px', cursor: 'pointer', boxShadow: '0 10px 30px rgba(255,255,255,0.1)',
+                            background: 'linear-gradient(135deg, #38bdf8, #2563eb)', color: '#fff', border: 'none',
+                            padding: isMobile ? '1.2rem 2rem' : '1.4rem 4.5rem', fontSize: '1.2rem',
+                            fontWeight: '900', borderRadius: '50px', cursor: 'pointer', boxShadow: '0 10px 30px rgba(56, 189, 248, 0.3)',
                             transition: 'transform 0.2s', width: isMobile ? '100%' : 'auto'
                         }}
-                        onMouseOver={(e) => e.currentTarget.style.transform = isMobile ? 'scale(1)' : 'scale(1.05)'}
+                        onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.05)"}
                         onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
                     >
-                        返回課程大廳
+                        ⚡ 進入實戰：動態編配工具箱 ➔
                     </button>
-                </section>
+                </footer>
 
             </div>
+
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+                @keyframes pulseText { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; text-shadow: 0 0 30px #fff; } }
+            ` }} />
         </div>
     );
 }
