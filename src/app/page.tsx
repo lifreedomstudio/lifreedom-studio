@@ -1,18 +1,113 @@
 "use client";
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+
+// --- 🎧 首頁專屬互動組件：LCR 空間盲測播放器 ---
+const HomeInteractivePlayer = ({ isMobile }: { isMobile: boolean }) => {
+  const [activeVersion, setActiveVersion] = useState<'A' | 'B'>('A');
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const router = useRouter();
+
+  // 處理播放/暫停與版本切換邏輯
+  const handleTogglePlay = () => {
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play().then(() => setIsPlaying(true)).catch(e => console.log(e));
+    }
+  };
+
+  const handleSwitchVersion = (version: 'A' | 'B') => {
+    if (version === activeVersion) return;
+    setActiveVersion(version);
+
+    if (audioRef.current) {
+      const currentTime = audioRef.current.currentTime;
+      const wasPlaying = !audioRef.current.paused;
+
+      // 假設音檔路徑，這裡用 LCR 和 Mono 的概念命名
+      audioRef.current.src = version === 'A' ? '/audio/demo-mono-masked.mp3' : '/audio/demo-lcr-wide.mp3';
+      audioRef.current.load();
+      audioRef.current.currentTime = currentTime;
+
+      if (wasPlaying) {
+        audioRef.current.play().catch(() => setIsPlaying(false));
+      }
+    }
+  };
+
+  return (
+    <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '24px', padding: isMobile ? '2rem 1.5rem' : '3.5rem', maxWidth: '850px', margin: '0 auto', textAlign: 'center', boxShadow: '0 20px 50px rgba(0,0,0,0.3)' }}>
+      <h2 style={{ fontSize: isMobile ? '1.5rem' : '2rem', color: '#fff', margin: '0 0 1rem 0', fontWeight: '900' }}>
+        🎧 你真的聽得見所有聲音嗎？
+      </h2>
+      <p style={{ color: '#94a3b8', fontSize: '1.05rem', lineHeight: '1.8', margin: '0 0 2rem 0' }}>
+        這兩段音樂的樂器與旋律<strong style={{ color: '#fff' }}>完全一模一樣</strong>。<br />
+        請戴上耳機，先聽版本 A，再切換到版本 B。<br />
+        <span style={{ color: '#fca311' }}>你能聽出版版 B 裡，哪個「被隱藏的聲音」突然出現了嗎？</span>
+      </p>
+
+      {/* 播放器 UI */}
+      <div style={{ background: '#020617', padding: '1rem', borderRadius: '16px', border: '1px solid #1e293b', display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', gap: '1.5rem', marginBottom: '2.5rem' }}>
+
+        <button
+          onClick={handleTogglePlay}
+          style={{ width: '60px', height: '60px', borderRadius: '50%', background: isPlaying ? '#fca311' : 'rgba(255,255,255,0.1)', color: isPlaying ? '#020617' : '#fca311', border: isPlaying ? 'none' : '2px solid #fca311', fontSize: '1.5rem', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', flexShrink: 0, transition: 'all 0.2s' }}
+        >
+          {isPlaying ? '⏸' : '▶'}
+        </button>
+
+        <div style={{ display: 'flex', width: '100%', background: '#0f172a', padding: '6px', borderRadius: '12px', gap: '10px' }}>
+          <button
+            onClick={() => handleSwitchVersion('A')}
+            style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', transition: 'all 0.2s', background: activeVersion === 'A' ? '#475569' : 'transparent', color: activeVersion === 'A' ? '#fff' : '#64748b' }}
+          >
+            版本 A (一般聽覺)
+          </button>
+          <button
+            onClick={() => handleSwitchVersion('B')}
+            style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', transition: 'all 0.2s', background: activeVersion === 'B' ? '#38bdf8' : 'transparent', color: activeVersion === 'B' ? '#020617' : '#64748b' }}
+          >
+            版本 B (空間解放)
+          </button>
+        </div>
+      </div>
+
+      <audio ref={audioRef} src="/audio/demo-mono-masked.mp3" onEnded={() => setIsPlaying(false)} />
+
+      {/* 引導前往 Step 0 */}
+      <div style={{ borderTop: '1px dashed rgba(255,255,255,0.1)', paddingTop: '2.5rem' }}>
+        <p style={{ color: '#cbd5e1', fontSize: '1.1rem', marginBottom: '1.5rem', fontWeight: 'bold' }}>
+          🤯 聽到了嗎？那個聲音其實一直都在，只是被「蓋住」了。
+        </p>
+        <button
+          onClick={() => { window.scrollTo(0, 0); router.push('/step0'); }}
+          style={{ padding: '1rem 3rem', background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff', fontSize: '1.1rem', fontWeight: 'bold', borderRadius: '50px', border: 'none', cursor: 'pointer', boxShadow: '0 10px 25px rgba(16, 185, 129, 0.3)', transition: 'transform 0.2s' }}
+          onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+          onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
+        >
+          解鎖答案，進入完整的聽覺挑戰 ➔
+        </button>
+      </div>
+    </div>
+  );
+};
 
 export default function HomePage() {
   const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
+    let timeoutId: NodeJS.Timeout;
+    const checkMobile = () => { clearTimeout(timeoutId); timeoutId = setTimeout(() => setIsMobile(window.innerWidth < 768), 150); };
+    setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', checkMobile);
     window.scrollTo(0, 0);
-    return () => window.removeEventListener('resize', checkMobile);
+    return () => { window.removeEventListener('resize', checkMobile); clearTimeout(timeoutId); };
   }, []);
 
   return (
@@ -20,7 +115,7 @@ export default function HomePage() {
 
       {/* ================= 1️⃣ HERO 核心開場 ================= */}
       <div style={{
-        minHeight: isMobile ? '80vh' : '90vh',
+        minHeight: isMobile ? '85vh' : '90vh',
         display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center',
         backgroundImage: "linear-gradient(to bottom, rgba(2, 6, 23, 0.7) 0%, #020617 100%), url('/console-bg.jpg')",
         backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed',
@@ -54,44 +149,34 @@ export default function HomePage() {
           這裡會帶你跨過那條線。
         </p>
 
-        {/* ================= 2️⃣ CTA 頂部轉換按鈕 ================= */}
-        <div style={{ width: isMobile ? '100%' : 'auto', maxWidth: '400px' }}>
+        {/* 雙引導按鈕：分別導向 Step 0 與 課程藍圖 */}
+        <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexDirection: isMobile ? 'column' : 'row', width: isMobile ? '100%' : 'auto', maxWidth: '700px' }}>
           <button
             onClick={() => { window.scrollTo(0, 0); router.push('/step0'); }}
-            style={{ width: '100%', padding: '1.3rem 3rem', background: 'linear-gradient(135deg, #38bdf8, #2563eb)', color: '#fff', fontSize: '1.15rem', fontWeight: '900', borderRadius: '50px', border: 'none', cursor: 'pointer', boxShadow: '0 10px 30px rgba(56, 189, 248, 0.4)', transition: 'transform 0.2s' }}
+            style={{ flex: 1, padding: isMobile ? '1.2rem' : '1.3rem 2.5rem', background: 'linear-gradient(135deg, #38bdf8, #2563eb)', color: '#fff', fontSize: '1.1rem', fontWeight: '900', borderRadius: '50px', border: 'none', cursor: 'pointer', boxShadow: '0 10px 30px rgba(56, 189, 248, 0.4)', transition: 'transform 0.2s' }}
             onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.03)"}
             onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
           >
-            🎮 開始第一個聽覺挑戰（免費）
+            我有「創作者耳朵」嗎？(免費挑戰)
           </button>
-        </div>
-      </div>
 
-      {/* ================= 3️⃣ 🎮 STEP 0 盲測體驗引導 ================= */}
-      <div style={{ padding: '2rem 1.5rem 4rem 1.5rem', background: '#020617', textAlign: 'center' }}>
-        <div style={{
-          maxWidth: '850px', margin: '0 auto', background: 'rgba(255,255,255,0.01)',
-          border: '1px solid rgba(255,255,255,0.05)', borderRadius: '24px', padding: isMobile ? '2rem 1.5rem' : '3rem'
-        }}>
-          <h2 style={{ fontSize: '1.5rem', color: '#fff', marginBottom: '1rem', fontWeight: 'bold' }}>
-            👉 你真的聽得出差別嗎？
-          </h2>
-          <p style={{ color: '#94a3b8', fontSize: '1.05rem', lineHeight: '1.8', margin: 0 }}>
-            兩段幾乎一模一樣的音樂旋律，中間只有一個極其微小的參數不同。<br />
-            盲測開始——你能靠耳朵把它揪出來嗎？
-          </p>
           <button
-            onClick={() => router.push('/step0')}
-            style={{ marginTop: '1.5rem', padding: '8px 24px', borderRadius: '50px', border: '1px solid #38bdf8', background: 'transparent', color: '#38bdf8', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s' }}
-            onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(56, 189, 248, 0.05)'; }}
+            onClick={() => { window.scrollTo(0, 0); router.push('/courses'); }}
+            style={{ flex: 1, padding: isMobile ? '1.2rem' : '1.3rem 2.5rem', background: 'transparent', color: '#38bdf8', border: '2px solid #38bdf8', fontSize: '1.1rem', fontWeight: '900', borderRadius: '50px', cursor: 'pointer', transition: 'all 0.2s' }}
+            onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(56, 189, 248, 0.1)'; }}
             onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; }}
           >
-            立即測試耳力 →
+            查看「聽覺系統」訓練藍圖
           </button>
         </div>
       </div>
 
-      {/* ================= 4️⃣ 👥 適合對象（對號入座卡片） ================= */}
+      {/* ================= 2️⃣ 🎧 首頁直接試聽組件 (The LCR Masking Hook) ================= */}
+      <div style={{ padding: '2rem 1.5rem 5rem 1.5rem', background: '#020617' }}>
+        <HomeInteractivePlayer isMobile={isMobile} />
+      </div>
+
+      {/* ================= 3️⃣ 👥 適合對象（對號入座卡片） ================= */}
       <div style={{ padding: isMobile ? '4rem 1.5rem' : '5rem 2rem', background: '#070a13', borderTop: '1px solid rgba(255,255,255,0.02)' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
           <span style={{ color: '#facc15', fontWeight: '900', letterSpacing: '3px', fontSize: '0.85rem' }}>TARGET AUDIENCE</span>
@@ -118,7 +203,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ================= 5️⃣ 🧠 系統定義：Lifreedom 是什麼？ ================= */}
+      {/* ================= 4️⃣ 🧠 系統定義：Lifreedom 是什麼？ ================= */}
       <div style={{ padding: isMobile ? '4rem 1.5rem' : '5rem 2rem', background: '#020617', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           <span style={{ color: '#38bdf8', fontWeight: 'bold', letterSpacing: '3px', fontSize: '0.85rem' }}>SYSTEM OVERVIEW</span>
@@ -135,7 +220,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ================= 6️⃣ 🤖 AI 區塊（降權與市場敘事升級） ================= */}
+      {/* ================= 5️⃣ 🤖 AI 區塊 ================= */}
       <div style={{ padding: isMobile ? '4rem 1.5rem' : '6rem 2rem', background: 'linear-gradient(135deg, #0f172a, #020617)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
         <div style={{ maxWidth: '950px', margin: '0 auto', display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '3rem', alignItems: 'center' }}>
           <div style={{ flex: 1.2 }}>
@@ -144,7 +229,7 @@ export default function HomePage() {
               當生成工具降低了門檻，<br />核心差距就在於「判斷力」
             </h2>
             <p style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.8', marginBottom: '1.5rem' }}>
-              現在任何人都可以用 AI 快速做出一段完整的音樂（如 Suno 平台），但多數創作者隨後都會卡在兩件事上：<br /><br />
+              現在任何人都可以用 AI 快速做出一段完整的音樂，但多數創作者隨後都會卡在兩件事上：<br /><br />
               <span style={{ color: '#fca5a5' }}>👉 1. 你不確定自己要什麼（風格/結構/情緒不夠精準）</span><br />
               <span style={{ color: '#fca5a5' }}>👉 2. 導出音訊後，不知道怎麼變更好（混音/空間/能量打架）</span><br /><br />
               這本質上不是 AI 工具的問題，而是<strong>聽覺判斷能力</strong>的問題。
@@ -170,7 +255,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ================= 7️⃣ 🔓 未來解鎖（關卡期待感建立） ================= */}
+      {/* ================= 7️⃣ 🔓 未來解鎖 ================= */}
       <div style={{ padding: isMobile ? '4rem 1.5rem' : '6rem 2rem', background: '#020617', textAlign: 'center' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           <span style={{ color: '#22c55e', fontWeight: 'bold', letterSpacing: '3px', fontSize: '0.85rem' }}>ROADMAP</span>
@@ -186,14 +271,13 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-
           <p style={{ color: '#22c55e', fontSize: '1.15rem', fontWeight: 'bold', margin: 0 }}>
             ✨ 這一切都不需要靠死記硬背參數，而是你會真正「聽得出來」。
           </p>
         </div>
       </div>
 
-      {/* ================= 8️⃣ CTA 底部最終一拳 ================= */}
+      {/* ================= 8️⃣ 最終 CTA ================= */}
       <div style={{ padding: isMobile ? '4rem 1.5rem' : '6rem 2rem', textAlign: 'center', background: 'radial-gradient(circle at 50% 100%, #111827 0%, #020617 80%)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
         <h2 style={{ fontSize: isMobile ? '1.6rem' : '2.2rem', color: '#fff', marginBottom: '1rem', fontWeight: '900', maxWidth: '750px', margin: '0 auto 2rem' }}>
           開始訓練你的耳朵，建立受用終身的聽覺判斷力
@@ -202,27 +286,22 @@ export default function HomePage() {
         <button
           onClick={() => { window.scrollTo(0, 0); router.push('/step0'); }}
           style={{ display: 'inline-block', padding: '1.3rem 4.5rem', background: '#fff', color: '#020617', fontSize: '1.15rem', fontWeight: '900', borderRadius: '50px', border: 'none', cursor: 'pointer', boxShadow: '0 10px 30px rgba(255,255,255,0.2)', marginBottom: '4rem' }}
-          onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-          onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
         >
           🚀 立即開啟免費訓練
         </button>
 
-        {/* ⚠️ 金流審查與服務合規宣告 */}
         <div style={{ maxWidth: '700px', margin: '0 auto', textAlign: 'left', padding: '1.5rem', background: 'rgba(0,0,0,0.3)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '3rem' }}>
           <div style={{ color: '#475569', fontSize: '0.8rem', lineHeight: '1.7' }}>
             <strong>學習服務說明：</strong> 本平台採用「階段解鎖式任務設計」與「盲測實作練習」作為教學引導機制，旨在提升學習動機與專注度，<strong>此機制並非隨機或機率型獲取內容（非抽卡或賭博性機制）</strong>。所有數位內容與訓練服務皆為教育用途，學習成果將因個人實際練習與投入程度而產生個體差異。
           </div>
         </div>
 
-        {/* ================= 9️⃣ FOOTER 頁尾與法規宣告 ================= */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
           <Link href="/terms" style={{ color: '#475569', textDecoration: 'none', fontSize: '0.85rem' }}>使用條款</Link>
           <Link href="/privacy" style={{ color: '#475569', textDecoration: 'none', fontSize: '0.85rem' }}>隱私權政策</Link>
           <Link href="/refund" style={{ color: '#475569', textDecoration: 'none', fontSize: '0.85rem' }}>退款政策</Link>
           <a href="mailto:support@lifreedom.com" style={{ color: '#475569', textDecoration: 'none', fontSize: '0.85rem' }}>聯絡我們</a>
         </div>
-
         <div style={{ marginTop: '2rem', color: '#334155', fontSize: '0.8rem', fontFamily: 'monospace' }}>© 2026 Lifreedom Studio. All rights reserved.</div>
       </div>
     </div>
