@@ -3,9 +3,9 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
-// 定義樂器配置與檔案路徑
+// 🎛️ 樂器配置
 const INSTRUMENTS = [
-    { id: 'vocal', name: '🎤 主唱 (Vocal)', color: '#fff', file: '/audio/vocal.mp3' },
+    { id: 'vocal', name: '🎤 主唱 (Vocal)', color: '#ffffff', file: '/audio/vocal.mp3' },
     { id: 'drum', name: '🥁 鼓組 (Drums)', color: '#ef4444', file: '/audio/drum.mp3' },
     { id: 'bass', name: '🎸 貝斯 (Bass)', color: '#3b82f6', file: '/audio/bass.mp3' },
     { id: 'rhythm', name: '🎸 節奏吉他 (Rhythm)', color: '#10b981', file: '/audio/rhythm.mp3' },
@@ -13,83 +13,105 @@ const INSTRUMENTS = [
 ];
 
 const PRESETS = {
-    mono: {
-        name: '📻 實驗單聲道',
-        desc: '👉 先按播放，然後把『節奏吉他』與『旋律吉他』慢慢往左右拉，注意空間與主唱清晰度的變化。',
-        pan: { vocal: 0, drum: 0, bass: 0, rhythm: 0, lead: 0 }
-    },
-    jrock: {
-        name: '🔥 日系搖滾 (J-Rock)',
-        desc: '聽見那個爽感了嗎？節奏與旋律吉他硬分左右 (LCR)，把它們不被閹割的飽滿音色推到兩側，中間完全讓給主唱與節奏組！',
-        pan: { vocal: 0, drum: 0, bass: 0, rhythm: -100, lead: 100 }
-    },
-    pop: {
-        name: '🎧 現代流行 (Modern Pop)',
-        desc: '安全集中。吉他稍微往中間靠攏，創造溫暖緊密的包覆感，但犧牲了兩側的極致寬廣度。',
-        pan: { vocal: 0, drum: 0, bass: 0, rhythm: -40, lead: 40 }
-    }
+    mono: { name: '📻 擁擠音牆模式', desc: '所有樂器擠在中間，主唱被吉他嚴重 Masking。', pan: { vocal: 0, drum: 0, bass: 0, rhythm: 0, lead: 0 } },
+    jrock: { name: '🔥 日系空間爆破', desc: '兩把吉他極端 LCR 佈局，撕開最狂暴的寬廣度。', pan: { vocal: 0, drum: 0, bass: 0, rhythm: -100, lead: 100 } },
+    pop: { name: '🎧 流行溫暖包覆', desc: '吉他向內收攏，犧牲極致寬廣，換取把聽眾包裹的親密感。', pan: { vocal: 0, drum: 0, bass: 0, rhythm: -45, lead: 45 } }
 };
 
 type PanState = Record<string, number>;
+type EvaluationResult = { widthScore: number; clarityScore: number; totalScore: number; dynamicHints: string[] };
 
-// 🚀 升級：驗證系統升級回傳 score 與「錯誤樂器清單 (errors)」
+// 🧠 核心升級 1：平滑曲線與雙軸評分引擎 (Width & Clarity)
 const LEVELS = [
     {
         id: "level-1",
-        title: "Level 1：立體聲寬度 (Stereo Width)",
-        instruction: "💡 任務：讓這個混音聽起來「更寬廣」。\n👉 不要看數值，請用耳朵判斷！找出是誰擠在中間，並把他們拉開。",
-        evaluate: (panVals: PanState) => {
-            let score = 0;
-            const errors: string[] = [];
+        title: "聽覺任務 1：撕開空間 (Width Expansion)",
+        instruction: "💡 目標：讓這首歌聽起來「比現在更寬廣」。\n請用耳朵找出擠在中間的頻率，把它們完全拉開，直到空間感徹底炸開。",
+        proPan: { vocal: 0, drum: 0, bass: 0, rhythm: -100, lead: 100 }, // 標準答案音場
+        evaluate: (panVals: PanState): EvaluationResult => {
+            let r = panVals.rhythm;
+            let l = panVals.lead;
+            if (r > l) { const temp = r; r = l; l = temp; } // 確保 r 在左, l 在右
 
-            if (panVals.rhythm <= -70) score += 50;
-            else {
-                if (panVals.rhythm <= -30) score += 25;
-                errors.push('rhythm'); // 沒到位就標記錯誤
-            }
+            // 軸 1：Width Score (平滑計算離 ±100 的距離)
+            let widthScore = Math.max(0, 100 - (Math.abs(-100 - r) + Math.abs(100 - l)) / 2);
+            if (r * l > 0) widthScore = 0; // 同側撞車直接 0 分
 
-            if (panVals.lead >= 70) score += 50;
-            else {
-                if (panVals.lead >= 30) score += 25;
-                errors.push('lead'); // 沒到位就標記錯誤
+            // 軸 2：Clarity Score (核心骨架偏移度)
+            const stemDeviation = Math.abs(panVals.vocal) + Math.abs(panVals.drum) + Math.abs(panVals.bass);
+            let clarityScore = Math.max(0, 100 - stemDeviation * 2);
+
+            // 🧠 錯誤感知導航 (Error-driven Hints)
+            const dynamicHints: string[] = [];
+            if (r * l > 0 && Math.abs(r) > 15 && Math.abs(l) > 15) {
+                dynamicHints.push("❌ Phase Crowding (相位擁擠)：兩把吉他擠在同側，導致左右重量嚴重失衡。");
+                clarityScore = Math.max(0, clarityScore - 40);
             }
-            return { score, errors };
+            if (stemDeviation > 15) dynamicHints.push("❌ Anchor Instability (骨架偏移)：主唱或大鼓偏離 C 點，整首歌失去視覺重心。");
+            if (widthScore < 60 && r * l <= 0) dynamicHints.push("⚠️ Center Masking (中心頻率遮蔽)：吉他離中心太近，沒有真正撕開空間。");
+
+            if (dynamicHints.length === 0 && widthScore >= 85) dynamicHints.push("🔥 Perfect Width：空間已經完全被撕開，這就是 LCR 的威力！");
+
+            return { widthScore: Math.round(widthScore), clarityScore: Math.round(clarityScore), totalScore: Math.round((widthScore + clarityScore) / 2), dynamicHints };
         },
-        unlockedSkill: "Stereo Width 感知",
-        unlockDetails: [
-            "✔ 具備拉開立體聲寬度的能力",
-            "✔ 懂得為主唱騰出空間的判斷"
-        ]
+        unlockedSkill: "空間擴張 (Stereo Width) 感知"
     },
     {
         id: "level-2",
-        title: "Level 2：主唱清晰度 (Vocal Clarity)",
-        instruction: "💡 任務：主唱現在被蓋住了！請保持主唱與節奏組 (Drum/Bass) 在正中央，並利用左右空間把干擾的樂器移開。",
-        evaluate: (panVals: PanState) => {
-            let score = 0;
-            const errors: string[] = [];
+        title: "聽覺任務 2：保護主唱 (Vocal Clarity)",
+        instruction: "💡 目標：解除遮蔽，讓「主唱」變得最清晰。\n主唱快被吉他淹沒了。請穩住核心骨架，並把干擾的樂器移開，還給主唱一條乾淨的走道。",
+        proPan: { vocal: 0, drum: 0, bass: 0, rhythm: -80, lead: 80 },
+        evaluate: (panVals: PanState): EvaluationResult => {
+            let r = panVals.rhythm;
+            let l = panVals.lead;
+            if (r > l) { const temp = r; r = l; l = temp; }
 
-            const checkCenter = (id: string) => {
-                if (Math.abs(panVals[id]) <= 10) score += 13.33;
-                else errors.push(id);
-            };
-            checkCenter('vocal');
-            checkCenter('drum');
-            checkCenter('bass');
+            let widthScore = Math.max(0, 100 - (Math.abs(-80 - r) + Math.abs(80 - l)) / 1.5);
+            if (r * l > 0) widthScore = 0;
 
-            if (panVals.rhythm <= -50 || panVals.rhythm >= 50) score += 30;
-            else errors.push('rhythm');
+            const stemDeviation = Math.abs(panVals.vocal) + Math.abs(panVals.drum) + Math.abs(panVals.bass);
+            let clarityScore = Math.max(0, 100 - stemDeviation * 2.5);
 
-            if (panVals.lead <= -50 || panVals.lead >= 50) score += 30;
-            else errors.push('lead');
+            const dynamicHints: string[] = [];
+            if (r * l > 0 && Math.abs(r) > 15 && Math.abs(l) > 15) {
+                dynamicHints.push("❌ Phase Crowding (相位擁擠)：吉他同側互撞，反而製造了新的遮蔽點。");
+                clarityScore = Math.max(0, clarityScore - 50);
+            }
+            if (stemDeviation > 10) dynamicHints.push("❌ Anchor Instability (骨架偏移)：你動到了主唱或節奏組！把它們釘回 C 點。");
+            if (Math.abs(r) < 40 || Math.abs(l) < 40) dynamicHints.push("⚠️ Center Masking (中心頻率遮蔽)：干擾物還沒完全移開，主唱聽起來還是糊的。");
 
-            return { score: Math.min(Math.round(score), 100), errors };
+            return { widthScore: Math.round(widthScore), clarityScore: Math.round(clarityScore), totalScore: Math.round((widthScore + clarityScore) / 2), dynamicHints };
         },
-        unlockedSkill: "Vocal 頻段保護",
-        unlockDetails: [
-            "✔ 掌握核心樂器置中原則 (LCR)",
-            "✔ 解除頻率遮蔽 (Masking) 技巧"
-        ]
+        unlockedSkill: "頻率防遮蔽 (Masking) 意識"
+    },
+    {
+        id: "level-3",
+        title: "聽覺任務 3：溫暖的親密感 (Intimacy)",
+        instruction: "💡 目標：做出一種「溫暖、緊密包覆」的現代流行聽感。\n極端拉開雖然很爽，但有時中間會太散。請把吉他往中間「收攏」一點，找到那個剛好包住主唱的甜蜜點。",
+        proPan: { vocal: 0, drum: 0, bass: 0, rhythm: -45, lead: 45 },
+        evaluate: (panVals: PanState): EvaluationResult => {
+            let r = panVals.rhythm;
+            let l = panVals.lead;
+            if (r > l) { const temp = r; r = l; l = temp; }
+
+            // 最佳寬度在 ±45 左右，平滑衰減
+            let widthScore = Math.max(0, 100 - (Math.abs(-45 - r) + Math.abs(45 - l)));
+            if (r * l > 0) widthScore = 0;
+
+            const stemDeviation = Math.abs(panVals.vocal) + Math.abs(panVals.drum) + Math.abs(panVals.bass);
+            let clarityScore = Math.max(0, 100 - stemDeviation * 2);
+
+            const dynamicHints: string[] = [];
+            if (r * l > 0 && Math.abs(r) > 15 && Math.abs(l) > 15) {
+                dynamicHints.push("❌ Phase Crowding (相位擁擠)：左右失衡。");
+                clarityScore = Math.max(0, clarityScore - 40);
+            }
+            if (Math.abs(r) > 75 || Math.abs(l) > 75) dynamicHints.push("⚠️ Space Disconnected (空間解離)：拉得太遠了，失去了包覆主唱的親密感。");
+            else if (Math.abs(r) < 25 || Math.abs(l) < 25) dynamicHints.push("⚠️ Center Masking (中心頻率遮蔽)：收得太緊，快要把主唱勒死了。");
+
+            return { widthScore: Math.round(widthScore), clarityScore: Math.round(clarityScore), totalScore: Math.round((widthScore + clarityScore) / 2), dynamicHints };
+        },
+        unlockedSkill: "親暱度 (Intimacy) 控制藝術"
     }
 ];
 
@@ -99,9 +121,7 @@ export default function IncubatorPage() {
     useEffect(() => {
         const checkUser = async () => {
             const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                router.push('/login');
-            }
+            if (!session) router.push('/login');
         };
         checkUser();
     }, [router]);
@@ -110,13 +130,14 @@ export default function IncubatorPage() {
     const [activePreset, setActivePreset] = useState<string>('mono');
     const [infoText, setInfoText] = useState(PRESETS.mono.desc);
 
-    const [mode, setMode] = useState<'free' | 'challenge'>('free');
-    const [challengeStatus, setChallengeStatus] = useState<"pending" | "success" | "partial" | "fail">("pending");
-    const [currentScore, setCurrentScore] = useState<number>(0);
-    const [currentLevelIdx, setCurrentLevelIdx] = useState<number>(0);
+    const [mode, setMode] = useState<'free' | 'challenge'>('challenge');
 
-    const [combo, setCombo] = useState(0);
-    const [errorInsts, setErrorInsts] = useState<string[]>([]);
+    // 🧠 核心升級 2：加入 Pro Mix 參考音軌狀態
+    const [isProMix, setIsProMix] = useState(false);
+
+    const [challengeStatus, setChallengeStatus] = useState<"pending" | "evaluated">("pending");
+    const [evalResult, setEvalResult] = useState<EvaluationResult | null>(null);
+    const [currentLevelIdx, setCurrentLevelIdx] = useState<number>(0);
 
     const [isPlaying, setIsPlaying] = useState(false);
     const [isAudioReady, setIsAudioReady] = useState(false);
@@ -133,7 +154,6 @@ export default function IncubatorPage() {
         const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
         const ctx = new AudioContextClass();
         audioCtxRef.current = ctx;
-
         const masterGain = ctx.createGain();
         masterGain.gain.value = 0.6;
         masterGain.connect(ctx.destination);
@@ -141,18 +161,14 @@ export default function IncubatorPage() {
 
         const loadPromises = INSTRUMENTS.map(async (inst) => {
             try {
-                const response = await fetch(inst.file);
-                const arrayBuffer = await response.arrayBuffer();
-                const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
-                buffersRef.current[inst.id] = audioBuffer;
-
+                const res = await fetch(inst.file);
+                const buf = await ctx.decodeAudioData(await res.arrayBuffer());
+                buffersRef.current[inst.id] = buf;
                 const panner = ctx.createStereoPanner();
                 panner.pan.value = (PRESETS.mono.pan as PanState)[inst.id] / 100;
                 pannersRef.current[inst.id] = panner;
                 panner.connect(masterGain);
-            } catch (error) {
-                console.error(`無法載入音軌 ${inst.name}:`, error);
-            }
+            } catch (e) { console.error(e); }
         });
 
         await Promise.all(loadPromises);
@@ -174,20 +190,12 @@ export default function IncubatorPage() {
     };
 
     const stopTracks = () => {
-        Object.values(sourcesRef.current).forEach(source => {
-            try { source.stop(); source.disconnect(); } catch (e) { }
-        });
+        Object.values(sourcesRef.current).forEach(source => { try { source.stop(); source.disconnect(); } catch (e) { } });
         sourcesRef.current = {};
     };
 
-    // ✅ 新增：在元件卸載（離開頁面）時，強制拔掉虛擬混音機的電源
     useEffect(() => {
-        return () => {
-            stopTracks(); // 停止所有音軌
-            if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') {
-                audioCtxRef.current.close(); // 徹底釋放音訊引擎的記憶體
-            }
-        };
+        return () => { stopTracks(); if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') audioCtxRef.current.close(); };
     }, []);
 
     const togglePlay = async () => {
@@ -197,324 +205,182 @@ export default function IncubatorPage() {
             setIsPlaying(true);
             return;
         }
-
         const ctx = audioCtxRef.current;
         if (ctx.state === 'suspended') await ctx.resume();
-
-        if (isPlaying) {
-            stopTracks();
-        } else {
-            playTracks(ctx);
-        }
+        if (isPlaying) stopTracks(); else playTracks(ctx);
         setIsPlaying(!isPlaying);
     };
 
+    // 🧠 核心升級 2：Pro Mix A/B 切換引擎
     useEffect(() => {
         if (!isAudioReady || !audioCtxRef.current) return;
-        Object.entries(panVals).forEach(([id, val]) => {
+        const activePanVals = isProMix ? LEVELS[currentLevelIdx].proPan : panVals;
+        Object.entries(activePanVals).forEach(([id, val]) => {
             if (pannersRef.current[id]) {
                 pannersRef.current[id].pan.setTargetAtTime(val / 100, audioCtxRef.current!.currentTime, 0.1);
             }
         });
-    }, [panVals, isAudioReady]);
-
-    const applyPreset = (key: string) => {
-        if (mode === 'challenge') return;
-        setPanVals(PRESETS[key as keyof typeof PRESETS].pan);
-        setActivePreset(key);
-        setInfoText(PRESETS[key as keyof typeof PRESETS].desc);
-    };
+    }, [panVals, isProMix, isAudioReady, currentLevelIdx]);
 
     const handlePanChange = (id: string, val: number) => {
-        const newVals = { ...panVals, [id]: val };
-        setPanVals(newVals);
+        setPanVals({ ...panVals, [id]: val });
         setActivePreset('custom');
-
-        if (mode === 'challenge') {
-            setChallengeStatus('pending');
-            setErrorInsts([]);
-        }
-
-        if (mode === 'free') {
-            if (newVals.rhythm <= -70 && newVals.lead >= 70 && Math.abs(newVals.vocal) < 20) {
-                setInfoText("🔥 厲害！你已經接近專業的 LCR (左-中-右) 擺位了！這是讓混音瞬間變寬的秘密。");
-            } else if (Math.abs(newVals.rhythm) < 30 && Math.abs(newVals.lead) < 30) {
-                setInfoText("🤔 所有的樂器好像都擠在中間了？聽聽看主唱是不是變得有點模糊。");
-            } else {
-                setInfoText('🔧 自訂擺位中... 戴上耳機，聽聽看聲音是如何在你的腦海中移動的。');
-            }
-        }
+        if (mode === 'challenge') setChallengeStatus('pending');
     };
+
+    const currentLevel = LEVELS[currentLevelIdx];
 
     const checkPanChallenge = () => {
-        const currentLevel = LEVELS[currentLevelIdx];
-        const { score, errors } = currentLevel.evaluate(panVals);
-        setCurrentScore(score);
-        setErrorInsts(errors);
-
-        if (score === 100) {
-            setChallengeStatus("success");
-            setCombo(prev => prev + 1);
-        } else if (score >= 50) {
-            setChallengeStatus("partial");
-            setCombo(0);
-        } else {
-            setChallengeStatus("fail");
-            setCombo(0);
-        }
-    };
-
-    const getHint = (score: number) => {
-        if (score < 30) return "👉 還是太集中了，有東西緊緊擠在中間。";
-        if (score < 60) return "👉 方向對了！試著把你覺得有干擾的樂器拉到更兩側。";
-        return "👉 已經很接近了，再大膽極端一點點！";
-    };
-
-    const enterChallengeMode = () => {
-        setMode('challenge');
-        setChallengeStatus('pending');
-        setCombo(0);
-        setErrorInsts([]);
-        setPanVals(PRESETS.mono.pan);
-        setActivePreset('mono');
+        const result = currentLevel.evaluate(panVals);
+        setEvalResult(result);
+        setChallengeStatus("evaluated");
     };
 
     const exitChallengeMode = () => {
         setMode('free');
         setChallengeStatus('pending');
-        setCombo(0);
-        setErrorInsts([]);
+        setEvalResult(null);
         setInfoText(PRESETS.mono.desc);
-        setCurrentLevelIdx(0);
     };
 
-    const currentLevel = LEVELS[currentLevelIdx];
+    // 💡 雙軸評分 UI 組件
+    const DualAxisScoreBar = ({ label, score, color }: { label: string, score: number, color: string }) => (
+        <div style={{ marginBottom: '10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', fontSize: '0.85rem', color: '#94a3b8', fontFamily: 'monospace' }}>
+                <span>{label}</span>
+                <span style={{ color: color, fontWeight: 'bold' }}>{score}%</span>
+            </div>
+            <div style={{ height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ width: `${score}%`, height: '100%', background: color, transition: 'width 0.5s cubic-bezier(0.16, 1, 0.3, 1)' }}></div>
+            </div>
+        </div>
+    );
 
     return (
         <div style={{ padding: '2rem', maxWidth: '1000px', margin: '0 auto', fontFamily: 'sans-serif', color: '#fff' }}>
             <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-                <span style={{ color: '#38bdf8', letterSpacing: '4px', fontWeight: 'bold', fontSize: '0.9rem' }}>SONIC ARCHITECTURE LAB</span>
-                <h1 style={{ fontSize: '2.5rem', fontWeight: '900', margin: '0.5rem 0', color: '#fff' }}>立體聲場構築實驗室</h1>
-                <p style={{ color: '#94a3b8', fontSize: '1.1rem' }}>親自解剖神級製作人的空間魔術。請務必戴上耳機體驗 🎧</p>
+                <span style={{ color: '#38bdf8', letterSpacing: '4px', fontWeight: 'bold', fontSize: '0.9rem' }}>AUDIO PERCEPTION SYSTEM</span>
+                <h1 style={{ fontSize: '2.5rem', fontWeight: '900', margin: '0.5rem 0', color: '#fff' }}>聽覺認知訓練引擎</h1>
+                <p style={{ color: '#94a3b8', fontSize: '1.1rem' }}>閉上眼睛盲飛。用大腦感知聲音在空氣中構築的物理層次 🎧</p>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '2.5rem' }}>
-                <button
-                    onClick={exitChallengeMode}
-                    style={{ padding: '0.6rem 1.5rem', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', border: '1px solid #334155', background: mode === 'free' ? '#38bdf8' : '#1e293b', color: mode === 'free' ? '#000' : '#94a3b8', transition: '0.2s' }}
-                >
-                    🎛️ 自由探索模式
-                </button>
-                <button
-                    onClick={enterChallengeMode}
-                    style={{ padding: '0.6rem 1.5rem', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', border: '1px solid #4f46e5', background: mode === 'challenge' ? '#4f46e5' : '#1e293b', color: '#fff', boxShadow: mode === 'challenge' ? '0 0 15px rgba(79, 70, 229, 0.4)' : 'none', transition: '0.2s' }}
-                >
-                    🎯 耳力挑戰模式
+            <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+                <button onClick={togglePlay} disabled={isLoading} style={{ padding: '1.2rem 3.5rem', fontSize: '1.5rem', fontWeight: '900', borderRadius: '50px', cursor: isLoading ? 'not-allowed' : 'pointer', background: isLoading ? '#475569' : isPlaying ? '#ef4444' : '#10b981', color: '#fff', border: 'none', boxShadow: `0 0 40px ${isPlaying ? 'rgba(239, 68, 68, 0.5)' : 'rgba(16, 185, 129, 0.5)'}`, transition: 'all 0.3s' }}>
+                    {isLoading ? '⏳ 音訊引擎初始化...' : isPlaying ? '⏸️ 關閉音訊引擎' : '▶️ 播放音樂'}
                 </button>
             </div>
 
+            {/* 🎯 挑戰模式：Pro Simulator */}
             {mode === 'challenge' && (
-                <div style={{ marginBottom: '2rem', padding: '1.5rem', background: '#111827', borderRadius: '16px', border: '1px solid #4f46e5', animation: 'fadeIn 0.3s ease' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                            <h3 style={{ margin: 0, color: '#818cf8', fontSize: '1.2rem' }}>🏆 {currentLevel.title}</h3>
-                            {combo > 0 && (
-                                <span style={{ color: '#fca311', fontWeight: 'bold', animation: 'pulse 1s infinite' }}>
-                                    🔥 連續成功：{combo} 次
-                                </span>
-                            )}
-                        </div>
-                        <span style={{ background: '#1e293b', padding: '4px 10px', borderRadius: '12px', fontSize: '0.85rem', color: '#94a3b8' }}>
-                            關卡 {currentLevelIdx + 1} / {LEVELS.length}
+                <div style={{ marginBottom: '2rem', padding: '2rem', background: '#0b0f19', borderRadius: '24px', border: '1px solid #334155', boxShadow: '0 20px 50px rgba(0,0,0,0.4)', animation: 'fadeIn 0.3s ease' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '1rem' }}>
+                        <h3 style={{ margin: 0, color: '#f8fafc', fontSize: '1.4rem', fontWeight: '900' }}>{currentLevel.title}</h3>
+                        <span style={{ background: '#1e293b', padding: '6px 12px', borderRadius: '12px', fontSize: '0.9rem', color: '#94a3b8', fontFamily: 'monospace' }}>
+                            LEVEL {currentLevelIdx + 1} / {LEVELS.length}
                         </span>
                     </div>
-                    <p style={{ margin: '0 0 1.5rem 0', color: '#e2e8f0', lineHeight: '1.6', fontSize: '1.05rem', whiteSpace: 'pre-line' }}>
+
+                    <p style={{ margin: '0 0 2rem 0', color: '#cbd5e1', lineHeight: '1.8', fontSize: '1.1rem', whiteSpace: 'pre-line' }}>
                         {currentLevel.instruction}
                     </p>
 
-                    {challengeStatus === 'pending' && (
-                        <button
-                            onClick={checkPanChallenge}
-                            style={{ padding: '0.8rem 2rem', background: '#4f46e5', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(79, 70, 229, 0.3)', transition: '0.2s' }}
-                            onMouseOver={e => e.currentTarget.style.background = '#4338ca'}
-                            onMouseOut={e => e.currentTarget.style.background = '#4f46e5'}
-                        >
-                            👂 聽好了，送出驗證
+                    {challengeStatus === 'pending' ? (
+                        <button onClick={checkPanChallenge} style={{ width: '100%', padding: '1.2rem', background: '#38bdf8', color: '#020617', border: 'none', borderRadius: '12px', fontWeight: '900', fontSize: '1.1rem', cursor: 'pointer', transition: '0.2s' }}>
+                            🔍 提交聽感分析 (Analyze Mix)
                         </button>
-                    )}
-
-                    {challengeStatus === 'partial' && (
-                        <div style={{ animation: 'fadeIn 0.3s' }}>
-                            <div style={{ padding: '1rem', background: 'rgba(245, 158, 11, 0.1)', border: '1px solid #f59e0b', borderRadius: '8px', color: '#fcd34d', fontWeight: 'bold', marginBottom: '1rem' }}>
-                                👍 接近了！(得分: {currentScore}/100) <br />
-                                <span style={{ fontSize: '0.9rem', color: '#fde68a', fontWeight: 'normal' }}>有抓到感覺，但還可以調得更好。</span>
-                            </div>
-                            <p style={{ color: '#94a3b8', fontSize: '0.9rem', margin: '0 0 1rem 0' }}>
-                                💡 教練提示：{getHint(currentScore)} <span style={{ color: '#ef4444' }}>(發出紅光的樂器位置還不對喔)</span>
-                            </p>
-                        </div>
-                    )}
-
-                    {challengeStatus === 'fail' && (
-                        <div style={{ animation: 'fadeIn 0.3s' }}>
-                            <div style={{ padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid #ef4444', borderRadius: '8px', color: '#fca5a5', fontWeight: 'bold', marginBottom: '1rem' }}>
-                                ❌ 再試試看！(得分: {currentScore}/100) <br />
-                                <span style={{ fontSize: '0.9rem', color: '#fecaca', fontWeight: 'normal' }}>想想看，是誰擋住了空間？大膽用耳朵找出來！</span>
-                            </div>
-                            <p style={{ color: '#94a3b8', fontSize: '0.9rem', margin: '0 0 1rem 0' }}>
-                                💡 教練提示：{getHint(currentScore)} <span style={{ color: '#ef4444' }}>(發出紅光的樂器位置還不對喔)</span>
-                            </p>
-                        </div>
-                    )}
-
-                    {challengeStatus === 'success' && (
-                        <div style={{ animation: 'fadeIn 0.4s' }}>
-                            <div style={{ padding: '1.5rem', background: 'linear-gradient(145deg, rgba(16, 185, 129, 0.15), rgba(6, 95, 70, 0.3))', border: '1px solid #10b981', borderRadius: '12px' }}>
-                                <div style={{ color: '#6ee7b7', fontWeight: 'bold', fontSize: '1.2rem', marginBottom: '1rem' }}>
-                                    🔥 完美通關！(得分: 100/100)
+                    ) : (
+                        <div style={{ background: 'rgba(255,255,255,0.02)', padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', animation: 'fadeIn 0.3s' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                                <div style={{ flex: 1, minWidth: '250px' }}>
+                                    <h4 style={{ color: '#fff', margin: '0 0 1rem 0', fontSize: '1.1rem' }}>📊 空間聽感分析報告</h4>
+                                    <DualAxisScoreBar label="空間寬廣度 (Width Score)" score={evalResult?.widthScore || 0} color="#38bdf8" />
+                                    <DualAxisScoreBar label="核心清晰度 (Clarity Score)" score={evalResult?.clarityScore || 0} color="#facc15" />
                                 </div>
+                                <div style={{ background: '#1e293b', padding: '1rem', borderRadius: '12px', textAlign: 'center', minWidth: '120px' }}>
+                                    <div style={{ color: '#94a3b8', fontSize: '0.8rem', fontFamily: 'monospace', marginBottom: '5px' }}>TOTAL MATCH</div>
+                                    <div style={{ color: evalResult!.totalScore >= 80 ? '#10b981' : '#fca5a5', fontSize: '2rem', fontWeight: '900' }}>{evalResult?.totalScore}%</div>
+                                </div>
+                            </div>
 
-                                <div style={{ background: 'rgba(2, 44, 34, 0.6)', padding: '1.2rem', borderRadius: '8px', marginBottom: '1.5rem', borderLeft: '4px solid #34d399' }}>
-                                    <h4 style={{ margin: '0 0 0.8rem 0', color: '#10b981', fontSize: '1.1rem' }}>🧠 能力解鎖：{currentLevel.unlockedSkill}</h4>
-                                    <div style={{ color: '#a7f3d0', fontSize: '0.95rem', lineHeight: '1.8' }}>
-                                        <p style={{ margin: 0, fontWeight: 'bold', color: '#fff' }}>現在你已經具備：</p>
-                                        {currentLevel.unlockDetails.map((detail, i) => (
-                                            <div key={i}>{detail}</div>
-                                        ))}
+                            {/* 🧠 錯誤感知導航 */}
+                            <div style={{ marginBottom: '2rem' }}>
+                                <h4 style={{ color: '#64748b', fontSize: '0.85rem', margin: '0 0 10px 0', letterSpacing: '1px' }}>🧠 聽覺盲區偵測 (Error-driven Hints)</h4>
+                                {evalResult?.dynamicHints.map((hint, i) => (
+                                    <div key={i} style={{ color: hint.includes('🔥') ? '#10b981' : '#fca5a5', fontSize: '0.95rem', margin: '0 0 8px 0', paddingLeft: '10px', borderLeft: `3px solid ${hint.includes('🔥') ? '#10b981' : '#ef4444'}` }}>
+                                        {hint}
                                     </div>
-                                </div>
+                                ))}
+                                {evalResult?.dynamicHints.length === 0 && evalResult!.totalScore < 80 && (
+                                    <div style={{ color: '#cbd5e1', paddingLeft: '10px', borderLeft: '3px solid #64748b' }}>👉 方向沒錯，但還沒有達到完美平衡。微調看看！</div>
+                                )}
+                            </div>
 
-                                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                                    {currentLevelIdx < LEVELS.length - 1 ? (
-                                        <button
-                                            onClick={() => {
-                                                setCurrentLevelIdx(prev => prev + 1);
-                                                setChallengeStatus('pending');
-                                                setErrorInsts([]);
-                                                setPanVals(PRESETS.mono.pan);
-                                            }}
-                                            style={{ padding: '0.8rem 1.5rem', background: '#10b981', color: '#000', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', transition: '0.2s', boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)' }}
-                                        >
-                                            👉 趁勝追擊！解鎖下一關
+                            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                                {/* 🎧 Reference Track (Pro Mix) 按鈕 */}
+                                <button
+                                    onMouseDown={() => setIsProMix(true)}
+                                    onMouseUp={() => setIsProMix(false)}
+                                    onMouseLeave={() => setIsProMix(false)}
+                                    onTouchStart={() => setIsProMix(true)}
+                                    onTouchEnd={() => setIsProMix(false)}
+                                    style={{ flex: 1, padding: '1rem', background: isProMix ? '#a78bfa' : 'transparent', color: isProMix ? '#020617' : '#a78bfa', border: '2px solid #a78bfa', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.1s' }}
+                                >
+                                    {isProMix ? '🎧 正在播放大師解答 (Pro Mix)...' : '🎧 壓住對比大師解答 (A/B Test)'}
+                                </button>
+
+                                {evalResult!.totalScore >= 80 ? (
+                                    currentLevelIdx < LEVELS.length - 1 ? (
+                                        <button onClick={() => { setCurrentLevelIdx(prev => prev + 1); setChallengeStatus('pending'); setEvalResult(null); setPanVals(PRESETS.mono.pan); }} style={{ flex: 1, padding: '1rem', background: '#10b981', color: '#020617', border: 'none', borderRadius: '12px', fontWeight: '900', cursor: 'pointer', boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)' }}>
+                                            👉 聽感一致！前往下一維度
                                         </button>
                                     ) : (
-                                        <button
-                                            onClick={exitChallengeMode}
-                                            style={{ padding: '0.8rem 1.5rem', background: '#10b981', color: '#000', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', transition: '0.2s' }}
-                                        >
-                                            🏆 你已通關所有實驗！回到自由模式
+                                        <button onClick={exitChallengeMode} style={{ flex: 1, padding: '1rem', background: '#fca311', color: '#020617', border: 'none', borderRadius: '12px', fontWeight: '900', cursor: 'pointer', boxShadow: '0 4px 15px rgba(252, 163, 17, 0.3)' }}>
+                                            🏆 聽覺完全覺醒！解鎖自由模式
                                         </button>
-                                    )}
-                                </div>
+                                    )
+                                ) : (
+                                    <button onClick={() => setChallengeStatus('pending')} style={{ flex: 1, padding: '1rem', background: '#334155', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}>
+                                        🔧 重新調整聽感
+                                    </button>
+                                )}
                             </div>
                         </div>
                     )}
                 </div>
             )}
 
-            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                <button
-                    onClick={togglePlay}
-                    disabled={isLoading}
-                    style={{
-                        padding: '1rem 3rem', fontSize: '1.5rem', fontWeight: '900', borderRadius: '50px', cursor: isLoading ? 'not-allowed' : 'pointer',
-                        background: isLoading ? '#475569' : isPlaying ? '#ef4444' : '#10b981', color: '#fff', border: 'none',
-                        boxShadow: `0 0 30px ${isPlaying ? 'rgba(239, 68, 68, 0.4)' : 'rgba(16, 185, 129, 0.4)'}`,
-                        transition: 'all 0.3s'
-                    }}
-                >
-                    {isLoading ? '⏳ 音軌載入解碼中...' : isPlaying ? '⏸️ 暫停實驗' : '▶️ 開始試聽混音'}
-                </button>
-                {!isAudioReady && !isLoading && <p style={{ color: '#94a3b8', fontSize: '0.8rem', marginTop: '10px' }}>點擊開始後將載入音軌，請確保網路順暢</p>}
-            </div>
-
             {mode === 'free' && (
-                <div style={{ background: '#0f172a', borderLeft: '4px solid #fca311', padding: '1.5rem', borderRadius: '4px 16px 16px 4px', marginBottom: '2rem', border: '1px solid rgba(251, 191, 36, 0.2)' }}>
-                    <p style={{ margin: 0, fontSize: '1.1rem', color: '#fed7aa', lineHeight: '1.6' }}>{infoText}</p>
-                </div>
+                <>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                        <h2 style={{ margin: 0, color: '#fca311', fontWeight: '900' }}>🎛️ 自由探索模式 (已解鎖)</h2>
+                        <button onClick={() => { setMode('challenge'); setCurrentLevelIdx(0); setChallengeStatus('pending'); setPanVals(PRESETS.mono.pan); }} style={{ padding: '8px 16px', background: 'transparent', border: '1px solid #4f46e5', color: '#818cf8', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+                            ↩ 重新進入聽覺測驗
+                        </button>
+                    </div>
+                    <div style={{ background: '#0f172a', borderLeft: '4px solid #fca311', padding: '1.5rem', borderRadius: '4px 16px 16px 4px', marginBottom: '2rem', border: '1px solid rgba(251, 191, 36, 0.2)' }}>
+                        <p style={{ margin: 0, fontSize: '1.05rem', color: '#fed7aa', lineHeight: '1.7' }}>{infoText}</p>
+                    </div>
+                </>
             )}
 
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '3rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-                {Object.entries(PRESETS).map(([key, preset]) => (
-                    <button
-                        key={key}
-                        onClick={() => applyPreset(key)}
-                        disabled={mode === 'challenge'}
-                        style={{
-                            padding: '12px 24px', borderRadius: '50px', fontWeight: 'bold', transition: 'all 0.3s',
-                            background: activePreset === key ? '#fca311' : '#1e293b',
-                            color: activePreset === key ? '#000' : '#e2e8f0',
-                            border: `1px solid ${activePreset === key ? '#fca311' : '#334155'}`,
-                            boxShadow: activePreset === key ? '0 0 20px rgba(252, 163, 17, 0.3)' : 'none',
-                            opacity: mode === 'challenge' ? 0.4 : 1,
-                            cursor: mode === 'challenge' ? 'not-allowed' : 'pointer'
-                        }}
-                    >
-                        {preset.name}
-                    </button>
-                ))}
-            </div>
-
-            <div style={{ background: '#0f172a', padding: '2rem', borderRadius: '24px', border: '1px solid #1e293b', marginBottom: '3rem', position: 'relative' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#64748b', fontSize: '0.9rem', marginBottom: '1.5rem', fontWeight: 'bold', letterSpacing: '2px' }}>
-                    <span>LEFT</span>
-                    <span>CENTER</span>
-                    <span>RIGHT</span>
-                </div>
-
-                <div style={{ height: '180px', background: 'radial-gradient(circle at 50% 50%, rgba(30,41,59,1) 0%, rgba(2,6,23,1) 100%)', borderRadius: '12px', position: 'relative', border: '1px dashed rgba(56, 189, 248, 0.1)' }}>
-                    <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: '1px', background: 'rgba(255,255,255,0.05)' }}></div>
-
-                    {INSTRUMENTS.map((inst, idx) => {
-                        const panValue = panVals[inst.id];
-                        const leftPos = `${((panValue + 100) / 200) * 100}%`;
-                        const isError = errorInsts.includes(inst.id);
-
-                        const glowEffect = isError
-                            ? `0 0 25px rgba(239, 68, 68, 0.9)`
-                            : activePreset === 'jrock' && (inst.id === 'rhythm' || inst.id === 'lead')
-                                ? `0 0 25px ${inst.color}cc`
-                                : `0 0 15px ${inst.color}60`;
-
-                        return (
-                            <div key={inst.id} style={{
-                                position: 'absolute', top: `${20 + idx * 15}%`, left: leftPos,
-                                transform: 'translateX(-50%)', width: '45px', height: '45px',
-                                background: inst.color, borderRadius: '50%',
-                                display: 'flex', justifyContent: 'center', alignItems: 'center',
-                                boxShadow: glowEffect,
-                                transition: 'left 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s',
-                                zIndex: isError ? 20 : 10, border: `3px solid ${isError ? '#ef4444' : '#fff'}`, fontSize: '1.3rem'
-                            }}>
-                                {inst.name.split(' ')[0]}
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
+            {/* 〰️ 控制推子滑桿 (隱藏數值強制盲飛) */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.2rem' }}>
                 {INSTRUMENTS.map(inst => {
-                    const isError = errorInsts.includes(inst.id);
                     return (
                         <div key={inst.id} style={{
-                            background: '#0f172a', padding: '1.2rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '1rem',
-                            border: isError ? '1px solid #ef4444' : '1px solid #1e293b',
-                            boxShadow: isError ? '0 0 15px rgba(239, 68, 68, 0.3)' : 'none',
-                            transition: 'all 0.3s'
+                            background: '#0f172a', padding: '1.5rem', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '1rem',
+                            border: '1px solid #1e293b', transition: 'all 0.3s'
                         }}>
                             <div style={{ flex: 1 }}>
-                                <div style={{ fontWeight: 'bold', color: inst.color, fontSize: '0.9rem', marginBottom: '0.5rem' }}>{inst.name}</div>
+                                <div style={{ fontWeight: 'bold', color: '#fff', fontSize: '1rem', marginBottom: '1rem', fontFamily: 'monospace' }}>{inst.name}</div>
                                 <input
-                                    type="range"
-                                    min="-100" max="100"
-                                    value={panVals[inst.id]}
+                                    type="range" min="-100" max="100" value={panVals[inst.id]}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => handlePanChange(inst.id, parseInt(e.target.value))}
-                                    style={{ width: '100%', cursor: 'pointer', accentColor: inst.color }}
+                                    style={{ width: '100%', cursor: 'pointer', accentColor: '#38bdf8' }}
                                 />
                             </div>
-                            <div style={{ width: '45px', textAlign: 'right', color: isError ? '#ef4444' : '#fca311', fontVariantNumeric: 'tabular-nums', fontWeight: 'bold' }}>
-                                {panVals[inst.id] === 0 ? 'C' : panVals[inst.id] < 0 ? `L${Math.abs(panVals[inst.id])}` : `R${panVals[inst.id]}`}
+                            <div style={{ width: '60px', textAlign: 'right', color: '#64748b', fontWeight: 'bold', fontSize: '1.2rem', fontFamily: 'monospace', opacity: mode === 'challenge' ? 0.3 : 1 }}>
+                                {mode === 'challenge' ? '???' : (panVals[inst.id] === 0 ? 'C' : panVals[inst.id] < 0 ? `L${Math.abs(panVals[inst.id])}` : `R${panVals[inst.id]}`)}
                             </div>
                         </div>
                     );
