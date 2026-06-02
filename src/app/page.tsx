@@ -7,14 +7,11 @@ import { useRouter } from 'next/navigation';
 const HomeInteractivePlayer = ({ isMobile }: { isMobile: boolean }) => {
   const [activeVersion, setActiveVersion] = useState<'A' | 'B'>('A');
   const [isPlaying, setIsPlaying] = useState(false);
-
-  // 💡 產品級修改：用一個狀態控制「就地解鎖答案」，完全不跳轉頁面
   const [showAnswer, setShowAnswer] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const router = useRouter();
 
-  // 處理播放/暫停與版本切換邏輯
   const handleTogglePlay = () => {
     if (!audioRef.current) return;
     if (isPlaying) {
@@ -51,7 +48,7 @@ const HomeInteractivePlayer = ({ isMobile }: { isMobile: boolean }) => {
       <p style={{ color: '#94a3b8', fontSize: '1.05rem', lineHeight: '1.8', margin: '0 0 2rem 0' }}>
         這兩段音樂的樂器與旋律<strong style={{ color: '#fff' }}>完全一模一樣</strong>。<br />
         請戴上耳機，先聽版本 A，再切換到版本 B。<br />
-        <span style={{ color: '#fca311' }}>你能聽出版本 B 裡，哪個「被隱藏的聲音」突然跳出來了嗎？</span>
+        <span style={{ color: '#fca311' }}>你能聽出版本 B 裡，主唱和吉他的輪廓發生了什麼變化嗎？</span>
       </p>
 
       {/* 播放器 UI */}
@@ -85,11 +82,10 @@ const HomeInteractivePlayer = ({ isMobile }: { isMobile: boolean }) => {
       {/* 答案揭曉區 */}
       <div style={{ borderTop: '1px dashed rgba(255,255,255,0.1)', paddingTop: '2.5rem' }}>
         <p style={{ color: '#cbd5e1', fontSize: '1.1rem', marginBottom: '1.5rem', fontWeight: 'bold' }}>
-          🤯 聽到了嗎？那個隱藏的和聲在版本 A 裡一直都在，只是被「蓋住」了。
+          🤯 聽到了嗎？主唱突然變得清晰，吉他的輪廓也浮現出來了。
         </p>
 
         {!showAnswer ? (
-          /* 💡 修正 2：改名為「解鎖答案」，按下後原地切換狀態顯化答案 */
           <button
             onClick={() => setShowAnswer(true)}
             style={{ padding: '1rem 4.5rem', background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff', fontSize: '1.1rem', fontWeight: 'bold', borderRadius: '50px', border: 'none', cursor: 'pointer', boxShadow: '0 10px 25px rgba(16, 185, 129, 0.3)', transition: 'transform 0.2s' }}
@@ -100,11 +96,12 @@ const HomeInteractivePlayer = ({ isMobile }: { isMobile: boolean }) => {
           </button>
         ) : (
           <div style={{ background: 'rgba(56, 189, 248, 0.05)', border: '1px solid #38bdf8', padding: '1.5rem', borderRadius: '16px', textAlign: 'left', animation: 'fadeIn 0.4s ease-out' }}>
-            <h4 style={{ color: '#38bdf8', fontWeight: 'bold', fontSize: '1.1rem', margin: '0 0 8px 0' }}>💡 大師空間魔術真相：</h4>
+            <h4 style={{ color: '#38bdf8', fontWeight: 'bold', fontSize: '1.1rem', margin: '0 0 8px 0' }}>💡 空間分配的真相：</h4>
+            {/* 💡 修正：更精準、寫實的音樂人描述 */}
             <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>
-              在<strong>版本 A</strong> 中，我們把所有樂器全擠在正中央（單聲道疊加），導致旁邊的吉他把微弱的和聲完全「吃掉」了。<br /><br />
-              而在<strong>版本 B</strong> 中，我們大膽把吉他推到最左與最右側（LCR立體聲場佈局），解除了頻率互蓋的危機，中間瞬間清空，原本隱形的人聲和聲才會像魔法一樣跳到你耳邊！<br /><br />
-              這就是為什麼你需要建立「聽覺系統」。你的耳朵其實漏掉了無數細節，讓我們在接下來的訓練裡全部找回來！
+              在<strong>版本 A</strong> 中，所有樂器都擠在正中央。這會造成「頻率遮蔽」，導致主唱的聲音被吉他稍微悶住、覆蓋，吉他本身的細節也聽不清楚。<br /><br />
+              而在<strong>版本 B</strong> 中，我們只是把兩把吉他往左右兩側拉開（LCR 空間佈局）。中間的通道一清空，主唱瞬間就變得立體清晰，兩側的吉他細節也自然有了呼吸的空間！<br /><br />
+              這就是為什麼你需要建立「聽覺系統」。你的耳朵其實漏掉了許多頻率與空間的細節，讓我們在接下來的訓練裡把它們找回來！
             </p>
             <button
               onClick={() => { window.scrollTo(0, 0); router.push('/courses/ear-opening/intro'); }}
@@ -171,7 +168,6 @@ export default function HomePage() {
           這裡會帶你跨過那條線。
         </p>
 
-        {/* 💡 修正 1：主按鈕路徑精準對接 app/courses/ear-opening/intro */}
         <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexDirection: isMobile ? 'column' : 'row', width: isMobile ? '100%' : 'auto', maxWidth: '700px' }}>
           <button
             onClick={() => { window.scrollTo(0, 0); router.push('/courses/ear-opening/intro'); }}
@@ -225,7 +221,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ================= 4️⃣ 🧠 系統定義 ================= */}
+      {/* ================= 4️⃣ 🧠 系統定義：Lifreedom 是什麼？ ================= */}
       <div style={{ padding: isMobile ? '4rem 1.5rem' : '5rem 2rem', background: '#020617', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           <span style={{ color: '#38bdf8', fontWeight: 'bold', letterSpacing: '3px', fontSize: '0.85rem' }}>SYSTEM OVERVIEW</span>
@@ -234,10 +230,14 @@ export default function HomePage() {
             我們不教你死板地去調整特定的插件數值。<br />
             Lifreedom 是一套專門<strong style={{ color: '#fff' }}>「訓練你聽覺判斷能力」</strong>的心智系統。
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '500px', margin: '0 auto', textAlign: 'left', background: 'rgba(255,255,255,0.02)', padding: '2rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '550px', margin: '0 auto', textAlign: 'left', background: 'rgba(255,255,255,0.02)', padding: '2rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
             <div style={{ color: '#cbd5e1', fontSize: '1.05rem' }}>🚀 <strong>✔ 聽出差異</strong> —— 靠耳朵直覺咬合，而不是靠瞎猜</div>
             <div style={{ color: '#cbd5e1', fontSize: '1.05rem' }}>📦 <strong>✔ 理解聲音結構</strong> —— 看穿音頻的空間防線，而不是憑感覺</div>
             <div style={{ color: '#cbd5e1', fontSize: '1.05rem' }}>🎛️ <strong>✔ 做出決定</strong> —— 每一步都有清晰的科學邏輯，而不是亂試</div>
+            {/* 💡 新增：AI 聽診輔助說明 */}
+            <div style={{ color: '#cbd5e1', fontSize: '1.05rem', borderTop: '1px dashed rgba(255,255,255,0.1)', paddingTop: '10px', marginTop: '5px' }}>
+              🤖 <strong>✔ AI 聽診輔助</strong> —— 專屬助理隨時為你的混音抓漏，提供修改建議
+            </div>
           </div>
         </div>
       </div>
@@ -256,9 +256,10 @@ export default function HomePage() {
               <span style={{ color: '#fca5a5' }}>👉 2. 導出音訊後，不知道怎麼變更好（混音/空間/能量打架）</span><br /><br />
               這本質上不是 AI 工具的問題，而是<strong>聽覺判斷能力</strong>的問題。
             </p>
+            {/* 💡 升級：讓 AI 助理的功能更具體，但依然只是配角 */}
             <div style={{ background: 'rgba(167, 139, 250, 0.08)', padding: '1.2rem', borderRadius: '12px', borderLeft: '4px solid #a78bfa', color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6' }}>
               <strong>💡 製作人心法：</strong><br />
-              當你開始「聽得出來」之後，AI 才會真正變成你的生產力工具。我們提供輔助分析模組幫你定位方向，但最終扣下板機的決策，永遠來自你自己的耳朵。
+              我們內建了專屬的 <strong>AI 混音聽診助理</strong>，當你卡關時，隨時上傳 DAW 截圖或發問，它會幫你指出頻率盲點。但記住，AI 只是導航，最終扣下板機的決策，永遠來自你訓練過的耳朵。
             </div>
           </div>
 
@@ -277,7 +278,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ================= 7️⃣ 🔓 未來解鎖 ================= */}
+      {/* ================= 6️⃣ 🔓 未來解鎖 ================= */}
       <div style={{ padding: isMobile ? '4rem 1.5rem' : '6rem 2rem', background: '#020617', textAlign: 'center' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           <span style={{ color: '#22c55e', fontWeight: 'bold', letterSpacing: '3px', fontSize: '0.85rem' }}>ROADMAP</span>
@@ -299,13 +300,13 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ================= 8️⃣ 最終 CTA ================= */}
+      {/* ================= 7️⃣ 最終 CTA ================= */}
       <div style={{ padding: isMobile ? '4rem 1.5rem' : '6rem 2rem', textAlign: 'center', background: 'radial-gradient(circle at 50% 100%, #111827 0%, #020617 80%)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
         <h2 style={{ fontSize: isMobile ? '1.6rem' : '2.2rem', color: '#fff', marginBottom: '1rem', fontWeight: '900', maxWidth: '750px', margin: '0 auto 2rem' }}>
           開始訓練你的耳朵，建立受用終身的聽覺判斷力
         </h2>
 
-        {/* 💡 修正 3：最下方的免費訓練按鈕也無縫精準導流至 app/courses/ear-opening/intro */}
+        {/* 💡 修正：導向 `/courses/ear-opening/intro` */}
         <button
           onClick={() => { window.scrollTo(0, 0); router.push('/courses/ear-opening/intro'); }}
           style={{ display: 'inline-block', padding: '1.3rem 4.5rem', background: '#fff', color: '#020617', fontSize: '1.15rem', fontWeight: '900', borderRadius: '50px', border: 'none', cursor: 'pointer', boxShadow: '0 10px 30px rgba(255,255,255,0.2)', marginBottom: '4rem' }}

@@ -115,7 +115,7 @@ export default function RootLayout({
           </div>
         )}
 
-        {/* 🤖 懸浮 AI 聽診 */}
+        {/* 🤖 懸浮 AI 助理 */}
         <Link href="/mix-assistant" style={{
           position: 'fixed',
           bottom: '25px',
@@ -134,7 +134,7 @@ export default function RootLayout({
           transition: 'transform 0.2s'
         }}>
           <span style={{ fontSize: '1.4rem' }}>🤖</span>
-          <span style={{ fontSize: isMobile ? '0.8rem' : '0.9rem', color: '#fff', fontWeight: 'bold' }}>AI 聽診</span>
+          <span style={{ fontSize: isMobile ? '0.8rem' : '0.9rem', color: '#fff', fontWeight: 'bold' }}>AI 助理</span>
         </Link>
 
         <main>{children}</main>
