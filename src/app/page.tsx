@@ -7,6 +7,10 @@ import { useRouter } from 'next/navigation';
 const HomeInteractivePlayer = ({ isMobile }: { isMobile: boolean }) => {
   const [activeVersion, setActiveVersion] = useState<'A' | 'B'>('A');
   const [isPlaying, setIsPlaying] = useState(false);
+
+  // 💡 產品級修改：用一個狀態控制「就地解鎖答案」，完全不跳轉頁面
+  const [showAnswer, setShowAnswer] = useState(false);
+
   const audioRef = useRef<HTMLAudioElement>(null);
   const router = useRouter();
 
@@ -29,7 +33,6 @@ const HomeInteractivePlayer = ({ isMobile }: { isMobile: boolean }) => {
       const currentTime = audioRef.current.currentTime;
       const wasPlaying = !audioRef.current.paused;
 
-      // 假設音檔路徑，這裡用 LCR 和 Mono 的概念命名
       audioRef.current.src = version === 'A' ? '/audio/demo-mono-masked.mp3' : '/audio/demo-lcr-wide.mp3';
       audioRef.current.load();
       audioRef.current.currentTime = currentTime;
@@ -48,7 +51,7 @@ const HomeInteractivePlayer = ({ isMobile }: { isMobile: boolean }) => {
       <p style={{ color: '#94a3b8', fontSize: '1.05rem', lineHeight: '1.8', margin: '0 0 2rem 0' }}>
         這兩段音樂的樂器與旋律<strong style={{ color: '#fff' }}>完全一模一樣</strong>。<br />
         請戴上耳機，先聽版本 A，再切換到版本 B。<br />
-        <span style={{ color: '#fca311' }}>你能聽出版版 B 裡，哪個「被隱藏的聲音」突然出現了嗎？</span>
+        <span style={{ color: '#fca311' }}>你能聽出版本 B 裡，哪個「被隱藏的聲音」突然跳出來了嗎？</span>
       </p>
 
       {/* 播放器 UI */}
@@ -79,19 +82,38 @@ const HomeInteractivePlayer = ({ isMobile }: { isMobile: boolean }) => {
 
       <audio ref={audioRef} src="/audio/demo-mono-masked.mp3" onEnded={() => setIsPlaying(false)} />
 
-      {/* 引導前往 Step 0 */}
+      {/* 答案揭曉區 */}
       <div style={{ borderTop: '1px dashed rgba(255,255,255,0.1)', paddingTop: '2.5rem' }}>
         <p style={{ color: '#cbd5e1', fontSize: '1.1rem', marginBottom: '1.5rem', fontWeight: 'bold' }}>
-          🤯 聽到了嗎？那個聲音其實一直都在，只是被「蓋住」了。
+          🤯 聽到了嗎？那個隱藏的和聲在版本 A 裡一直都在，只是被「蓋住」了。
         </p>
-        <button
-          onClick={() => { window.scrollTo(0, 0); router.push('/step0'); }}
-          style={{ padding: '1rem 3rem', background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff', fontSize: '1.1rem', fontWeight: 'bold', borderRadius: '50px', border: 'none', cursor: 'pointer', boxShadow: '0 10px 25px rgba(16, 185, 129, 0.3)', transition: 'transform 0.2s' }}
-          onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-          onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
-        >
-          解鎖答案，進入完整的聽覺挑戰 ➔
-        </button>
+
+        {!showAnswer ? (
+          /* 💡 修正 2：改名為「解鎖答案」，按下後原地切換狀態顯化答案 */
+          <button
+            onClick={() => setShowAnswer(true)}
+            style={{ padding: '1rem 4.5rem', background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff', fontSize: '1.1rem', fontWeight: 'bold', borderRadius: '50px', border: 'none', cursor: 'pointer', boxShadow: '0 10px 25px rgba(16, 185, 129, 0.3)', transition: 'transform 0.2s' }}
+            onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.03)"}
+            onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
+          >
+            解鎖答案
+          </button>
+        ) : (
+          <div style={{ background: 'rgba(56, 189, 248, 0.05)', border: '1px solid #38bdf8', padding: '1.5rem', borderRadius: '16px', textAlign: 'left', animation: 'fadeIn 0.4s ease-out' }}>
+            <h4 style={{ color: '#38bdf8', fontWeight: 'bold', fontSize: '1.1rem', margin: '0 0 8px 0' }}>💡 大師空間魔術真相：</h4>
+            <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>
+              在<strong>版本 A</strong> 中，我們把所有樂器全擠在正中央（單聲道疊加），導致旁邊的吉他把微弱的和聲完全「吃掉」了。<br /><br />
+              而在<strong>版本 B</strong> 中，我們大膽把吉他推到最左與最右側（LCR立體聲場佈局），解除了頻率互蓋的危機，中間瞬間清空，原本隱形的人聲和聲才會像魔法一樣跳到你耳邊！<br /><br />
+              這就是為什麼你需要建立「聽覺系統」。你的耳朵其實漏掉了無數細節，讓我們在接下來的訓練裡全部找回來！
+            </p>
+            <button
+              onClick={() => { window.scrollTo(0, 0); router.push('/courses/ear-opening/intro'); }}
+              style={{ marginTop: '1.5rem', width: '100%', padding: '10px', background: '#38bdf8', color: '#020617', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
+            >
+              進入正式聽覺特訓 ➔
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -149,10 +171,10 @@ export default function HomePage() {
           這裡會帶你跨過那條線。
         </p>
 
-        {/* 雙引導按鈕：分別導向 Step 0 與 課程藍圖 */}
+        {/* 💡 修正 1：主按鈕路徑精準對接 app/courses/ear-opening/intro */}
         <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexDirection: isMobile ? 'column' : 'row', width: isMobile ? '100%' : 'auto', maxWidth: '700px' }}>
           <button
-            onClick={() => { window.scrollTo(0, 0); router.push('/step0'); }}
+            onClick={() => { window.scrollTo(0, 0); router.push('/courses/ear-opening/intro'); }}
             style={{ flex: 1, padding: isMobile ? '1.2rem' : '1.3rem 2.5rem', background: 'linear-gradient(135deg, #38bdf8, #2563eb)', color: '#fff', fontSize: '1.1rem', fontWeight: '900', borderRadius: '50px', border: 'none', cursor: 'pointer', boxShadow: '0 10px 30px rgba(56, 189, 248, 0.4)', transition: 'transform 0.2s' }}
             onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.03)"}
             onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
@@ -171,12 +193,12 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ================= 2️⃣ 🎧 首頁直接試聽組件 (The LCR Masking Hook) ================= */}
+      {/* ================= 2️⃣ 🎧 首頁直接試聽組件 ================= */}
       <div style={{ padding: '2rem 1.5rem 5rem 1.5rem', background: '#020617' }}>
         <HomeInteractivePlayer isMobile={isMobile} />
       </div>
 
-      {/* ================= 3️⃣ 👥 適合對象（對號入座卡片） ================= */}
+      {/* ================= 3️⃣ 👥 適合對象 ================= */}
       <div style={{ padding: isMobile ? '4rem 1.5rem' : '5rem 2rem', background: '#070a13', borderTop: '1px solid rgba(255,255,255,0.02)' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
           <span style={{ color: '#facc15', fontWeight: '900', letterSpacing: '3px', fontSize: '0.85rem' }}>TARGET AUDIENCE</span>
@@ -203,7 +225,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ================= 4️⃣ 🧠 系統定義：Lifreedom 是什麼？ ================= */}
+      {/* ================= 4️⃣ 🧠 系統定義 ================= */}
       <div style={{ padding: isMobile ? '4rem 1.5rem' : '5rem 2rem', background: '#020617', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           <span style={{ color: '#38bdf8', fontWeight: 'bold', letterSpacing: '3px', fontSize: '0.85rem' }}>SYSTEM OVERVIEW</span>
@@ -283,8 +305,9 @@ export default function HomePage() {
           開始訓練你的耳朵，建立受用終身的聽覺判斷力
         </h2>
 
+        {/* 💡 修正 3：最下方的免費訓練按鈕也無縫精準導流至 app/courses/ear-opening/intro */}
         <button
-          onClick={() => { window.scrollTo(0, 0); router.push('/step0'); }}
+          onClick={() => { window.scrollTo(0, 0); router.push('/courses/ear-opening/intro'); }}
           style={{ display: 'inline-block', padding: '1.3rem 4.5rem', background: '#fff', color: '#020617', fontSize: '1.15rem', fontWeight: '900', borderRadius: '50px', border: 'none', cursor: 'pointer', boxShadow: '0 10px 30px rgba(255,255,255,0.2)', marginBottom: '4rem' }}
         >
           🚀 立即開啟免費訓練
