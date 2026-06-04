@@ -5,21 +5,33 @@ import { useRouter } from 'next/navigation';
 // 🎯 定義題庫結構，支援插入「中場知識卡 (interstitial)」與「陷阱題 (acceptAny)」
 const basicQuestions = [
     {
-        id: 1, title: '覺醒 01: 第一次聽見低頻', question: '哪一個比較「有重量」？', fileA: '/audio/step0/q1_a_full.mp3', fileB: '/audio/step0/q1_b_nobass.mp3', correct: 'A',
+        id: 1, title: '覺醒 01: 第一次聽見低頻', question: '哪一個比較「有重量」？', fileA: '/audio/step0/q1bass.mp3', fileB: '/audio/step0/q1nobass.mp3', correct: 'A',
         feedbackCorrect: '你已經開始抓到聲音的「厚度」！', feedbackIncorrect: '很多人一開始會忽略這個差異 👂',
         insight: '🎧 聽感重量 = 低頻是否站得住'
     },
     {
-        id: 2, title: '覺醒 02: 感受空間的維度', question: '哪一個感覺比較「遠」？', fileA: '/audio/step0/q2_a_dry.mp3', fileB: '/audio/step0/q2_b_wet.mp3', correct: 'B',
+        id: 2, title: '覺醒 02: 感受空間的維度', question: '哪一個感覺比較「遠」？', fileA: '/audio/step0/q2dry.mp3', fileB: '/audio/step0/q2wet.mp3', correct: 'B',
         feedbackCorrect: '你抓到了空間感！', feedbackIncorrect: '這需要一點直覺，再試試看。',
         insight: '🎧 距離不是遠近，是乾濕比例',
         interstitial: { type: 'knowledge', title: '🎧 小知識', text: '低頻不是「聽到」，而是「感受到」' }
     },
     {
-        id: 3, title: '進化 01: 分辨聲音的邊界', question: '哪一個比較「清晰」？', fileA: '/audio/step0/q3_a_bright.mp3', fileB: '/audio/step0/q3_b_dark.mp3', correct: 'A',
-        feedbackCorrect: '你的耳朵正在進化！', feedbackIncorrect: '有時候清晰與刺耳只有一線之隔。',
-        insight: '🎧 清晰 ≠ 亮，是「頻率不打架」',
-        interstitial: { type: 'real-world', title: '🎧 真實應用', text: '下次聽歌時，先不要聽旋律，試著單純找尋低頻是不是穩穩在下面跳動。' }
+
+        id: 3,
+        title: '進化 01: 分辨聲音的邊界',
+        question: '哪一個聽起來比較「清晰」且耐聽？',
+        fileA: '/audio/step0/q3balanced.mp3', // 正常EQ版 (正確答案)
+        fileB: '/audio/step0/q3bright.mp3',    // 刻意推高頻的刺耳版 (陷阱)
+        correct: 'A',
+        feedbackCorrect: '沒錯！你的耳朵正在進化，能辨別出真正的清晰度！',
+        feedbackIncorrect: '被騙了吧！有時候「清晰」與「刺耳」只有一線之隔，太亮反而會造成聽覺疲勞喔。',
+        insight: '🎧 明亮 ≠ 清晰。真正的清晰是「頻率不打架」，而不是無腦推高頻。',
+        interstitial: {
+            type: 'real-world',
+            title: '🎧 真實應用',
+            text: '下次混音覺得聲音不夠清楚時，試著去「減弱」那些轟轟作響的低中頻，而不是一味地把高頻推亮。'
+        }
+
     },
     {
         id: 4, title: '進化 02: 捕捉兩側的細節', question: '哪一個聽起來比較「寬」？', fileA: '/audio/step0/q4_a_stereo.mp3', fileB: '/audio/step0/q4_b_mono.mp3', correct: 'A',

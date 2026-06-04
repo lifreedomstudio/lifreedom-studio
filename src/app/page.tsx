@@ -43,7 +43,7 @@ const HomeInteractivePlayer = ({ isMobile }: { isMobile: boolean }) => {
   return (
     <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '24px', padding: isMobile ? '2rem 1.5rem' : '3.5rem', maxWidth: '850px', margin: '0 auto', textAlign: 'center', boxShadow: '0 20px 50px rgba(0,0,0,0.3)' }}>
       <h2 style={{ fontSize: isMobile ? '1.5rem' : '2rem', color: '#fff', margin: '0 0 1rem 0', fontWeight: '900' }}>
-        🎧 你真的聽得見所有聲音嗎？
+        🎧 如果你聽不出差別，那就是問題所在
       </h2>
       <p style={{ color: '#94a3b8', fontSize: '1.05rem', lineHeight: '1.8', margin: '0 0 2rem 0' }}>
         這兩段音樂的樂器與旋律<strong style={{ color: '#fff' }}>完全一模一樣</strong>。<br />
