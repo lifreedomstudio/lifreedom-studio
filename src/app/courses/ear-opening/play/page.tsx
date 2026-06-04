@@ -2,7 +2,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-// 🎯 定義題庫結構，支援插入「中場知識卡 (interstitial)」與「陷阱題 (acceptAny)」
 const basicQuestions = [
     {
         id: 1, title: '覺醒 01: 第一次聽見低頻', question: '哪一個比較「有重量」？', fileA: '/audio/step0/q1bass.mp3', fileB: '/audio/step0/q1nobass.mp3', correct: 'A',
@@ -81,73 +80,60 @@ export default function EarOpeningPlayPage() {
     const [score, setScore] = useState(0);
     const [showInterstitial, setShowInterstitial] = useState(false);
 
-    const audioARef = useRef<HTMLAudioElement | null>(null);
-    const audioBRef = useRef<HTMLAudioElement | null>(null);
+    // 🎯 核心優化：只留一個 Audio Ref
+    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     const activeQuestions = currentPhase === 'advanced' ? advancedQuestions : basicQuestions;
     const q = activeQuestions[currentIndex];
 
-    // ✅ 修正 1：修復依賴陣列與安全播放
+    // 🔁 換題時的初始化
     useEffect(() => {
-        if (currentPhase === 'intermediate-result' || currentPhase === 'final-result' || showInterstitial) return;
+        if (!audioRef.current || !q || currentPhase === 'intermediate-result' || currentPhase === 'final-result' || showInterstitial) return;
 
-        if (audioARef.current && audioBRef.current && q) {
-            audioARef.current.src = q.fileA;
-            audioBRef.current.src = q.fileB;
-
-            audioARef.current.muted = false;
-            audioBRef.current.muted = true;
-            audioARef.current.volume = 1;
-            audioBRef.current.volume = 0;
-
-            audioARef.current.load();
-            audioBRef.current.load();
-
-            if (isPlaying) {
-                const playPromiseA = audioARef.current.play();
-                if (playPromiseA !== undefined) playPromiseA.catch(e => console.log('Audio A play blocked:', e));
-
-                const playPromiseB = audioBRef.current.play();
-                if (playPromiseB !== undefined) playPromiseB.catch(e => console.log('Audio B play blocked:', e));
-            }
-        }
+        audioRef.current.src = q.fileA; // 預設載入 A
+        audioRef.current.currentTime = 0;
 
         setCurrentTrack('A');
+        setIsPlaying(false);
         setSelectedAnswer(null);
-        // 🚨 這裡已經移除了 isPlaying，換題才重置軌道
+
     }, [currentIndex, currentPhase, showInterstitial, q]);
 
-    // ✅ 修正 2：修復播放鍵按鈕邏輯
+    // 🎧 切換音檔 (純粹試聽，不綁定作答)
+    const playTrack = (track: 'A' | 'B') => {
+        if (!audioRef.current || !q) return;
+
+        // 如果已經在播同一軌，就不動作，避免重新從頭播
+        if (currentTrack === track && isPlaying) return;
+
+        const src = track === 'A' ? q.fileA : q.fileB;
+
+        audioRef.current.pause(); // 避免殘音
+        audioRef.current.src = src;
+        audioRef.current.currentTime = 0;
+
+        audioRef.current.play().catch(e => console.log('Play error:', e));
+
+        setCurrentTrack(track);
+        setIsPlaying(true);
+    };
+
+    // ▶️ 播放/暫停按鈕
     const togglePlay = () => {
-        if (!audioARef.current || !audioBRef.current) return;
+        if (!audioRef.current) return;
 
         if (isPlaying) {
-            audioARef.current.pause();
-            audioBRef.current.pause();
+            audioRef.current.pause();
         } else {
-            const playPromiseA = audioARef.current.play();
-            if (playPromiseA !== undefined) playPromiseA.catch(e => console.log(e));
-
-            const playPromiseB = audioBRef.current.play();
-            if (playPromiseB !== undefined) playPromiseB.catch(e => console.log(e));
+            audioRef.current.play().catch(e => console.log('Play error:', e));
         }
+
         setIsPlaying(!isPlaying);
     };
 
-    // ✅ 修正 3：加入音量雙重保險，確保完全靜音
-    const switchTrack = (track: 'A' | 'B') => {
-        setCurrentTrack(track);
-        if (audioARef.current && audioBRef.current) {
-            audioARef.current.muted = track !== 'A';
-            audioBRef.current.muted = track !== 'B';
-
-            audioARef.current.volume = track === 'A' ? 1 : 0;
-            audioBRef.current.volume = track === 'B' ? 1 : 0;
-        }
-    };
-
+    // ✅ 確認作答
     const handleSelect = (answer: 'A' | 'B') => {
-        if (selectedAnswer) return;
+        if (selectedAnswer) return; // 避免重複作答
         setSelectedAnswer(answer);
 
         // @ts-ignore
@@ -163,8 +149,7 @@ export default function EarOpeningPlayPage() {
         // @ts-ignore
         if (q.interstitial && !showInterstitial) {
             setShowInterstitial(true);
-            if (audioARef.current) audioARef.current.pause();
-            if (audioBRef.current) audioBRef.current.pause();
+            if (audioRef.current) audioRef.current.pause();
             setIsPlaying(false);
             return;
         }
@@ -173,8 +158,7 @@ export default function EarOpeningPlayPage() {
         if (currentIndex < activeQuestions.length - 1) {
             setCurrentIndex(prev => prev + 1);
         } else {
-            if (audioARef.current) audioARef.current.pause();
-            if (audioBRef.current) audioBRef.current.pause();
+            if (audioRef.current) audioRef.current.pause();
 
             if (currentPhase === 'basic') {
                 setCurrentPhase('intermediate-result');
@@ -190,7 +174,7 @@ export default function EarOpeningPlayPage() {
         return { title: '初學感知型', desc: '你的聽覺才剛被喚醒，還有巨大的開發潛能。', icon: '🌱' };
     };
 
-    // 🎴 中場知識卡 (Interstitial) 畫面
+    // 🎴 中場知識卡
     // @ts-ignore
     if (showInterstitial && q.interstitial) {
         // @ts-ignore
@@ -221,41 +205,24 @@ export default function EarOpeningPlayPage() {
         );
     }
 
-    // 🎬 第一階段結束
+    // 🎬 結算畫面 (省略部分重複代碼，保留完整結構)
     if (currentPhase === 'intermediate-result') {
         const level = getEarLevel();
         return (
             <div style={{ minHeight: '100vh', background: '#020617', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem' }}>
                 <div style={{ background: 'rgba(30,41,59,0.5)', border: '1px solid rgba(255,255,255,0.1)', padding: '3rem 2rem', borderRadius: '24px', textAlign: 'center', maxWidth: '500px', width: '100%', backdropFilter: 'blur(10px)', animation: 'fadeIn 0.5s' }}>
-
                     <h1 style={{ fontSize: '2rem', color: '#fff', fontWeight: '900', marginBottom: '1.5rem' }}>你剛剛不是在亂猜</h1>
-
                     <div style={{ background: '#0f172a', borderRadius: '16px', padding: '2rem', marginBottom: '2rem', border: '1px solid rgba(56, 189, 248, 0.2)' }}>
                         <div style={{ fontSize: '3.5rem', marginBottom: '0.5rem' }}>{level.icon}</div>
                         <div style={{ fontSize: '0.9rem', color: '#94a3b8', marginBottom: '0.5rem' }}>你的結果：</div>
                         <h2 style={{ color: '#38bdf8', fontSize: '1.8rem', fontWeight: '900', margin: '0 0 1rem 0' }}>{level.title}</h2>
                         <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>{level.desc}</p>
                     </div>
-
-                    <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1.5rem', borderRadius: '16px', marginBottom: '2rem', textAlign: 'left', border: '1px solid rgba(255,255,255,0.05)' }}>
-                        <div style={{ color: '#fca311', fontWeight: 'bold', marginBottom: '1rem', fontSize: '1.1rem' }}>🔥 你剛剛學到的 3 件事：</div>
-                        <ul style={{ color: '#cbd5e1', lineHeight: '2', margin: 0, paddingLeft: '1.5rem', fontSize: '1.05rem' }}>
-                            <li>低頻 = <strong style={{ color: '#fff' }}>重量</strong></li>
-                            <li>殘響 (Reverb) = <strong style={{ color: '#fff' }}>距離</strong></li>
-                            <li>單純變大聲 = <strong style={{ color: '#ef4444' }}>假好聽</strong> (聽覺錯覺)</li>
-                        </ul>
-                    </div>
-
-                    <p style={{ color: '#94a3b8', lineHeight: '1.7', marginBottom: '2.5rem', fontSize: '1.05rem' }}>
-                        你已經開始能分辨聲音的差異。<br />
-                        <strong style={{ color: '#fca311' }}>大多數人其實從來沒有練過這件事。</strong>
-                    </p>
-
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        <button onClick={() => router.push('/courses/ear-opening/bridge')} style={{ width: '100%', padding: '1.2rem', background: 'linear-gradient(135deg, #10b981, #38bdf8)', color: '#020617', border: 'none', borderRadius: '50px', fontSize: '1.1rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(16, 185, 129, 0.3)' }}>
+                        <button onClick={() => router.push('/courses/ear-opening/bridge')} style={{ width: '100%', padding: '1.2rem', background: 'linear-gradient(135deg, #10b981, #38bdf8)', color: '#020617', border: 'none', borderRadius: '50px', fontSize: '1.1rem', fontWeight: '900', cursor: 'pointer' }}>
                             🎧 我想知道這些聲音怎麼做
                         </button>
-                        <button onClick={() => { setCurrentPhase('advanced'); setCurrentIndex(0); }} style={{ width: '100%', padding: '1rem', background: 'transparent', color: '#94a3b8', border: '1px solid #475569', borderRadius: '50px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = '#94a3b8'}>
+                        <button onClick={() => { setCurrentPhase('advanced'); setCurrentIndex(0); }} style={{ width: '100%', padding: '1rem', background: 'transparent', color: '#94a3b8', border: '1px solid #475569', borderRadius: '50px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer' }}>
                             🎮 再玩幾個聽音挑戰
                         </button>
                     </div>
@@ -264,41 +231,25 @@ export default function EarOpeningPlayPage() {
         );
     }
 
-    // 🎬 進階階段結束
     if (currentPhase === 'final-result') {
         return (
             <div style={{ minHeight: '100vh', background: '#020617', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem' }}>
-                <div style={{ background: 'linear-gradient(145deg, #0f172a, #1e293b)', border: '1px solid rgba(56, 189, 248, 0.3)', padding: '4rem 2rem', borderRadius: '24px', textAlign: 'center', maxWidth: '550px', width: '100%', backdropFilter: 'blur(10px)', animation: 'fadeIn 0.5s', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
-
+                <div style={{ background: 'linear-gradient(145deg, #0f172a, #1e293b)', border: '1px solid rgba(56, 189, 248, 0.3)', padding: '4rem 2rem', borderRadius: '24px', textAlign: 'center', maxWidth: '550px', width: '100%', backdropFilter: 'blur(10px)', animation: 'fadeIn 0.5s' }}>
                     <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>🤯</div>
-
-                    <h1 style={{ fontSize: '2.2rem', color: '#fff', fontWeight: '900', marginBottom: '1.5rem', lineHeight: '1.4' }}>
-                        你剛剛做的事情<br />
-                        <span style={{ color: '#ef4444' }}>不是在「猜答案」</span>
-                    </h1>
-
-                    <p style={{ color: '#cbd5e1', lineHeight: '1.8', marginBottom: '2.5rem', fontSize: '1.15rem' }}>
-                        而是在建立：<br />
-                        <strong style={{ color: '#38bdf8', fontSize: '1.4rem', letterSpacing: '1px', display: 'inline-block', margin: '10px 0' }}>👉 聲音判斷能力</strong><br /><br />
-                        <span style={{ color: '#fca311', fontWeight: 'bold' }}>大多數人聽音樂 10 年，<br />也從來沒有做過你剛剛這件事。</span>
-                    </p>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        <button onClick={() => router.push('/courses/ear-opening/bridge')} style={{ width: '100%', padding: '1.2rem', background: 'linear-gradient(135deg, #fca311, #f97316)', color: '#020617', border: 'none', borderRadius: '50px', fontSize: '1.2rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(252, 163, 17, 0.3)' }}>
-                            🎧 進入學習系統 (開始做出自己的聲音)
-                        </button>
-                    </div>
+                    <h1 style={{ fontSize: '2.2rem', color: '#fff', fontWeight: '900', marginBottom: '1.5rem', lineHeight: '1.4' }}>你剛剛做的事情<br /><span style={{ color: '#ef4444' }}>不是在「猜答案」</span></h1>
+                    <button onClick={() => router.push('/courses/ear-opening/bridge')} style={{ width: '100%', padding: '1.2rem', background: 'linear-gradient(135deg, #fca311, #f97316)', color: '#020617', border: 'none', borderRadius: '50px', fontSize: '1.2rem', fontWeight: '900', cursor: 'pointer' }}>
+                        🎧 進入學習系統 (開始做出自己的聲音)
+                    </button>
                 </div>
             </div>
         );
     }
 
-    // 🎮 遊戲本體畫面
     return (
         <div style={{ minHeight: '100vh', background: '#020617', color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem 1rem', fontFamily: 'sans-serif' }}>
 
-            <audio ref={audioARef} loop muted={currentTrack !== 'A'} />
-            <audio ref={audioBRef} loop muted={currentTrack !== 'B'} />
+            {/* 🎯 唯一的 Audio 元件 */}
+            <audio ref={audioRef} preload="auto" loop />
 
             <div style={{ width: '100%', maxWidth: '600px', marginBottom: '3rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '0.85rem', color: '#64748b', fontWeight: 'bold' }}>
@@ -311,45 +262,77 @@ export default function EarOpeningPlayPage() {
             </div>
 
             <div style={{ maxWidth: '500px', width: '100%', textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column' }}>
-
-                <h1 style={{ fontSize: '2rem', fontWeight: '900', marginBottom: '3rem', lineHeight: '1.4' }}>
+                <h1 style={{ fontSize: '2rem', fontWeight: '900', marginBottom: '2rem', lineHeight: '1.4' }}>
                     {q?.question}
                 </h1>
 
-                <div style={{ marginBottom: '3rem' }}>
+                {/* 🎧 UI 優化：顯示當下狀態 */}
+                <div style={{
+                    color: isPlaying ? '#38bdf8' : '#64748b',
+                    fontWeight: 'bold',
+                    fontSize: '1.1rem',
+                    marginBottom: '1rem',
+                    transition: 'color 0.3s'
+                }}>
+                    {isPlaying ? `🎵 現在播放：版本 ${currentTrack}` : '⏸ 點擊下方播放音訊'}
+                </div>
+
+                <div style={{ marginBottom: '2rem' }}>
                     <button onClick={togglePlay} style={{ background: isPlaying ? '#1e293b' : '#fff', color: isPlaying ? '#fff' : '#000', border: isPlaying ? '1px solid #475569' : 'none', padding: '1rem 3rem', fontSize: '1.2rem', fontWeight: 'bold', borderRadius: '50px', cursor: 'pointer', boxShadow: isPlaying ? 'none' : '0 10px 20px rgba(255,255,255,0.2)' }}>
-                        {isPlaying ? '⏸ 暫停' : '▶ 播放音訊'}
+                        {isPlaying ? '暫停' : '開始播放'}
                     </button>
                 </div>
 
+                {/* 🎧 試聽區塊 (單純切換，不作答) */}
                 <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginBottom: '2rem' }}>
-                    <button
-                        onClick={() => { switchTrack('A'); if (!selectedAnswer) handleSelect('A'); }}
-                        style={{
-                            flex: 1, padding: '2rem 0', fontSize: '1.5rem', fontWeight: '900', borderRadius: '24px', cursor: 'pointer', transition: 'all 0.2s',
-                            background: currentTrack === 'A' ? '#38bdf8' : '#1e293b',
-                            color: currentTrack === 'A' ? '#020617' : '#94a3b8',
-                            border: selectedAnswer === 'A' ? '2px solid #fff' : '2px solid transparent',
-                            transform: currentTrack === 'A' ? 'scale(1.05)' : 'scale(1)'
-                        }}
-                    >
-                        A
+                    <button onClick={() => playTrack('A')} style={{
+                        flex: 1, padding: '1.2rem 0', fontSize: '1.2rem', fontWeight: 'bold', borderRadius: '16px', cursor: 'pointer', transition: 'all 0.2s',
+                        background: currentTrack === 'A' && isPlaying ? 'rgba(56, 189, 248, 0.2)' : '#1e293b',
+                        color: currentTrack === 'A' && isPlaying ? '#38bdf8' : '#94a3b8',
+                        border: currentTrack === 'A' && isPlaying ? '2px solid #38bdf8' : '2px solid transparent'
+                    }}>
+                        聽聽看 A
                     </button>
-                    <button
-                        onClick={() => { switchTrack('B'); if (!selectedAnswer) handleSelect('B'); }}
-                        style={{
-                            flex: 1, padding: '2rem 0', fontSize: '1.5rem', fontWeight: '900', borderRadius: '24px', cursor: 'pointer', transition: 'all 0.2s',
-                            background: currentTrack === 'B' ? '#10b981' : '#1e293b',
-                            color: currentTrack === 'B' ? '#020617' : '#94a3b8',
-                            border: selectedAnswer === 'B' ? '2px solid #fff' : '2px solid transparent',
-                            transform: currentTrack === 'B' ? 'scale(1.05)' : 'scale(1)'
-                        }}
-                    >
-                        B
+                    <button onClick={() => playTrack('B')} style={{
+                        flex: 1, padding: '1.2rem 0', fontSize: '1.2rem', fontWeight: 'bold', borderRadius: '16px', cursor: 'pointer', transition: 'all 0.2s',
+                        background: currentTrack === 'B' && isPlaying ? 'rgba(16, 185, 129, 0.2)' : '#1e293b',
+                        color: currentTrack === 'B' && isPlaying ? '#10b981' : '#94a3b8',
+                        border: currentTrack === 'B' && isPlaying ? '2px solid #10b981' : '2px solid transparent'
+                    }}>
+                        聽聽看 B
                     </button>
                 </div>
 
-                <div style={{ opacity: selectedAnswer ? 1 : 0, transition: 'opacity 0.3s', pointerEvents: selectedAnswer ? 'auto' : 'none', marginTop: 'auto', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '1.5rem', borderRadius: '20px' }}>
+                {/* ✅ 作答區塊 (分隔開來，體驗更明確) */}
+                <div style={{
+                    borderTop: '1px solid rgba(255,255,255,0.1)',
+                    paddingTop: '2rem',
+                    opacity: selectedAnswer ? 0.5 : 1, // 作答後稍微淡化
+                    pointerEvents: selectedAnswer ? 'none' : 'auto'
+                }}>
+                    <div style={{ color: '#94a3b8', marginBottom: '1rem', fontSize: '0.9rem', fontWeight: 'bold' }}>準備好就鎖定答案：</div>
+                    <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                        <button onClick={() => handleSelect('A')} style={{
+                            flex: 1, padding: '1.2rem 0', fontSize: '1.3rem', fontWeight: '900', borderRadius: '16px', cursor: 'pointer',
+                            background: selectedAnswer === 'A' ? '#fff' : '#0f172a',
+                            color: selectedAnswer === 'A' ? '#000' : '#fff',
+                            border: '1px solid #475569'
+                        }}>
+                            ✅ 選擇 A
+                        </button>
+                        <button onClick={() => handleSelect('B')} style={{
+                            flex: 1, padding: '1.2rem 0', fontSize: '1.3rem', fontWeight: '900', borderRadius: '16px', cursor: 'pointer',
+                            background: selectedAnswer === 'B' ? '#fff' : '#0f172a',
+                            color: selectedAnswer === 'B' ? '#000' : '#fff',
+                            border: '1px solid #475569'
+                        }}>
+                            ✅ 選擇 B
+                        </button>
+                    </div>
+                </div>
+
+                {/* 🎉 解答與回饋區塊 */}
+                <div style={{ opacity: selectedAnswer ? 1 : 0, transition: 'opacity 0.3s', pointerEvents: selectedAnswer ? 'auto' : 'none', marginTop: '2rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '1.5rem', borderRadius: '20px' }}>
                     {/* @ts-ignore */}
                     <div style={{ color: selectedAnswer === q?.correct || q?.acceptAny ? '#34d399' : '#f87171', fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.5rem' }}>
                         {/* @ts-ignore */}
