@@ -15,7 +15,7 @@ const basicQuestions = [
         interstitial: { type: 'knowledge', title: '🎧 小知識', text: '低頻不是「聽到」，而是「感受到」' }
     },
     {
-        id: 3, title: '進化 01: 分辨聲音的邊界', question: '哪一個聽起來比較「清晰」且耐聽？', fileA: '/audio/step0/q3_balanced.mp3', fileB: '/audio/step0/q3bright.mp3', correct: 'A',
+        id: 3, title: '進化 01: 分辨聲音的邊界', question: '哪一個聽起來比較「清晰」且耐聽？', fileA: '/audio/step0/q3balanced.mp3', fileB: '/audio/step0/q3bright.mp3', correct: 'A',
         feedbackCorrect: '沒錯！你的耳朵正在進化，能辨別出真正的清晰度！', feedbackIncorrect: '被騙了吧！有時候「清晰」與「刺耳」只有一線之隔，太亮反而會造成聽覺疲勞喔。',
         insight: '🎧 明亮 ≠ 清晰。真正的清晰是「頻率不打架」，而不是無腦推高頻。',
         interstitial: { type: 'real-world', title: '🎧 真實應用', text: '下次混音覺得聲音不夠清楚時，試著去「減弱」那些轟轟作響的低中頻，而不是一味地把高頻推亮。' }
