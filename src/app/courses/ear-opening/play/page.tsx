@@ -16,22 +16,10 @@ const basicQuestions = [
         interstitial: { type: 'knowledge', title: '🎧 小知識', text: '低頻不是「聽到」，而是「感受到」' }
     },
     {
-
-        id: 3,
-        title: '進化 01: 分辨聲音的邊界',
-        question: '哪一個聽起來比較「清晰」且耐聽？',
-        fileA: '/audio/step0/q3balanced.mp3', // 正常EQ版 (正確答案)
-        fileB: '/audio/step0/q3bright.mp3',    // 刻意推高頻的刺耳版 (陷阱)
-        correct: 'A',
-        feedbackCorrect: '沒錯！你的耳朵正在進化，能辨別出真正的清晰度！',
-        feedbackIncorrect: '被騙了吧！有時候「清晰」與「刺耳」只有一線之隔，太亮反而會造成聽覺疲勞喔。',
+        id: 3, title: '進化 01: 分辨聲音的邊界', question: '哪一個聽起來比較「清晰」且耐聽？', fileA: '/audio/step0/q3_balanced.mp3', fileB: '/audio/step0/q3bright.mp3', correct: 'A',
+        feedbackCorrect: '沒錯！你的耳朵正在進化，能辨別出真正的清晰度！', feedbackIncorrect: '被騙了吧！有時候「清晰」與「刺耳」只有一線之隔，太亮反而會造成聽覺疲勞喔。',
         insight: '🎧 明亮 ≠ 清晰。真正的清晰是「頻率不打架」，而不是無腦推高頻。',
-        interstitial: {
-            type: 'real-world',
-            title: '🎧 真實應用',
-            text: '下次混音覺得聲音不夠清楚時，試著去「減弱」那些轟轟作響的低中頻，而不是一味地把高頻推亮。'
-        }
-
+        interstitial: { type: 'real-world', title: '🎧 真實應用', text: '下次混音覺得聲音不夠清楚時，試著去「減弱」那些轟轟作響的低中頻，而不是一味地把高頻推亮。' }
     },
     {
         id: 4, title: '進化 02: 捕捉兩側的細節', question: '哪一個聽起來比較「寬」？', fileA: '/audio/step0/q4_a_stereo.mp3', fileB: '/audio/step0/q4_b_mono.mp3', correct: 'A',
@@ -99,39 +87,62 @@ export default function EarOpeningPlayPage() {
     const activeQuestions = currentPhase === 'advanced' ? advancedQuestions : basicQuestions;
     const q = activeQuestions[currentIndex];
 
+    // ✅ 修正 1：修復依賴陣列與安全播放
     useEffect(() => {
         if (currentPhase === 'intermediate-result' || currentPhase === 'final-result' || showInterstitial) return;
+
         if (audioARef.current && audioBRef.current && q) {
             audioARef.current.src = q.fileA;
             audioBRef.current.src = q.fileB;
+
+            audioARef.current.muted = false;
+            audioBRef.current.muted = true;
+            audioARef.current.volume = 1;
+            audioBRef.current.volume = 0;
+
             audioARef.current.load();
             audioBRef.current.load();
+
             if (isPlaying) {
-                audioARef.current.play();
-                audioBRef.current.play();
+                const playPromiseA = audioARef.current.play();
+                if (playPromiseA !== undefined) playPromiseA.catch(e => console.log('Audio A play blocked:', e));
+
+                const playPromiseB = audioBRef.current.play();
+                if (playPromiseB !== undefined) playPromiseB.catch(e => console.log('Audio B play blocked:', e));
             }
         }
+
         setCurrentTrack('A');
         setSelectedAnswer(null);
-    }, [currentIndex, currentPhase, showInterstitial, q, isPlaying]);
+        // 🚨 這裡已經移除了 isPlaying，換題才重置軌道
+    }, [currentIndex, currentPhase, showInterstitial, q]);
 
+    // ✅ 修正 2：修復播放鍵按鈕邏輯
     const togglePlay = () => {
         if (!audioARef.current || !audioBRef.current) return;
+
         if (isPlaying) {
             audioARef.current.pause();
             audioBRef.current.pause();
         } else {
-            audioARef.current.play();
-            audioBRef.current.play();
+            const playPromiseA = audioARef.current.play();
+            if (playPromiseA !== undefined) playPromiseA.catch(e => console.log(e));
+
+            const playPromiseB = audioBRef.current.play();
+            if (playPromiseB !== undefined) playPromiseB.catch(e => console.log(e));
         }
         setIsPlaying(!isPlaying);
     };
 
+    // ✅ 修正 3：加入音量雙重保險，確保完全靜音
     const switchTrack = (track: 'A' | 'B') => {
         setCurrentTrack(track);
         if (audioARef.current && audioBRef.current) {
             audioARef.current.muted = track !== 'A';
             audioBRef.current.muted = track !== 'B';
+
+            audioARef.current.volume = track === 'A' ? 1 : 0;
+            audioBRef.current.volume = track === 'B' ? 1 : 0;
         }
     };
 
@@ -241,7 +252,6 @@ export default function EarOpeningPlayPage() {
                     </p>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        {/* ✅ 這裡確保導向 bridge 頁面 */}
                         <button onClick={() => router.push('/courses/ear-opening/bridge')} style={{ width: '100%', padding: '1.2rem', background: 'linear-gradient(135deg, #10b981, #38bdf8)', color: '#020617', border: 'none', borderRadius: '50px', fontSize: '1.1rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(16, 185, 129, 0.3)' }}>
                             🎧 我想知道這些聲音怎麼做
                         </button>
@@ -274,7 +284,6 @@ export default function EarOpeningPlayPage() {
                     </p>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        {/* ✅ 這裡確保導向 bridge 頁面 */}
                         <button onClick={() => router.push('/courses/ear-opening/bridge')} style={{ width: '100%', padding: '1.2rem', background: 'linear-gradient(135deg, #fca311, #f97316)', color: '#020617', border: 'none', borderRadius: '50px', fontSize: '1.2rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(252, 163, 17, 0.3)' }}>
                             🎧 進入學習系統 (開始做出自己的聲音)
                         </button>
