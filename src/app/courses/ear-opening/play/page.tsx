@@ -21,30 +21,30 @@ const basicQuestions = [
         interstitial: { type: 'real-world', title: '🎧 真實應用', text: '下次混音覺得聲音不夠清楚時，試著去「減弱」那些轟轟作響的低中頻，而不是一味地把高頻推亮。' }
     },
     {
-        id: 4, title: '進化 02: 捕捉兩側的細節', question: '哪一個聽起來比較「寬」？', fileA: '/audio/step0/q4_a_stereo.mp3', fileB: '/audio/step0/q4_b_mono.mp3', correct: 'A',
+        id: 4, title: '進化 02: 捕捉兩側的細節', question: '哪一個聽起來比較「寬」？', fileA: '/audio/step0/q4stereo.mp3', fileB: '/audio/step0/q4mono.mp3', correct: 'A',
         feedbackCorrect: '你開始注意到左右的細節了！', feedbackIncorrect: '把注意力放在耳朵的兩側邊緣試試看。',
         insight: '🎧 寬度 = 左右聲道資訊的差異度',
         interstitial: { type: 'knowledge', title: '🎧 小知識', text: '清晰 ≠ 亮，是“頻率不打架”' }
     },
     {
-        id: 5, title: '陷阱 01: 聽覺的錯覺', question: '哪一個聽起來比較「好聽」？', fileA: '/audio/step0/q5_a_normal.mp3', fileB: '/audio/step0/q5_b_louder.mp3', correct: 'B',
+        id: 5, title: '陷阱 01: 聽覺的錯覺', question: '哪一個聽起來比較爽？', fileA: '/audio/step0/q5normal.mp3', fileB: '/audio/step0/q5louder.mp3', correct: 'B',
         acceptAny: true,
         feedbackCorrect: '這是專業混音師也會中招的錯覺！', feedbackIncorrect: '這是專業混音師也會中招的錯覺！',
         insight: '🎧 假好聽 = 單純的音量膨脹 (+1dB 錯覺)'
     },
     {
-        id: 6, title: '挑戰 01: 隱形的動態控制', question: '哪一個聲音比較「穩」？', fileA: '/audio/step0/q6_a_unstable.mp3', fileB: '/audio/step0/q6_b_stable.mp3', correct: 'B',
+        id: 6, title: '挑戰 01: 隱形的動態控制', question: '哪一個聲音比較「穩」，不會忽大忽小？', fileA: '/audio/step0/q6unstable.mp3', fileB: '/audio/step0/q6stable.mp3', correct: 'B',
         feedbackCorrect: '你連這種微小的動態都能察覺！', feedbackIncorrect: '這題很難，聽不出差異是正常的。',
         insight: '🎧 穩定 = 動態被妥善地壓縮控制',
         interstitial: { type: 'real-world', title: '🎧 真實應用', text: '去聽你最愛的那首歌，注意大聲爆發時，聲音是否依然穩如泰山。' }
     },
     {
-        id: 7, title: '綜合 01: 畫面平衡感', question: '哪一個整體比較「平衡」？', fileA: '/audio/step0/q7_a_balanced.mp3', fileB: '/audio/step0/q7_b_muddy.mp3', correct: 'A',
+        id: 7, title: '綜合 01: 畫面平衡感', question: '哪一個整體比較「平衡」？', fileA: '/audio/step0/q7balanced.mp3', fileB: '/audio/step0/q7muddy.mp3', correct: 'A',
         feedbackCorrect: '你對整體畫面的掌握度很高。', feedbackIncorrect: '平衡是最難判斷的指標之一。',
         insight: '🎧 平衡 = 沒有任何頻段特別搶戲'
     },
     {
-        id: 8, title: '直覺 01: 製作人視角', question: '哪一個聽起來比較「專業」？', fileA: '/audio/step0/q8_a_amateur.mp3', fileB: '/audio/step0/q8_b_pro.mp3', correct: 'B',
+        id: 8, title: '直覺 01: 製作人視角', question: '哪一個聽起來比較「穩定、清楚、不刺耳」？', fileA: '/audio/step0/q8amateur.mp3', fileB: '/audio/step0/q8pro.mp3', correct: 'B',
         feedbackCorrect: '你已經具備製作人的直覺了！', feedbackIncorrect: '專業感來自無數個微小的細節堆疊。',
         insight: '🎧 專業感 = 無數微小正確決策的堆疊'
     }
