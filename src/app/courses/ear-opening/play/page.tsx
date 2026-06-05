@@ -52,17 +52,17 @@ const basicQuestions = [
 
 const advancedQuestions = [
     {
-        id: 9, title: '極限 01: 微量體感', question: '哪一個低頻比較「滿」？', fileA: '/audio/step0/q9_a_bass2db.mp3', fileB: '/audio/step0/q9_b_bass5db.mp3', correct: 'B',
+        id: 9, title: '極限 01: 微量體感', question: '哪一個低頻比較「滿」？', fileA: '/audio/step0/q9bass2db.mp3', fileB: '/audio/step0/q9bass5db.mp3', correct: 'B',
         feedbackCorrect: '太神了，你連這麼細微的變化都抓到了！', feedbackIncorrect: '這題非常進階，聽不出來很正常。',
         insight: '🎧 飽滿度 = 極微小音量差異的敏銳捕捉'
     },
     {
-        id: 10, title: '感知 01: 情緒的形狀', question: '哪一個聽起來比較「溫暖」？', fileA: '/audio/step0/q10_a_warm.mp3', fileB: '/audio/step0/q10_b_cold.mp3', correct: 'A',
+        id: 10, title: '感知 01: 情緒的形狀', question: '哪一個聽起來比較「溫暖」？', fileA: '/audio/step0/q10warm.mp3', fileB: '/audio/step0/q10cold.mp3', correct: 'A',
         feedbackCorrect: '沒錯，這就是「溫暖」的感覺。', feedbackIncorrect: '溫暖通常來自中低頻的包覆感。',
         insight: '🎧 溫暖 = 頻率與空間被設計出來的情感包覆'
     },
     {
-        id: 11, title: '感知 02: 空間的重量', question: '哪一個聽起來比較有「壓迫感」？', fileA: '/audio/step0/q11_a_open.mp3', fileB: '/audio/step0/q11_b_compressed.mp3', correct: 'B',
+        id: 11, title: '感知 02: 空間的重量', question: '哪一個聽起來比較有「壓迫感」？', fileA: '/audio/step0/q11open.mp3', fileB: '/audio/step0/q11compressed.mp3', correct: 'B',
         feedbackCorrect: '你感受到聲音的「重量與擠壓」了！', feedbackIncorrect: '壓迫感是一種很主觀但真實存在的聽覺感受。',
         insight: '🎧 壓迫感 = 過度壓縮導致聲音喘不過氣'
     }
