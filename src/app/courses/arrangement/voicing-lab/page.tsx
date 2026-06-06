@@ -15,14 +15,12 @@ const instruments: Instrument[] = [
     { id: "synth", name: "合成器", task: "負責：最亮眼的主旋律 (Lead)", icon: "🎛" },
 ];
 
-// 💡 優化 1：直接將資料調整為「上高下低」的視覺順序，附帶頻寬佔用圖示
 const slots = [
     { id: "high", label: "UPPER FLOOR (高頻區)", color: "#38bdf8", desc: "旋律線與點綴的挑高空間", bar: "██████" },
     { id: "mid", label: "MID FLOOR (中頻區)", color: "#facc15", desc: "和弦基底與人聲的主戰場", bar: "█████████████" },
     { id: "low", label: "GROUND FLOOR (低頻/基底區)", color: "#ef4444", desc: "Bass 與 大鼓 的專屬地盤", bar: "████████" },
 ];
 
-// 💡 優化 2：封裝獨立元件解決 React 直接修改 DOM 的 UX Bug
 const PlacedBadge = ({ name, icon, onRemove, disabled }: { name: string, icon: string, onRemove: (e: React.MouseEvent) => void, disabled: boolean }) => {
     const [isHover, setIsHover] = useState(false);
     return (
@@ -52,7 +50,6 @@ export default function VoicingLabPage() {
     const [placed, setPlaced] = useState<Record<string, string>>({});
     const [selectedIns, setSelectedIns] = useState<string | null>(null);
 
-    // 📊 產品級優化：Progress Memory 成長型統計狀態
     const [historyErrors, setHistoryErrors] = useState({ lowClash: 0, midCongested: 0 });
     const [hasCalculated, setHasCalculated] = useState(false);
 
@@ -61,11 +58,9 @@ export default function VoicingLabPage() {
         const check = () => setIsMobile(window.innerWidth < 768);
         check();
         window.addEventListener("resize", check);
-
         return () => window.removeEventListener("resize", check);
     }, []);
 
-    // 💡 優化 3：支援按鍵盤 ESC 取消選取樂器
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === "Escape") setSelectedIns(null);
@@ -74,13 +69,9 @@ export default function VoicingLabPage() {
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, []);
 
-    // 💡 優化 4：再點擊一次已選取的樂器即可取消選取 (Deselect)
     const handleSelectInstrument = (id: string) => {
-        if (selectedIns === id) {
-            setSelectedIns(null);
-        } else {
-            setSelectedIns(id);
-        }
+        if (selectedIns === id) setSelectedIns(null);
+        else setSelectedIns(id);
     };
 
     const handleSlotClick = (slotId: string) => {
@@ -100,7 +91,6 @@ export default function VoicingLabPage() {
         setHasCalculated(false);
     };
 
-    // 💡 優化 5：動態分數系統（非二元歸零，改採加扣分制）
     const getScoreDetails = () => {
         let currentScore = 0;
         let penalties = 0;
@@ -112,24 +102,15 @@ export default function VoicingLabPage() {
             const slot = placed[ins.id];
             if (!slot) return;
 
-            // 正確配對積分
             if (ins.id === "guitar" && slot === "mid") currentScore++;
             if (ins.id === "piano" && slot === "high") currentScore++;
             if (ins.id === "synth" && slot === "high") currentScore++;
 
-            // 致命低頻車禍懲罰：一個扣 2 分
-            if (slot === "low") {
-                penalties += 2;
-                lowClashDetected = true;
-            }
+            if (slot === "low") { penalties += 2; lowClashDetected = true; }
             if (slot === "mid") midCount++;
         });
 
-        // 中頻擁擠懲罰
-        if (midCount >= 2) {
-            penalties += 1;
-            midCongestedDetected = true;
-        }
+        if (midCount >= 2) { penalties += 1; midCongestedDetected = true; }
 
         const finalScore = Math.max(0, currentScore - penalties);
         return { finalScore, lowClashDetected, midCongestedDetected };
@@ -137,9 +118,8 @@ export default function VoicingLabPage() {
 
     const { finalScore, lowClashDetected, midCongestedDetected } = getScoreDetails();
     const allPlaced = instruments.every((i) => placed[i.id]);
-    const isFreeze = allPlaced && finalScore === 3; // 滿分時鎖定操作
+    const isFreeze = allPlaced && finalScore === 3;
 
-    // 📊 異步記錄錯誤軌跡 (記憶成長系統)
     useEffect(() => {
         if (allPlaced && !hasCalculated) {
             setHistoryErrors(prev => ({
@@ -148,9 +128,8 @@ export default function VoicingLabPage() {
             }));
             setHasCalculated(true);
         }
-    }, [allPlaced, finalScore]);
+    }, [allPlaced, finalScore, lowClashDetected, midCongestedDetected, hasCalculated]);
 
-    // 💡 優化 6：非機械化判定，改為「提示型」擁擠度 UI
     const getCongestionUI = (slotId: string) => {
         const count = Object.values(placed).filter(v => v === slotId).length;
         if (slotId === "high") {
@@ -242,7 +221,7 @@ export default function VoicingLabPage() {
                             )}
                         </div>
 
-                        {/* 📊 成長型大腦小面板面板 (Progress Memory) */}
+                        {/* 📊 成長型大腦小面板面板 */}
                         {(historyErrors.lowClash > 0 || historyErrors.midCongested > 0) && (
                             <div style={{ marginTop: "2rem", paddingTop: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
                                 <div style={{ fontSize: "0.85rem", color: "#64748b", fontWeight: "bold", marginBottom: "8px", letterSpacing: "1px" }}>👂 耳朵決策軌跡</div>
@@ -282,7 +261,6 @@ export default function VoicingLabPage() {
                                                 </div>
                                                 <div style={{ color: "#64748b", fontSize: "0.85rem", marginBottom: "8px" }}>{slot.desc}</div>
 
-                                                {/* 💡 優化 7：增加視覺頻譜，彰顯「頻寬佔用感」 */}
                                                 <div style={{ fontFamily: "monospace", color: "rgba(255,255,255,0.15)", fontSize: "0.85rem", letterSpacing: "1px" }}>
                                                     頻寬：<span style={{ color: `${slot.color}40` }}>{slot.bar}</span>
                                                 </div>
@@ -320,15 +298,15 @@ export default function VoicingLabPage() {
                     </div>
                 </div>
 
-                {/* 🔥 RESULT 反饋 */}
+                {/* 🔥 RESULT 反饋 & CTA 升級轉折頁 */}
                 {allPlaced && (
                     <div style={{
-                        marginTop: "4rem", padding: isMobile ? "2rem 1.5rem" : "3rem", borderRadius: "24px", animation: "fadeInUp 0.5s ease",
-                        background: finalScore === 3 ? "rgba(34,197,94,0.05)" : "rgba(239,68,68,0.05)",
-                        border: finalScore === 3 ? "1px solid rgba(34,197,94,0.3)" : "1px solid rgba(239,68,68,0.3)",
-                        boxShadow: "0 20px 40px rgba(0,0,0,0.3)"
+                        marginTop: "4rem", padding: isMobile ? "2rem 1.5rem" : "4rem 3rem", borderRadius: "24px", animation: "fadeInUp 0.5s ease",
+                        background: finalScore === 3 ? "linear-gradient(180deg, rgba(15, 23, 42, 0) 0%, rgba(15, 23, 42, 0.8) 100%)" : "rgba(239,68,68,0.05)",
+                        border: finalScore === 3 ? "1px solid rgba(56, 189, 248, 0.2)" : "1px solid rgba(239,68,68,0.3)",
+                        boxShadow: finalScore === 3 ? "0 20px 40px rgba(0,0,0,0.5)" : "none"
                     }}>
-                        <div style={{ textAlign: "center" }}>
+                        <div style={{ textAlign: "center", marginBottom: finalScore === 3 ? "3rem" : "0" }}>
                             <div style={{ fontSize: "1.2rem", color: "#94a3b8", marginBottom: "0.5rem", fontWeight: "bold" }}>當前決策評分</div>
                             <div style={{ fontSize: "3.5rem", fontWeight: "900", color: finalScore === 3 ? "#10b981" : "#facc15", marginBottom: "1.5rem" }}>
                                 {finalScore} <span style={{ fontSize: "1.5rem", color: "#475569" }}>/ 3 分</span>
@@ -337,7 +315,7 @@ export default function VoicingLabPage() {
                             {finalScore === 3 ? (
                                 <>
                                     <h2 style={{ color: "#10b981", fontSize: "1.8rem", margin: "0 0 1rem 0", fontWeight: 900 }}>🎯 完美空間編配！布局已鎖定</h2>
-                                    <p style={{ color: '#cbd5e1', fontSize: '1.1rem', lineHeight: 1.6, margin: '0 0 2rem 0' }}>
+                                    <p style={{ color: '#cbd5e1', fontSize: '1.1rem', lineHeight: 1.6, margin: '0' }}>
                                         你讓木吉他穩住二樓中頻，並成功把鋼琴和合成器利用「移高八度」推向高空。每個樂器都有自己的樓層，不再需要搶奪頻寬！
                                     </p>
                                 </>
@@ -355,23 +333,88 @@ export default function VoicingLabPage() {
                             )}
                         </div>
 
-                        {/* CTA - 滿分過關 */}
+                        {/* 🔥 終極奧義：升級轉折文案 (僅滿分時顯示) */}
                         {finalScore === 3 && (
-                            <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "2.5rem", marginTop: "2.5rem", textAlign: "center" }}>
-                                <p style={{ color: "#fca311", fontWeight: "bold", letterSpacing: "2px", fontSize: "0.9rem", marginBottom: "1.5rem" }}>NEXT CHAPTER</p>
-                                <button
-                                    onClick={() => router.push("/courses/arrangement/masking-intro")}
-                                    style={{
-                                        padding: isMobile ? "1.2rem 2rem" : "1.2rem 4rem", borderRadius: "50px", border: "none",
-                                        background: "linear-gradient(135deg, #a78bfa, #7c3aed)", color: "#fff",
-                                        fontWeight: 900, fontSize: "1.2rem", cursor: "pointer", boxShadow: "0 10px 30px rgba(124, 58, 237, 0.4)",
-                                        transition: "transform 0.2s", width: isMobile ? "100%" : "auto"
-                                    }}
-                                    onMouseOver={e => e.currentTarget.style.transform = "scale(1.05)"}
-                                    onMouseOut={e => e.currentTarget.style.transform = "scale(1)"}
-                                >
-                                    🚀 前往下一章：Masking 頻率遮蔽 ➔
-                                </button>
+                            <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "3rem", animation: "fadeInUp 0.8s ease 0.3s backwards" }}>
+
+                                <div style={{ maxWidth: "600px", margin: "0 auto", textAlign: "left" }}>
+                                    <h3 style={{ fontSize: "1.6rem", fontWeight: 900, color: "#fff", marginBottom: "2rem", lineHeight: 1.5 }}>
+                                        🎧 你剛剛做的，其實不是遊戲。<br />
+                                        <span style={{ color: "#38bdf8" }}>是「混音師每天在做的決策」。</span>
+                                    </h3>
+
+                                    <div style={{ color: "#cbd5e1", fontSize: "1.1rem", lineHeight: 1.8, marginBottom: "2.5rem" }}>
+                                        <p style={{ marginBottom: "1rem" }}>
+                                            大多數人學音樂會卡住，不是因為不努力<br />
+                                            而是因為：<br />
+                                            <span style={{ color: "#ef4444" }}>❌ 聽不出差異</span><br />
+                                            <span style={{ color: "#ef4444" }}>❌ 不知道哪裡錯</span><br />
+                                            <span style={{ color: "#ef4444" }}>❌ 更不知道怎麼修</span>
+                                        </p>
+
+                                        <p style={{ marginBottom: "1.5rem", color: "#fff", borderLeft: "3px solid #10b981", paddingLeft: "15px", background: "rgba(16, 185, 129, 0.05)", padding: "10px 15px", borderRadius: "0 8px 8px 0" }}>
+                                            但你剛剛已經做到一件關鍵的事：<br />
+                                            <strong style={{ color: "#10b981", fontSize: "1.15rem" }}>👉 你開始「用耳朵做選擇」</strong>
+                                        </p>
+
+                                        <hr style={{ border: "none", borderTop: "1px dashed rgba(255,255,255,0.1)", margin: "2rem 0" }} />
+
+                                        <p style={{ marginBottom: "1.5rem" }}>
+                                            而接下來你會遇到一個新的問題：<br />
+                                            <span style={{ color: "#fca311", fontWeight: "bold" }}>👉 當聲音開始變多的時候</span><br />
+                                            <span style={{ color: "#fca311", fontWeight: "bold" }}>👉 即使放對位置，也開始互相干擾</span>
+                                        </p>
+
+                                        <p style={{ marginBottom: "1.5rem" }}>
+                                            這就是下一關要解決的核心：<br />
+                                            <strong style={{ color: "#a78bfa", fontSize: "1.3rem", display: "inline-block", marginTop: "8px", letterSpacing: "1px" }}>🎯 Masking（頻率遮蔽）</strong>
+                                        </p>
+
+                                        <hr style={{ border: "none", borderTop: "1px dashed rgba(255,255,255,0.1)", margin: "2rem 0" }} />
+
+                                        <p style={{ marginBottom: "1.5rem" }}>
+                                            但在進入下一章之前<br />我想讓你先知道一件事：<br />
+                                            <strong style={{ color: "#fff", display: "inline-block", marginTop: "8px" }}>👉 你現在，已經比 80% 的創作者更接近「專業」</strong><br />
+                                            差的不是努力<br />
+                                            而是<strong style={{ color: "#38bdf8" }}>「系統」</strong>
+                                        </p>
+
+                                        <p style={{ fontWeight: "bold", color: "#64748b", marginTop: "2rem", textAlign: "center" }}>
+                                            👇 接下來有兩條路
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* 🎯 雙按鈕 CTA 區塊 */}
+                                <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "1rem", justifyContent: "center", maxWidth: "700px", margin: "0 auto" }}>
+                                    <button
+                                        onClick={() => router.push("/")} // 導回首頁或導航頁
+                                        style={{
+                                            padding: "1.2rem 1.5rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)",
+                                            background: "rgba(255,255,255,0.03)", color: "#94a3b8",
+                                            fontWeight: "bold", fontSize: "1.1rem", cursor: "pointer",
+                                            transition: "all 0.2s", flex: 1
+                                        }}
+                                        onMouseOver={e => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "#fff"; }}
+                                        onMouseOut={e => { e.currentTarget.style.background = "rgba(255,255,255,0.03)"; e.currentTarget.style.color = "#94a3b8"; }}
+                                    >
+                                        繼續免費探索 ➜
+                                    </button>
+
+                                    <button
+                                        onClick={() => router.push("/pricing")} // 導向定價頁
+                                        style={{
+                                            padding: "1.2rem 1.5rem", borderRadius: "12px", border: "none",
+                                            background: "linear-gradient(135deg, #0ea5e9, #3b82f6)", color: "#fff",
+                                            fontWeight: 900, fontSize: "1.2rem", cursor: "pointer", boxShadow: "0 10px 25px rgba(59, 130, 246, 0.4)",
+                                            transition: "transform 0.2s", flex: 1.5, display: "flex", alignItems: "center", justifyContent: "center", gap: "10px"
+                                        }}
+                                        onMouseOver={e => e.currentTarget.style.transform = "translateY(-3px)"}
+                                        onMouseOut={e => e.currentTarget.style.transform = "translateY(0)"}
+                                    >
+                                        🚀 解鎖完整訓練系統
+                                    </button>
+                                </div>
                             </div>
                         )}
                     </div>
