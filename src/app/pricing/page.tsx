@@ -20,21 +20,39 @@ export default function PricingPage() {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
+    // 💡 修正 1：清理 Modal 狀態，避免卡住或出現上一次的成功畫面
     const openWaitlist = (planName: string) => {
         setWaitlistPlanType(planName);
-        setShowWaitlistModal(true);
-        setSubmitSuccess(false);
         setWaitlistEmail('');
+        setSubmitSuccess(false);
+        setIsSubmitting(false);
+        setShowWaitlistModal(true);
     };
 
+    const closeWaitlist = () => {
+        setShowWaitlistModal(false);
+    };
+
+    // 💡 修正 2：準備真實的 API 串接結構，避免名單蒸發
     const handleWaitlistSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!waitlistEmail) return;
         setIsSubmitting(true);
-        setTimeout(() => {
-            setIsSubmitting(false);
+
+        try {
+            // TODO: 最低限度請在這裡接上 Supabase / Firebase 或是 Google Sheet API
+            // 例如: await fetch('/api/waitlist', { method: 'POST', body: JSON.stringify({ email: waitlistEmail, plan: waitlistPlanType }) });
+
+            // 目前模擬 API 延遲
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
             setSubmitSuccess(true);
-        }, 1000);
+        } catch (error) {
+            console.error("Waitlist submission failed:", error);
+            alert("發生錯誤，請稍後再試！");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -42,162 +60,111 @@ export default function PricingPage() {
             <div style={{ maxWidth: '1100px', margin: '0 auto', width: '100%' }}>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
-                    <button onClick={() => router.push('/')} style={{ background: 'transparent', color: '#94a3b8', border: '1px solid #334155', padding: '0.6rem 1.2rem', borderRadius: '50px', cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#64748b'; }} onMouseOut={e => { e.currentTarget.style.color = '#94a3b8'; e.currentTarget.style.borderColor = '#334155'; }}>
+                    <button className="nav-btn" onClick={() => router.push('/')}>
                         ⬅️ 返回首頁
                     </button>
                 </div>
 
-                {/* 🎯 HERO 升級版：直擊 AI 時代痛點 */}
-                <header style={{ textAlign: 'center', marginBottom: '5rem' }}>
-                    <h1 style={{ fontSize: isMobile ? '2.2rem' : '4rem', fontWeight: '900', margin: '0 0 2rem 0', color: '#fff', lineHeight: '1.2' }}>
-                        你不是缺工具<br />
-                        <span style={{ color: '#38bdf8' }}>你是缺「判斷聲音的能力」</span>
+                {/* 🎯 HERO：升級成「會讓人掏錢型」 */}
+                <header style={{ textAlign: 'center', marginBottom: '4rem' }}>
+                    <h1 style={{ fontSize: isMobile ? '2.2rem' : '4rem', fontWeight: '900', margin: '0 0 1.5rem 0', color: '#fff', lineHeight: '1.2' }}>
+                        🎧 像製作人一樣<span style={{ color: '#38bdf8' }}>訓練你的耳朵</span>
                     </h1>
-
-                    <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '24px', padding: isMobile ? '2rem 1.5rem' : '3rem', maxWidth: '800px', margin: '0 auto' }}>
-                        <p style={{ color: '#94a3b8', fontSize: '1.15rem', lineHeight: '1.8', marginBottom: '2rem' }}>
-                            現在這個時代：<br />
-                            AI 可以幫你生成歌（像 Suno）<br />
-                            DAW 可以幫你修聲音<br />
-                            Plugin 可以自動混音<br />
-                            <strong style={{ color: '#fca311', fontSize: '1.3rem', display: 'inline-block', marginTop: '1rem' }}>👉 但問題是：你不知道什麼是「好的」</strong>
-                        </p>
-
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', marginBottom: '2.5rem' }}>
-                            <div style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#fca5a5', padding: '12px 24px', borderRadius: '12px', width: '100%', maxWidth: '400px', textAlign: 'left', fontWeight: 'bold' }}>❌ 生成出來不知道好不好</div>
-                            <div style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#fca5a5', padding: '12px 24px', borderRadius: '12px', width: '100%', maxWidth: '400px', textAlign: 'left', fontWeight: 'bold' }}>❌ 混音後覺得怪但說不出來</div>
-                            <div style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#fca5a5', padding: '12px 24px', borderRadius: '12px', width: '100%', maxWidth: '400px', textAlign: 'left', fontWeight: 'bold' }}>❌ 永遠卡在「好像差一點」</div>
-                        </div>
-
-                        <h3 style={{ fontSize: '1.5rem', color: '#fff', fontWeight: '900', letterSpacing: '1px' }}>
-                            我們不是再給你一個工具<br />
-                            我們在做的是：<strong style={{ color: '#10b981' }}>讓你的耳朵，變成工具</strong>
-                        </h3>
-                    </div>
+                    <p style={{ color: '#94a3b8', fontSize: '1.2rem', maxWidth: '650px', margin: '0 auto', lineHeight: '1.6' }}>
+                        別再瞎猜了。開始聽出真正的差異。<br />
+                        透過互動式聆聽，真正學會 EQ、空間分配、律動與混音決策。
+                    </p>
                 </header>
 
-                {/* 💥 核心差異與分層 */}
-                <section style={{ marginBottom: '6rem', display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '2rem' }}>
+                {/* 💥 價值主張（打痛點） */}
+                <section style={{ marginBottom: '6rem', display: 'flex', justifyContent: 'center' }}>
+                    <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '24px', padding: isMobile ? '2rem 1.5rem' : '3rem', maxWidth: '800px', width: '100%' }}>
+                        <h2 style={{ textAlign: 'center', fontSize: '1.5rem', color: '#fff', fontWeight: '900', marginBottom: '2rem' }}>為什麼你總是卡關？</h2>
 
-                    {/* 核心差異 */}
-                    <div style={{ flex: 1, background: 'linear-gradient(145deg, #1e1b4b, #0f172a)', border: '1px solid #7c3aed', borderRadius: '24px', padding: '2.5rem' }}>
-                        <h2 style={{ color: '#a78bfa', fontSize: '1.5rem', marginBottom: '1.5rem', fontWeight: '900' }}>💥 核心差異</h2>
-                        <p style={{ color: '#cbd5e1', marginBottom: '2rem', lineHeight: '1.6' }}>這套系統將直接拉開你跟 AI 工具使用者的差距：</p>
-
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                            <div>
-                                <div style={{ color: '#94a3b8', textDecoration: 'line-through', marginBottom: '5px' }}>❌ AI 工具：幫你做</div>
-                                <div style={{ color: '#10b981', fontWeight: 'bold', fontSize: '1.1rem' }}>✅ 我們：讓你知道「為什麼這樣做」</div>
-                            </div>
-                            <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
-                            <div>
-                                <div style={{ color: '#94a3b8', textDecoration: 'line-through', marginBottom: '5px' }}>❌ 教學影片：告訴你怎麼調</div>
-                                <div style={{ color: '#38bdf8', fontWeight: 'bold', fontSize: '1.1rem' }}>✅ 我們：讓你「聽出來要不要調」</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* 適合誰 */}
-                    <div style={{ flex: 1.5, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', padding: '2.5rem' }}>
-                        <h2 style={{ color: '#fff', fontSize: '1.5rem', marginBottom: '2rem', fontWeight: '900' }}>這套系統適合誰？</h2>
-
-                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1.5rem' }}>
-                            <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1.2rem', borderRadius: '12px', borderLeft: '4px solid #10b981' }}>
-                                <div style={{ color: '#fff', fontWeight: 'bold', marginBottom: '8px' }}>🟢 完全不懂音樂的人</div>
-                                <div style={{ color: '#94a3b8', fontSize: '0.9rem', lineHeight: '1.5' }}>第一次「聽見差異」，建立感覺</div>
-                            </div>
-                            <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1.2rem', borderRadius: '12px', borderLeft: '4px solid #facc15' }}>
-                                <div style={{ color: '#fff', fontWeight: 'bold', marginBottom: '8px' }}>🟡 用 AI 做歌的創作者</div>
-                                <div style={{ color: '#94a3b8', fontSize: '0.9rem', lineHeight: '1.5' }}>知道怎麼修改，讓作品「變好聽」</div>
-                            </div>
-                            <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1.2rem', borderRadius: '12px', borderLeft: '4px solid #38bdf8' }}>
-                                <div style={{ color: '#fff', fontWeight: 'bold', marginBottom: '8px' }}>🔵 有在用 DAW 混音的人</div>
-                                <div style={{ color: '#94a3b8', fontSize: '0.9rem', lineHeight: '1.5' }}>從「亂調」變成「有依據的決策」</div>
-                            </div>
-                            <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1.2rem', borderRadius: '12px', borderLeft: '4px solid #a78bfa' }}>
-                                <div style={{ color: '#fff', fontWeight: 'bold', marginBottom: '8px' }}>🟣 想進階到專業製作的人</div>
-                                <div style={{ color: '#94a3b8', fontSize: '0.9rem', lineHeight: '1.5' }}>建立真正的「混音判斷力」</div>
-                            </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', alignItems: 'center', marginBottom: '2.5rem' }}>
+                            <div className="pain-point-card">🎯 <strong>理論背得滾瓜爛熟</strong>，但實戰時「根本聽不出來」</div>
+                            <div className="pain-point-card">🎧 <strong>你的混音在耳機聽很棒</strong>，換到車上聽就全毀了</div>
+                            <div className="pain-point-card">🤯 <strong>看了一堆 YouTube 教學</strong>，自己做的時候還是憑感覺瞎轉</div>
                         </div>
 
-                        <div style={{ marginTop: '2rem', textAlign: 'center', color: '#fca311', fontWeight: 'bold', fontSize: '1.1rem' }}>
-                            你不需要先會，👉 你只需要開始「聽」
+                        <div style={{ textAlign: 'center' }}>
+                            <button className="cta-btn-primary" onClick={() => router.push('/courses/ear-opening/intro')}>
+                                立即開始訓練 (免費)
+                            </button>
                         </div>
                     </div>
                 </section>
 
                 <h2 style={{ textAlign: 'center', fontSize: '2.5rem', fontWeight: '900', color: '#fff', marginBottom: '3rem' }}>
-                    選擇你的訓練方案
+                    選擇適合你的訓練方案
                 </h2>
 
-                {/* 方案卡片區塊 (收斂主軸：你會學到什麼) */}
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '2rem', alignItems: 'center' }}>
+                {/* 💰 方案卡片區塊 (引入 AI 點數制與能力提升文案) */}
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '2rem', alignItems: 'stretch' }}>
 
-                    {/* 🟢 方案 1：免費層 */}
-                    <div style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '24px', padding: '2.5rem 2rem', textAlign: 'center', display: 'flex', flexDirection: 'column', height: '100%' }}>
-                        <h3 style={{ color: '#94a3b8', fontSize: '1.3rem', marginBottom: '1rem' }}>聽覺覺醒 (Awareness)</h3>
-                        <div style={{ fontSize: '2.5rem', fontWeight: '900', color: '#fff', marginBottom: '0.5rem' }}>
-                            免費體驗
-                        </div>
-                        <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '2rem' }}>打破「聽不出來」的瓶頸</p>
+                    {/* 🟢 方案 1：Free（引流） */}
+                    <div className="pricing-card free-card">
+                        <h3 style={{ color: '#94a3b8', fontSize: '1.3rem', marginBottom: '1rem' }}>聽覺覺醒</h3>
+                        <div style={{ fontSize: '2.5rem', fontWeight: '900', color: '#fff', marginBottom: '0.5rem' }}>$0</div>
+                        <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '2rem' }}>開始第一次「真的聽見差異」</p>
 
-                        <div style={{ color: '#fff', fontWeight: 'bold', textAlign: 'left', marginBottom: '1rem', fontSize: '1.1rem' }}>🎧 你會體驗到：</div>
-                        <ul style={{ color: '#cbd5e1', textAlign: 'left', lineHeight: '2', margin: '0 0 2rem 0', padding: 0, listStyle: 'none', flex: 1, fontSize: '0.95rem' }}>
-                            <li>✔️ 第一次真實感受到「頻率」的存在</li>
-                            <li>✔️ 發現「動態起伏」對情緒的影響</li>
-                            <li>✔️ 了解什麼叫做「聲音的立體感」</li>
-                            <li style={{ color: '#475569', marginTop: '10px' }}>❌ 進階頻率遮蔽與實戰混音決策</li>
+                        <ul className="feature-list">
+                            <li>✔️ 基礎聽覺覺醒 (Step 0)</li>
+                            <li>✔️ 解鎖基礎概念與部分互動題目</li>
+                            <li>✔️ <span style={{ color: '#facc15' }}>限制音檔播放次數</span> (挑戰直覺)</li>
+                            <li>✔️ <strong>3 次 AI 提示額度</strong> (體驗用)</li>
+                            <li className="disabled-feature">❌ 完整訓練章節解鎖</li>
+                            <li className="disabled-feature">❌ 無限重播與完整 AI 分析</li>
                         </ul>
-                        <button onClick={() => router.push('/courses/ear-opening/intro')} style={{ width: '100%', padding: '1rem', background: '#334155', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.2s' }} onMouseOver={e => e.currentTarget.style.background = '#475569'} onMouseOut={e => e.currentTarget.style.background = '#334155'}>
-                            開始免費探索
+                        <button className="plan-btn free-btn" onClick={() => router.push('/courses/ear-opening/intro')}>
+                            免費體驗
                         </button>
                     </div>
 
-                    {/* 🔵 方案 2：付費核心層 */}
-                    <div style={{ background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)', border: '2px solid #38bdf8', borderRadius: '24px', padding: '3rem 2rem', textAlign: 'center', display: 'flex', flexDirection: 'column', height: '100%', position: 'relative', boxShadow: '0 20px 40px rgba(56, 189, 248, 0.2)' }}>
-                        <div style={{ position: 'absolute', top: '-15px', left: '50%', transform: 'translateX(-50%)', background: '#38bdf8', color: '#020617', padding: '4px 16px', borderRadius: '20px', fontWeight: '900', fontSize: '0.85rem', letterSpacing: '1px' }}>
-                            核心訓練系統
-                        </div>
-                        <h3 style={{ color: '#38bdf8', fontSize: '1.5rem', marginBottom: '1rem', fontWeight: 'bold' }}>聲音建構者</h3>
+                    {/* 🔵 方案 2：Core（主賺 - 防爆成本設計） */}
+                    <div className="pricing-card core-card">
+                        <div className="popular-badge">推薦方案</div>
+                        <h3 style={{ color: '#38bdf8', fontSize: '1.5rem', marginBottom: '1rem', fontWeight: 'bold' }}>核心訓練系統</h3>
 
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: '5px', marginBottom: '0.5rem' }}>
                             <span style={{ fontSize: '1.2rem', color: '#fff', fontWeight: 'bold', marginBottom: '8px' }}>NT$</span>
                             <span style={{ fontSize: '3rem', fontWeight: '900', color: '#fff', lineHeight: 1 }}>399</span>
                         </div>
-                        <p style={{ color: '#38bdf8', fontSize: '0.9rem', marginBottom: '2rem', fontWeight: 'bold' }}>/ 月 (最完整的耳朵重訓計畫)</p>
+                        <p style={{ color: '#38bdf8', fontSize: '0.9rem', marginBottom: '2rem', fontWeight: 'bold' }}>/ 月 (建立真正的決策力)</p>
 
-                        <div style={{ color: '#fff', fontWeight: 'bold', textAlign: 'left', marginBottom: '1rem', fontSize: '1.1rem' }}>🎧 你會學會 (且真的聽得出來)：</div>
-                        <ul style={{ color: '#e2e8f0', textAlign: 'left', lineHeight: '2', margin: '0 0 2rem 0', padding: 0, listStyle: 'none', flex: 1, fontSize: '0.95rem' }}>
-                            <li>🔥 <strong style={{ color: '#38bdf8' }}>為什麼你的音樂會糊？</strong></li>
-                            <li>🔥 <strong style={{ color: '#38bdf8' }}>怎麼讓人聲站出來？</strong></li>
-                            <li>🔥 <strong style={{ color: '#38bdf8' }}>為什麼低頻會鬆散？</strong></li>
-                            <li>🔥 <strong style={{ color: '#38bdf8' }}>怎麼讓整體變「專業感」？</strong></li>
-                            <li style={{ fontSize: '0.85rem', color: '#94a3b8', marginTop: '10px' }}>*(包含無限制的訓練音檔與 AI 輔助解析)*</li>
+                        <div style={{ color: '#fff', fontWeight: 'bold', textAlign: 'left', marginBottom: '1rem', fontSize: '1rem' }}>🎧 你將獲得的能力：</div>
+                        <ul className="feature-list core-features">
+                            <li>🔥 瞬間聽出刺耳與混濁的頻率</li>
+                            <li>🔥 掌握讓樂器不打架的空間分配邏輯</li>
+                            <li>✔️ 解鎖全部章節 (Groove / Voicing / Pan)</li>
+                            <li>✔️ <strong>無限制音檔重複播放</strong></li>
+                            <li>✔️ <strong>每月 30 次 AI 深度分析額度</strong> (Credits)</li>
+                            <li>✔️ 盲測準確率與學習進度追蹤</li>
                         </ul>
-                        <button onClick={() => openWaitlist('聲音建構者方案')} style={{ width: '100%', padding: '1.2rem', background: 'linear-gradient(135deg, #38bdf8, #2563eb)', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: '900', fontSize: '1.1rem', cursor: 'pointer', boxShadow: '0 10px 20px rgba(56, 189, 248, 0.3)', transition: 'transform 0.2s' }} onMouseOver={e => e.currentTarget.style.transform = 'translateY(-3px)'} onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}>
-                            🚀 解鎖完整訓練 (加入等候名單)
+                        <button className="plan-btn core-btn" onClick={() => openWaitlist('核心訓練系統')}>
+                            開始學習
                         </button>
                     </div>
 
-                    {/* 🟣 方案 3：高階層 */}
-                    <div style={{ background: '#0f172a', border: '1px solid #a78bfa', borderRadius: '24px', padding: '2.5rem 2rem', textAlign: 'center', display: 'flex', flexDirection: 'column', height: '100%' }}>
+                    {/* 🟣 方案 3：Pro（未來） */}
+                    <div className="pricing-card pro-card">
                         <h3 style={{ color: '#a78bfa', fontSize: '1.3rem', marginBottom: '1rem' }}>混音實戰系統</h3>
 
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: '5px', marginBottom: '0.5rem' }}>
                             <span style={{ fontSize: '1.2rem', color: '#fff', fontWeight: 'bold', marginBottom: '8px' }}>NT$</span>
                             <span style={{ fontSize: '2.5rem', fontWeight: '900', color: '#fff', lineHeight: 1 }}>899</span>
                         </div>
-                        <p style={{ color: '#a78bfa', fontSize: '0.9rem', marginBottom: '2rem' }}>/ 月 (掌握大師級的決策邏輯)</p>
+                        <p style={{ color: '#a78bfa', fontSize: '0.9rem', marginBottom: '2rem' }}>/ 月 (大師級的極限訓練)</p>
 
-                        <div style={{ color: '#fff', fontWeight: 'bold', textAlign: 'left', marginBottom: '1rem', fontSize: '1.1rem' }}>🎧 你會精通：</div>
-                        <ul style={{ color: '#cbd5e1', textAlign: 'left', lineHeight: '2', margin: '0 0 2rem 0', padding: 0, listStyle: 'none', flex: 1, fontSize: '0.95rem' }}>
-                            <li>⭐ 在 30 軌的複雜專案中找出衝突點</li>
-                            <li>⭐ 判斷極限動態範圍的壓縮時機</li>
-                            <li>⭐ 建立自己的混音 S.O.P 與審美標準</li>
-                            <li>⭐ 參與每月真人混音作品深度拆解</li>
+                        <ul className="feature-list">
+                            <li>⭐ <strong>進階 AI 混音參數深度分析</strong></li>
+                            <li>⭐ 針對弱點的個人化訓練建議</li>
+                            <li>✔️ 包含 Core 方案所有內容</li>
+                            <li>✔️ 每月大額度 AI 分析點數</li>
+                            <li>✔️ 進階母帶動態與多軌實戰拆解</li>
                         </ul>
-                        <button onClick={() => openWaitlist('混音實戰系統方案')} style={{ width: '100%', padding: '1rem', background: '#1e1b4b', color: '#a78bfa', border: '1px solid #a78bfa', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.2s' }} onMouseOver={e => e.currentTarget.style.background = '#2e1065'} onMouseOut={e => e.currentTarget.style.background = '#1e1b4b'}>
-                            🚀 準備實戰 (加入等候名單)
+                        <button className="plan-btn pro-btn" onClick={() => openWaitlist('混音實戰系統')}>
+                            敬請期待
                         </button>
                     </div>
 
@@ -206,20 +173,13 @@ export default function PricingPage() {
 
             {/* 🚨 Waitlist 彈出視窗 (Modal) */}
             {showWaitlistModal && (
-                <div style={{
-                    position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(2, 6, 23, 0.85)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 999, backdropFilter: 'blur(8px)', padding: '1rem'
-                }}>
-                    <div style={{
-                        background: 'linear-gradient(145deg, #0f172a, #1e293b)', width: '100%', maxWidth: '450px', borderRadius: '24px',
-                        border: '1px solid #475569', padding: '2.5rem', position: 'relative', boxShadow: '0 25px 50px rgba(0,0,0,0.5)',
-                        animation: 'fadeIn 0.3s ease'
-                    }}>
-                        <button onClick={() => setShowWaitlistModal(false)} style={{ position: 'absolute', top: '15px', right: '15px', background: 'transparent', border: 'none', color: '#94a3b8', fontSize: '1.5rem', cursor: 'pointer' }}>✕</button>
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <button onClick={closeWaitlist} className="modal-close-btn">✕</button>
 
                         {!submitSuccess ? (
                             <>
-                                <div style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '1rem' }}>💎</div>
+                                <div style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '1rem' }}>🎟️</div>
                                 <h3 style={{ color: '#fff', fontSize: '1.5rem', textAlign: 'center', marginBottom: '1rem', fontWeight: 'bold' }}>
                                     {waitlistPlanType} 籌備中！
                                 </h3>
@@ -227,9 +187,16 @@ export default function PricingPage() {
                                     付費解鎖機制與進階訓練系統正在做最後的調校。留下 Email 加入等候名單，上線時我們將發送 <strong style={{ color: '#38bdf8' }}>首月 5 折專屬優惠碼</strong> 給你！
                                 </p>
                                 <form onSubmit={handleWaitlistSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                    <input type="email" required placeholder="輸入你的常用 Email" value={waitlistEmail} onChange={(e) => setWaitlistEmail(e.target.value)} style={{ padding: '1rem', borderRadius: '12px', border: '1px solid #334155', background: '#020617', color: '#fff', fontSize: '1rem', outline: 'none' }} />
-                                    <button type="submit" disabled={isSubmitting} style={{ padding: '1rem', borderRadius: '12px', background: isSubmitting ? '#475569' : '#38bdf8', color: '#020617', border: 'none', fontSize: '1.1rem', fontWeight: '900', cursor: isSubmitting ? 'not-allowed' : 'pointer' }}>
-                                        {isSubmitting ? '處理中...' : '加入早鳥名單 🎟️'}
+                                    <input
+                                        type="email"
+                                        required
+                                        placeholder="輸入你的常用 Email"
+                                        value={waitlistEmail}
+                                        onChange={(e) => setWaitlistEmail(e.target.value)}
+                                        className="waitlist-input"
+                                    />
+                                    <button type="submit" disabled={isSubmitting} className={`waitlist-submit ${isSubmitting ? 'submitting' : ''}`}>
+                                        {isSubmitting ? '處理中...' : '加入早鳥名單 🚀'}
                                     </button>
                                 </form>
                             </>
@@ -237,14 +204,92 @@ export default function PricingPage() {
                             <div style={{ textAlign: 'center', padding: '1rem 0' }}>
                                 <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎉</div>
                                 <h3 style={{ color: '#10b981', fontSize: '1.5rem', marginBottom: '1rem', fontWeight: 'bold' }}>加入成功！</h3>
-                                <p style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.6' }}>感謝你的支持！專屬折扣碼已經為你預留。<br />當進階訓練系統準備就緒時，我們會第一時間通知你。</p>
-                                <button onClick={() => setShowWaitlistModal(false)} style={{ marginTop: '2rem', padding: '0.8rem 2rem', background: 'transparent', border: '1px solid #64748b', color: '#94a3b8', borderRadius: '50px', cursor: 'pointer', fontWeight: 'bold' }}>關閉視窗</button>
+                                <p style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.6' }}>
+                                    感謝你的支持！專屬折扣碼已經為你預留。<br />
+                                    當進階訓練系統準備就緒時，我們會第一時間通知你。
+                                </p>
+                                <button onClick={closeWaitlist} className="modal-close-success-btn">開始免費體驗</button>
                             </div>
                         )}
                     </div>
                 </div>
             )}
-            <style jsx global>{`@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+
+            {/* 💡 修正 3：使用 CSS Classes 取代 Inline Hover 提升效能與 UX */}
+            <style jsx global>{`
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+                
+                .nav-btn {
+                    background: transparent; color: #94a3b8; border: 1px solid #334155; padding: 0.6rem 1.2rem; border-radius: 50px; cursor: pointer; transition: all 0.2s;
+                }
+                .nav-btn:hover { color: #fff; border-color: #64748b; background: rgba(255,255,255,0.05); }
+
+                .pain-point-card {
+                    background: rgba(239, 68, 68, 0.1); color: #fca5a5; padding: 16px 24px; border-radius: 12px; width: 100%; max-width: 500px; text-align: left; font-size: 1.05rem;
+                }
+
+                .cta-btn-primary {
+                    background: linear-gradient(135deg, #38bdf8, #2563eb); color: #fff; border: none; padding: 1.2rem 2.5rem; border-radius: 50px; font-weight: 900; font-size: 1.2rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 10px 20px rgba(56, 189, 248, 0.3);
+                }
+                .cta-btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(56, 189, 248, 0.4); }
+
+                .pricing-card {
+                    padding: 2.5rem 2rem; border-radius: 24px; text-align: center; display: flex; flex-direction: column; height: 100%; transition: transform 0.3s;
+                }
+                .free-card { background: #0f172a; border: 1px solid #334155; }
+                .core-card { background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border: 2px solid #38bdf8; position: relative; box-shadow: 0 20px 40px rgba(56, 189, 248, 0.2); transform: scale(1.02); }
+                .pro-card { background: #0f172a; border: 1px solid #a78bfa; }
+                
+                @media (max-width: 768px) { .core-card { transform: scale(1); } }
+
+                .popular-badge {
+                    position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: #38bdf8; color: #020617; padding: 4px 16px; border-radius: 20px; font-weight: 900; font-size: 0.85rem; letter-spacing: 1px;
+                }
+
+                .feature-list {
+                    text-align: left; line-height: 2; margin: 0 0 2rem 0; padding: 0; list-style: none; flex: 1; font-size: 0.95rem; color: #cbd5e1;
+                }
+                .core-features { color: #e2e8f0; }
+                .disabled-feature { color: #475569; margin-top: 5px; }
+
+                .plan-btn { width: 100%; padding: 1rem; border-radius: 12px; font-weight: bold; cursor: pointer; transition: all 0.2s; border: none; }
+                .free-btn { background: #334155; color: #fff; }
+                .free-btn:hover { background: #475569; }
+                
+                .core-btn { background: linear-gradient(135deg, #38bdf8, #2563eb); color: #fff; font-weight: 900; font-size: 1.1rem; box-shadow: 0 10px 20px rgba(56, 189, 248, 0.3); }
+                .core-btn:hover { transform: translateY(-3px); }
+                
+                .pro-btn { background: #1e1b4b; color: #a78bfa; border: 1px solid #a78bfa; }
+                .pro-btn:hover { background: #2e1065; }
+
+                /* Modal Styles */
+                .modal-overlay {
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 6, 23, 0.85); display: flex; align-items: center; justify-content: center; z-index: 999; backdrop-filter: blur(8px); padding: 1rem;
+                }
+                .modal-content {
+                    background: linear-gradient(145deg, #0f172a, #1e293b); width: 100%; max-width: 450px; border-radius: 24px; border: 1px solid #475569; padding: 2.5rem; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.5); animation: fadeIn 0.3s ease;
+                }
+                .modal-close-btn {
+                    position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer; transition: color 0.2s;
+                }
+                .modal-close-btn:hover { color: #fff; }
+                
+                .waitlist-input {
+                    padding: 1rem; border-radius: 12px; border: 1px solid #334155; background: #020617; color: #fff; font-size: 1rem; outline: none; transition: border-color 0.2s;
+                }
+                .waitlist-input:focus { border-color: #38bdf8; }
+                
+                .waitlist-submit {
+                    padding: 1rem; border-radius: 12px; background: #38bdf8; color: #020617; border: none; font-size: 1.1rem; font-weight: 900; cursor: pointer; transition: background 0.2s;
+                }
+                .waitlist-submit:hover { background: #7dd3fc; }
+                .waitlist-submit.submitting { background: #475569; cursor: not-allowed; }
+
+                .modal-close-success-btn {
+                    margin-top: 2rem; padding: 0.8rem 2rem; background: transparent; border: 1px solid #64748b; color: #94a3b8; border-radius: 50px; cursor: pointer; font-weight: bold; transition: all 0.2s;
+                }
+                .modal-close-success-btn:hover { border-color: #fff; color: #fff; background: rgba(255,255,255,0.05); }
+            `}</style>
         </div>
     );
 }

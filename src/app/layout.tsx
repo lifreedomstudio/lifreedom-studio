@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import "./globals.css";
+// 引入問卷按鈕 (如果你決定不懸浮，可以把這行跟最下面的 <FeedbackButton /> 刪掉)
+import FeedbackButton from '@/components/FeedbackButton';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -12,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const [isMobile, setIsMobile] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // 👈 新增：控制漢堡選單開關的狀態
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -21,7 +23,6 @@ export default function RootLayout({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // 點擊連結後，自動把選單收起來
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
@@ -65,9 +66,8 @@ export default function RootLayout({
             </span>
           </Link>
 
-          {/* 右側選單邏輯：判斷是手機還是電腦 */}
+          {/* 右側選單邏輯 */}
           {isMobile ? (
-            // 📱 手機版：只顯示一個「☰」按鈕
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'pointer', padding: '0 5px' }}
@@ -75,20 +75,21 @@ export default function RootLayout({
               {isMenuOpen ? '✖' : '☰'}
             </button>
           ) : (
-            // 💻 電腦版：維持原本的一長串橫排選單 (並優化文案)
+            // 💻 電腦版選單 (已將 AI 助理整合進來)
             <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', fontSize: '0.85rem', fontWeight: 'bold' }}>
               <Link href="/courses" style={{ color: '#e2e8f0', textDecoration: 'none' }}>📚 混音課程</Link>
               <Link href="/incubator" style={{ color: '#e2e8f0', textDecoration: 'none' }}>🧪 A/B 實驗室</Link>
               <Link href="/glossary" style={{ color: '#e2e8f0', textDecoration: 'none' }}>📖 混音字典</Link>
               <Link href="/collection" style={{ color: '#fbbf24', textDecoration: 'none' }}>📜 參數圖鑑</Link>
               <span style={{ color: '#475569' }}>|</span>
+              <Link href="/mix-assistant" style={{ color: '#38bdf8', textDecoration: 'none' }}>🤖 AI 助理</Link>
               <Link href="/pricing" style={{ color: '#facc15', textDecoration: 'none' }}>💎 方案</Link>
               <Link href="/login" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', textDecoration: 'none', padding: '6px 14px', borderRadius: '50px' }}>登入</Link>
             </div>
           )}
         </nav>
 
-        {/* 📱 手機版的下拉選單 (點擊 ☰ 後才會彈出來) */}
+        {/* 📱 手機版的下拉選單 */}
         {isMobile && isMenuOpen && (
           <div style={{
             position: 'fixed',
@@ -110,34 +111,16 @@ export default function RootLayout({
             <Link href="/glossary" onClick={closeMenu} style={{ color: '#e2e8f0', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold' }}>📖 混音字典 <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>(魔導書)</span></Link>
             <Link href="/collection" onClick={closeMenu} style={{ color: '#fbbf24', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold' }}>📜 參數圖鑑</Link>
             <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)', margin: '0.5rem 0' }}></div>
+            <Link href="/mix-assistant" onClick={closeMenu} style={{ color: '#38bdf8', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold' }}>🤖 AI 助理</Link>
             <Link href="/pricing" onClick={closeMenu} style={{ color: '#facc15', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold' }}>💎 訂閱方案</Link>
             <Link href="/login" onClick={closeMenu} style={{ color: '#fff', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold', textAlign: 'center', background: 'rgba(255,255,255,0.1)', padding: '12px', borderRadius: '50px' }}>登入 / 註冊</Link>
           </div>
         )}
 
-        {/* 🤖 懸浮 AI 助理 */}
-        <Link href="/mix-assistant" style={{
-          position: 'fixed',
-          bottom: '25px',
-          right: '20px',
-          zIndex: 2000,
-          background: 'linear-gradient(135deg, #38bdf8, #1d4ed8)',
-          padding: isMobile ? '10px 16px' : '12px 24px',
-          borderRadius: '50px',
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: '8px',
-          boxShadow: '0 8px 25px rgba(29, 78, 216, 0.5)',
-          textDecoration: 'none',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          transition: 'transform 0.2s'
-        }}>
-          <span style={{ fontSize: '1.4rem' }}>🤖</span>
-          <span style={{ fontSize: isMobile ? '0.8rem' : '0.9rem', color: '#fff', fontWeight: 'bold' }}>AI 助理</span>
-        </Link>
-
         <main>{children}</main>
+
+        {/* 👇 掛載問卷按鈕 (建議去 FeedbackButton.tsx 把 right 改成 left，避免擋到玩家按 B 選項) */}
+        <FeedbackButton />
 
       </body>
     </html>
