@@ -596,7 +596,7 @@ function AssistantContent() {
         </div>
       )}
 
-      <audio id="click-sound" src="/click.mp3" preload="auto" style={{ display: 'none' }}></audio>
+      <audio id="click-sound" src="/audio/click.mp3" preload="auto" style={{ display: 'none' }}></audio>
     </div>
   );
 }
