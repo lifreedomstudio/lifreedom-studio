@@ -136,7 +136,7 @@ export default function PricingPage() {
                         <ul className="feature-list core-features">
                             <li>🔥 瞬間聽出刺耳與混濁的頻率</li>
                             <li>🔥 掌握讓樂器不打架的空間分配邏輯</li>
-                            <li>✔️ 解鎖全部章節 (Groove / Voicing / Pan)</li>
+                            <li>✔️ 解鎖全部章節 (包含基礎及高階編曲/混音區以及後續持續更新的卡牌訓練遊戲系統)</li>
                             <li>✔️ <strong>無限制音檔重複播放</strong></li>
                             <li>✔️ <strong>每月 30 次 AI 深度分析額度</strong> (Credits)</li>
                             <li>✔️ 盲測準確率與學習進度追蹤</li>
