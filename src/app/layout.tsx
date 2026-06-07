@@ -106,8 +106,8 @@ export default function RootLayout({
             zIndex: 999,
             boxShadow: '0 10px 30px rgba(0,0,0,0.8)'
           }}>
-            <Link href="/courses" onClick={closeMenu} style={{ color: '#e2e8f0', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold' }}>📚 混音課程 <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>(建築所)</span></Link>
-            <Link href="/incubator" onClick={closeMenu} style={{ color: '#e2e8f0', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold' }}>🧪 A/B 實驗室</Link>
+            <Link href="/courses" onClick={closeMenu} style={{ color: '#e2e8f0', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold' }}>📚 課程計劃 <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>(建築所)</span></Link>
+            <Link href="/sonic-lab" onClick={closeMenu} style={{ color: '#e2e8f0', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold' }}>🧪 聲學實驗室</Link>
             <Link href="/glossary" onClick={closeMenu} style={{ color: '#e2e8f0', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold' }}>📖 混音字典 <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>(魔導書)</span></Link>
             <Link href="/collection" onClick={closeMenu} style={{ color: '#fbbf24', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold' }}>📜 參數圖鑑</Link>
             <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)', margin: '0.5rem 0' }}></div>
