@@ -419,7 +419,6 @@ function AssistantContent() {
 
               <p style={{ color: '#10b981', fontWeight: 'bold', fontSize: '1.2rem', marginBottom: '1rem' }}>👉 現在不要想，直接照做 👇</p>
 
-              {/* ✅ 1. 確保 tasks.map 的括號安全閉合 */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
                 {tasks.map((task, i) => {
                   const isChecked = guidedState.completedTasks.includes(task);
@@ -429,7 +428,8 @@ function AssistantContent() {
                         <input type="checkbox" checked={isChecked} style={{ width: '24px', height: '24px', accentColor: '#10b981', cursor: 'pointer' }} onChange={(e) => {
                           if (e.target.checked) {
                             setGuidedState((prev) => ({ ...prev, completedTasks: [...prev.completedTasks, task] }));
-                            try { new Audio('/click.mp3').play().catch(() => { }); } catch (err) { }
+                            // 💡 修正這裡：已經更新為正確的路徑 👇
+                            try { new Audio('/audio/click.mp3').play().catch(() => { }); } catch (err) { }
                             setActiveFeedbackIndex(i);
                             setTimeout(() => setActiveFeedbackIndex(null), 2500);
                           } else {
@@ -449,7 +449,6 @@ function AssistantContent() {
                 })}
               </div>
 
-              {/* ✅ 3. 加入領取獎勵的專屬觸發按鈕，引導明確不卡關 */}
               {guidedState.completedTasks.length === tasks.length && tasks.length > 0 && (
                 <button
                   onClick={handleClaimReward}
@@ -474,7 +473,6 @@ function AssistantContent() {
             </div>
           )}
 
-          {/* ✅ 2. 正確渲染 done 狀態 UI 分支 */}
           {guidedState.step === "done" && !showGacha && (
             <div style={{
               padding: '2rem',
@@ -596,6 +594,7 @@ function AssistantContent() {
         </div>
       )}
 
+      {/* 音效 preload */}
       <audio id="click-sound" src="/audio/click.mp3" preload="auto" style={{ display: 'none' }}></audio>
     </div>
   );
