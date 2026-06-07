@@ -77,8 +77,8 @@ export default function RootLayout({
           ) : (
             // 💻 電腦版選單 (已將 AI 助理整合進來)
             <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', fontSize: '0.85rem', fontWeight: 'bold' }}>
-              <Link href="/courses" style={{ color: '#e2e8f0', textDecoration: 'none' }}>📚 混音課程</Link>
-              <Link href="/incubator" style={{ color: '#e2e8f0', textDecoration: 'none' }}>🧪 A/B 實驗室</Link>
+              <Link href="/courses" style={{ color: '#e2e8f0', textDecoration: 'none' }}>📚 課程計劃</Link>
+              <Link href="/sonic-lab" style={{ color: '#e2e8f0', textDecoration: 'none' }}>🧪 聲學實驗室</Link>
               <Link href="/glossary" style={{ color: '#e2e8f0', textDecoration: 'none' }}>📖 混音字典</Link>
               <Link href="/collection" style={{ color: '#fbbf24', textDecoration: 'none' }}>📜 參數圖鑑</Link>
               <span style={{ color: '#475569' }}>|</span>
