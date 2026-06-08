@@ -97,7 +97,6 @@ const HomeInteractivePlayer = ({ isMobile }: { isMobile: boolean }) => {
         ) : (
           <div style={{ background: 'rgba(56, 189, 248, 0.05)', border: '1px solid #38bdf8', padding: '1.5rem', borderRadius: '16px', textAlign: 'left', animation: 'fadeIn 0.4s ease-out' }}>
             <h4 style={{ color: '#38bdf8', fontWeight: 'bold', fontSize: '1.1rem', margin: '0 0 8px 0' }}>💡 空間分配的真相：</h4>
-            {/* 💡 修正：更精準、寫實的音樂人描述 */}
             <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>
               在<strong>版本 A</strong> 中，所有樂器都擠在正中央。這會造成「頻率遮蔽」，導致主唱的聲音被吉他稍微悶住、覆蓋，吉他本身的細節也聽不清楚。<br /><br />
               而在<strong>版本 B</strong> 中，我們只是把兩把吉他往左右兩側拉開（LCR 空間佈局）。中間的通道一清空，主唱瞬間就變得立體清晰，兩側的吉他細節也自然有了呼吸的空間！<br /><br />
@@ -146,8 +145,9 @@ export default function HomePage() {
           style={{ height: isMobile ? '120px' : '150px', objectFit: 'contain', marginBottom: '1.5rem', filter: 'drop-shadow(0 0 20px rgba(56, 189, 248, 0.4))' }}
         />
 
+        {/* 💡 品牌升級：換上專屬音樂人的 AI 聽覺訓練副標 */}
         <div style={{ color: '#38bdf8', letterSpacing: '4px', fontWeight: 'bold', marginBottom: '1.5rem', fontSize: isMobile ? '0.75rem' : '0.85rem', opacity: 0.9 }}>
-          LIFREEDOM AUDITORY TRAINING SYSTEM
+          LIFREEDOM | AI EAR TRAINING FOR MUSICIANS
         </div>
 
         <h1 style={{
@@ -228,13 +228,13 @@ export default function HomePage() {
           <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.5rem', color: '#fff', margin: '1rem 0 1.5rem 0', fontWeight: '900' }}>這不是一堂傳統的混音課</h2>
           <p style={{ color: '#94a3b8', fontSize: '1.1rem', lineHeight: '1.8', marginBottom: '2.5rem' }}>
             我們不教你死板地去調整特定的插件數值。<br />
-            Lifreedom 是一套專門<strong style={{ color: '#fff' }}>「訓練你聽覺判斷能力」</strong>的心智系統。
+            {/* 💡 品牌升級：強調音樂人與 AI 陪練定位 */}
+            Lifreedom 是一套專為音樂人打造，專門<strong style={{ color: '#fff' }}>「訓練聽覺判斷力與空間感知」</strong>的 AI 陪練系統。
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '550px', margin: '0 auto', textAlign: 'left', background: 'rgba(255,255,255,0.02)', padding: '2rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
             <div style={{ color: '#cbd5e1', fontSize: '1.05rem' }}>🚀 <strong>✔ 聽出差異</strong> —— 靠耳朵直覺咬合，而不是靠瞎猜</div>
             <div style={{ color: '#cbd5e1', fontSize: '1.05rem' }}>📦 <strong>✔ 理解聲音結構</strong> —— 看穿音頻的空間防線，而不是憑感覺</div>
             <div style={{ color: '#cbd5e1', fontSize: '1.05rem' }}>🎛️ <strong>✔ 做出決定</strong> —— 每一步都有清晰的科學邏輯，而不是亂試</div>
-            {/* 💡 新增：AI 聽診輔助說明 */}
             <div style={{ color: '#cbd5e1', fontSize: '1.05rem', borderTop: '1px dashed rgba(255,255,255,0.1)', paddingTop: '10px', marginTop: '5px' }}>
               🤖 <strong>✔ AI 聽診輔助</strong> —— 專屬助理隨時為你的混音抓漏，提供修改建議
             </div>
@@ -256,7 +256,6 @@ export default function HomePage() {
               <span style={{ color: '#fca5a5' }}>👉 2. 導出音訊後，不知道怎麼變更好（混音/空間/能量打架）</span><br /><br />
               這本質上不是 AI 工具的問題，而是<strong>聽覺判斷能力</strong>的問題。
             </p>
-            {/* 💡 升級：讓 AI 助理的功能更具體，但依然只是配角 */}
             <div style={{ background: 'rgba(167, 139, 250, 0.08)', padding: '1.2rem', borderRadius: '12px', borderLeft: '4px solid #a78bfa', color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6' }}>
               <strong>💡 製作人心法：</strong><br />
               我們內建了專屬的 <strong>AI 混音聽診助理</strong>，當你卡關時，隨時上傳 DAW 截圖或發問，它會幫你指出頻率盲點。但記住，AI 只是導航，最終扣下板機的決策，永遠來自你訓練過的耳朵。
@@ -306,7 +305,6 @@ export default function HomePage() {
           開始訓練你的耳朵，建立受用終身的聽覺判斷力
         </h2>
 
-        {/* 💡 修正：導向 `/courses/ear-opening/intro` */}
         <button
           onClick={() => { window.scrollTo(0, 0); router.push('/courses/ear-opening/intro'); }}
           style={{ display: 'inline-block', padding: '1.3rem 4.5rem', background: '#fff', color: '#020617', fontSize: '1.15rem', fontWeight: '900', borderRadius: '50px', border: 'none', cursor: 'pointer', boxShadow: '0 10px 30px rgba(255,255,255,0.2)', marginBottom: '4rem' }}
@@ -324,9 +322,13 @@ export default function HomePage() {
           <Link href="/terms" style={{ color: '#475569', textDecoration: 'none', fontSize: '0.85rem' }}>使用條款</Link>
           <Link href="/privacy" style={{ color: '#475569', textDecoration: 'none', fontSize: '0.85rem' }}>隱私權政策</Link>
           <Link href="/refund" style={{ color: '#475569', textDecoration: 'none', fontSize: '0.85rem' }}>退款政策</Link>
-          <a href="mailto:support@lifreedom.com" style={{ color: '#475569', textDecoration: 'none', fontSize: '0.85rem' }}>聯絡我們</a>
+          {/* 💡 統一修正信箱 */}
+          <a href="mailto:xlifreedom305x@gmail.com" style={{ color: '#475569', textDecoration: 'none', fontSize: '0.85rem' }}>聯絡我們</a>
         </div>
-        <div style={{ marginTop: '2rem', color: '#334155', fontSize: '0.8rem', fontFamily: 'monospace' }}>© 2026 Lifreedom Studio. All rights reserved.</div>
+        <div style={{ marginTop: '2rem', color: '#334155', fontSize: '0.8rem', fontFamily: 'monospace' }}>
+          {/* 💡 統一修正公司版權名稱 */}
+          © 2026 LiFreedom Studio. All rights reserved.
+        </div>
       </div>
     </div>
   );

@@ -120,6 +120,16 @@ export default function SonicLabPage() {
         sourcesRef.current = {};
     };
 
+    // 🚨 【核心修正】新增：當學員離開這頁（元件卸載）時，強制徹底關閉虛擬混音機電源與釋放記憶體
+    useEffect(() => {
+        return () => {
+            stopTracks(); // 1. 關閉所有播放中的 Source 節點
+            if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') {
+                audioCtxRef.current.close(); // 2. 徹底關閉並釋放瀏覽器的 AudioContext 引擎
+            }
+        };
+    }, []);
+
     const togglePlay = async () => {
         if (!isAudioReady || !audioCtxRef.current) {
             const ctx = await initAudio();
