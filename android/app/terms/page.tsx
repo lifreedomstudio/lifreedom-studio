@@ -37,7 +37,8 @@ export default function TermsPage() {
                             👋 These Terms are here to make sure everyone has a clear and fair experience while using Lifreedom.
                         </p>
                         <p>
-                            Welcome to Lifreedom Auditory Training System (&quot;Service&quot;), operated by LiFreedom Studio (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;).
+                            {/* 💡 修正：將產品名稱更新為新版品牌副標 */}
+                            Welcome to Lifreedom - AI Ear Training for Musicians (&quot;Service&quot;), operated by LiFreedom Studio (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;).
                             By accessing or using this Service, you agree to be bound by these Terms.
                         </p>
                     </section>
@@ -45,7 +46,8 @@ export default function TermsPage() {
                     <section>
                         <h2 style={{ color: '#38bdf8', fontSize: '1.4rem', fontWeight: 'bold', marginBottom: '1rem' }}>1. Description of Service</h2>
                         <p style={{ marginBottom: '1rem' }}>
-                            Lifreedom is an interactive, web-based auditory training platform designed to help users improve their ability to perceive and understand sound, music, and audio mixing concepts. This Service may include:
+                            {/* 💡 修正：微調敘述，強調「為音樂人打造的 AI 聽覺訓練平台」 */}
+                            Lifreedom is an interactive, web-based AI ear training platform designed to help musicians and creators improve their ability to perceive and understand sound, space, and audio mixing concepts. This Service may include:
                         </p>
                         <ul style={{ paddingLeft: '1.5rem', listStyleType: 'disc', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                             <li>Audio playback and comparison tools</li>
@@ -66,7 +68,6 @@ export default function TermsPage() {
                         </ul>
                     </section>
 
-                    {/* 💡 修正 1️⃣：新增「帳號與存取」安全責任條款 */}
                     <section>
                         <h2 style={{ color: '#38bdf8', fontSize: '1.4rem', fontWeight: 'bold', marginBottom: '1rem' }}>3. Account & Access</h2>
                         <p style={{ marginBottom: '1rem' }}>You may need to create an account to access certain features. Under this provision:</p>
@@ -96,7 +97,6 @@ export default function TermsPage() {
                             <li>Educational layouts, blueprints, and training materials</li>
                             <li>UI/UX design, visual visualizers, and interactive components</li>
                         </ul>
-                        {/* 💡 修正 5️⃣：公司名稱統一為 LiFreedom Studio */}
                         <p>are owned by LiFreedom Studio unless otherwise stated. You may not copy, redistribute, or reuse content without explicit written permission.</p>
                     </section>
 
@@ -119,7 +119,6 @@ export default function TermsPage() {
                             <li>Access may be subscription-based and renew automatically unless canceled</li>
                             <li>Features included in specific tiers may evolve over time to stay current</li>
                         </ul>
-                        {/* 💡 修正 2️⃣：新增與 Refund Policy 頁面的關聯宣告 */}
                         <p style={{ marginBottom: 0 }}>
                             We reserve the right to modify pricing and structural features. Refund policies are described separately on our Refund Policy page.
                         </p>
@@ -141,13 +140,11 @@ export default function TermsPage() {
                             <li>We are not liable for any specific learning outcomes or skill mastery speed.</li>
                             <li>We are not liable for any direct, indirect, or incidental loss or damage resulting from the use of the Service.</li>
                         </ul>
-                        {/* 💡 修正 3️⃣：強化法律防禦力的標準核心免責句 */}
                         <p style={{ fontWeight: 'bold', color: '#fca311' }}>
                             To the maximum extent permitted by law, we disclaim all warranties, whether express or implied.
                         </p>
                     </section>
 
-                    {/* 💡 修正 4️⃣：新增「適用法律」管轄條款 */}
                     <section>
                         <h2 style={{ color: '#38bdf8', fontSize: '1.4rem', fontWeight: 'bold', marginBottom: '1rem' }}>10. Governing Law</h2>
                         <p style={{ margin: 0 }}>
@@ -162,12 +159,12 @@ export default function TermsPage() {
                         </p>
                     </section>
 
-                    {/* 💡 修正 5️⃣：聯絡區塊統一改為 LiFreedom Studio */}
                     <section style={{ background: 'rgba(255,255,255,0.02)', padding: '2rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', marginTop: '1rem' }}>
                         <h2 style={{ color: '#f8fafc', fontSize: '1.4rem', fontWeight: 'bold', marginBottom: '1rem' }}>12. Contact</h2>
                         <p style={{ margin: 0 }}>
                             If you have any questions regarding these Terms, please contact LiFreedom Studio at:<br />
-                            <a href="mailto:luoweikai@gmail.com" style={{ color: '#38bdf8', textDecoration: 'none', fontWeight: 'bold', display: 'inline-block', marginTop: '0.6rem', fontSize: '1.1rem' }}>
+                            {/* 💡 修正 12：確保 mailto 連結與顯示的信箱完全一致！ */}
+                            <a href="mailto:xlifreedom305x@gmail.com" style={{ color: '#38bdf8', textDecoration: 'none', fontWeight: 'bold', display: 'inline-block', marginTop: '0.6rem', fontSize: '1.1rem' }}>
                                 xlifreedom305x@gmail.com
                             </a>
                         </p>
@@ -175,7 +172,6 @@ export default function TermsPage() {
 
                 </div>
 
-                {/* 💡 修正 5️⃣：頁尾統一改為 LiFreedom Studio */}
                 <div style={{ textAlign: 'center', marginTop: '5rem', color: '#475569', fontSize: '0.85rem', fontFamily: 'monospace' }}>
                     © 2026 LiFreedom Studio. All rights reserved.
                 </div>

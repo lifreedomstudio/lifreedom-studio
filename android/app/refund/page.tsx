@@ -48,6 +48,10 @@ export default function RefundPolicyPage() {
                         <p style={{ color: '#fff', fontSize: '1.15rem', fontWeight: '500', backgroundColor: 'rgba(255,255,255,0.02)', padding: '1.5rem', borderRadius: '12px', borderLeft: '4px solid #818cf8', marginBottom: '1.5rem' }}>
                             👋 我們深信建立一個公平、透明的學習體驗是產品的基石（We believe in building a fair and transparent learning experience）。這份政策旨在保障您的權益，同時也確保我們能永續提供優質的服務。
                         </p>
+                        <p>
+                            {/* 💡 修正重點：將產品名稱更正為最新品牌副標 */}
+                            感謝您使用 Lifreedom - AI Ear Training for Musicians（以下簡稱「本服務」）。
+                        </p>
                     </section>
 
                     <section>
@@ -62,15 +66,12 @@ export default function RefundPolicyPage() {
                         <p style={{ marginBottom: '1rem' }}>在以下情況中，我們可能會為您提供退款：</p>
                         <ul style={{ paddingLeft: '1.5rem', listStyleType: 'disc', display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
                             <li>系統錯誤導致重複扣款或錯誤收費。</li>
-                            {/* 💡 修正 3：加入修復機會的定義 */}
                             <li>您遇到了嚴重的技術性問題導致完全無法使用平台核心功能，<strong style={{ color: '#fff' }}>且在聯繫客服後仍無法於合理時間內修復解決</strong>。</li>
-                            {/* 💡 修正 2：精準定義 7 天 */}
                             <li>您在<strong style={{ color: '#fff' }}>原始購買日起的 7 天內</strong>主動與我們聯繫。</li>
                         </ul>
                         <p>所有退款申請我們將會進行個案審查（case-by-case basis）。</p>
                     </section>
 
-                    {/* 💡 新增 1, 4, 5：金流責任切割與退款方式 */}
                     <section>
                         <h2 style={{ color: '#38bdf8', fontSize: '1.4rem', fontWeight: 'bold', marginBottom: '1rem' }}>3. 退款處理與金流責任 (Payments & Refund Process)</h2>
                         <ul style={{ paddingLeft: '1.5rem', listStyleType: 'disc', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>

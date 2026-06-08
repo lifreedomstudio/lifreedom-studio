@@ -27,6 +27,12 @@ export default function RootLayout({
 
   return (
     <html lang="zh-TW">
+      {/* 💡 修正 1：手動注入 Head 與 Title，完美解決 SEO 與分頁名稱問題 */}
+      <head>
+        <title>Lifreedom - AI Ear Training for Musicians</title>
+        <meta name="description" content="專為音樂人打造的 AI 聽覺與空間感知訓練系統。" />
+      </head>
+
       <body className={inter.className} style={{ margin: 0, padding: 0, backgroundColor: '#020617', color: '#f8fafc' }}>
 
         {/* 🚨 偵測如果是 LINE 或 FB 內建瀏覽器，強制跳出警告 */}
@@ -59,11 +65,20 @@ export default function RootLayout({
           alignItems: 'center'
         }}>
           {/* 左側 LOGO */}
-          <Link href="/" onClick={closeMenu} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <Link href="/" onClick={closeMenu} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ fontSize: isMobile ? '1.2rem' : '1.5rem' }}>🎧</span>
-            <span style={{ fontWeight: 'bold', fontSize: isMobile ? '1rem' : '1.1rem', color: '#fff', letterSpacing: '0.5px' }}>
-              Lifreedom <span style={{ color: '#38bdf8' }}>Studio</span>
-            </span>
+
+            {/* 💡 修正 2：品牌 Logo 視覺升級，加入 AI 副標 */}
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <span style={{ fontWeight: '900', fontSize: isMobile ? '1.1rem' : '1.25rem', color: '#fff', letterSpacing: '0.5px' }}>
+                Lifreedom
+              </span>
+              {!isMobile && (
+                <span style={{ color: '#38bdf8', fontSize: '0.75rem', fontWeight: 'bold', letterSpacing: '1px', borderLeft: '2px solid #334155', paddingLeft: '8px', marginLeft: '8px', marginTop: '2px' }}>
+                  AI EAR TRAINING
+                </span>
+              )}
+            </div>
           </Link>
 
           {/* 右側選單邏輯 */}
@@ -78,7 +93,6 @@ export default function RootLayout({
             // 💻 電腦版選單 
             <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', fontSize: '0.85rem', fontWeight: 'bold' }}>
               <Link href="/courses" style={{ color: '#e2e8f0', textDecoration: 'none' }}>📚 課程計劃</Link>
-              {/* 💡 修正：加上 /courses/ 前綴 */}
               <Link href="/courses/arrangement/sonic-lab" style={{ color: '#e2e8f0', textDecoration: 'none' }}>🧪 聲學實驗室</Link>
               <Link href="/glossary" style={{ color: '#e2e8f0', textDecoration: 'none' }}>📖 混音字典</Link>
               <Link href="/collection" style={{ color: '#fbbf24', textDecoration: 'none' }}>📜 參數圖鑑</Link>
@@ -108,7 +122,6 @@ export default function RootLayout({
             boxShadow: '0 10px 30px rgba(0,0,0,0.8)'
           }}>
             <Link href="/courses" onClick={closeMenu} style={{ color: '#e2e8f0', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold' }}>📚 課程計劃 <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>(建築所)</span></Link>
-            {/* 💡 修正：加上 /courses/ 前綴 */}
             <Link href="/courses/arrangement/sonic-lab" onClick={closeMenu} style={{ color: '#e2e8f0', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold' }}>🧪 聲學實驗室</Link>
             <Link href="/glossary" onClick={closeMenu} style={{ color: '#e2e8f0', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold' }}>📖 混音字典 <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>(魔導書)</span></Link>
             <Link href="/collection" onClick={closeMenu} style={{ color: '#fbbf24', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold' }}>📜 參數圖鑑</Link>

@@ -181,7 +181,8 @@ export default function SonicLabPage() {
 
                 {/* 1. 標題區 */}
                 <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-                    <span style={{ color: '#38bdf8', letterSpacing: '4px', fontWeight: 'bold', fontSize: '0.9rem' }}>STAGE 01 : SONIC ARCHITECTURE</span>
+                    {/* 💡 修正：將副標題對齊 Ear Training 精神 */}
+                    <span style={{ color: '#38bdf8', letterSpacing: '4px', fontWeight: 'bold', fontSize: '0.9rem' }}>LIFREEDOM EAR TRAINING : SPATIAL PERCEPTION</span>
                     <h1 style={{ fontSize: isMobile ? '2rem' : '3rem', fontWeight: '900', margin: '0.5rem 0', background: 'linear-gradient(135deg, #38bdf8, #818cf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                         立體聲場構築實驗室
                     </h1>

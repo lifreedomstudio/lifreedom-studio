@@ -66,13 +66,13 @@ const HomeInteractivePlayer = ({ isMobile }: { isMobile: boolean }) => {
             onClick={() => handleSwitchVersion('A')}
             style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', transition: 'all 0.2s', background: activeVersion === 'A' ? '#475569' : 'transparent', color: activeVersion === 'A' ? '#fff' : '#64748b' }}
           >
-            版本 A (一般聽覺)
+            版本 A
           </button>
           <button
             onClick={() => handleSwitchVersion('B')}
             style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', transition: 'all 0.2s', background: activeVersion === 'B' ? '#38bdf8' : 'transparent', color: activeVersion === 'B' ? '#020617' : '#64748b' }}
           >
-            版本 B (空間解放)
+            版本 B
           </button>
         </div>
       </div>
