@@ -20,7 +20,6 @@ export default function PricingPage() {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    // 💡 修正 1：清理 Modal 狀態，避免卡住或出現上一次的成功畫面
     const openWaitlist = (planName: string) => {
         setWaitlistPlanType(planName);
         setWaitlistEmail('');
@@ -33,23 +32,26 @@ export default function PricingPage() {
         setShowWaitlistModal(false);
     };
 
-    // 💡 修正 2：準備真實的 API 串接結構，避免名單蒸發
+    // 💡 修正 2：串接真實的後端 API，將早鳥名單存入資料庫
     const handleWaitlistSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!waitlistEmail) return;
         setIsSubmitting(true);
 
         try {
-            // TODO: 最低限度請在這裡接上 Supabase / Firebase 或是 Google Sheet API
-            // 例如: await fetch('/api/waitlist', { method: 'POST', body: JSON.stringify({ email: waitlistEmail, plan: waitlistPlanType }) });
+            const res = await fetch('/api/waitlist', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: waitlistEmail, plan: waitlistPlanType })
+            });
 
-            // 目前模擬 API 延遲
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "提交失敗");
 
             setSubmitSuccess(true);
-        } catch (error) {
+        } catch (error: any) {
             console.error("Waitlist submission failed:", error);
-            alert("發生錯誤，請稍後再試！");
+            alert(error.message || "發生錯誤，請稍後再試！");
         } finally {
             setIsSubmitting(false);
         }
@@ -65,7 +67,7 @@ export default function PricingPage() {
                     </button>
                 </div>
 
-                {/* 🎯 HERO：升級成「會讓人掏錢型」 */}
+                {/* HERO */}
                 <header style={{ textAlign: 'center', marginBottom: '4rem' }}>
                     <h1 style={{ fontSize: isMobile ? '2.2rem' : '4rem', fontWeight: '900', margin: '0 0 1.5rem 0', color: '#fff', lineHeight: '1.2' }}>
                         🎧 像製作人一樣<span style={{ color: '#38bdf8' }}>訓練你的耳朵</span>
@@ -76,7 +78,7 @@ export default function PricingPage() {
                     </p>
                 </header>
 
-                {/* 💥 價值主張（打痛點） */}
+                {/* 價值主張 */}
                 <section style={{ marginBottom: '6rem', display: 'flex', justifyContent: 'center' }}>
                     <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '24px', padding: isMobile ? '2rem 1.5rem' : '3rem', maxWidth: '800px', width: '100%' }}>
                         <h2 style={{ textAlign: 'center', fontSize: '1.5rem', color: '#fff', fontWeight: '900', marginBottom: '2rem' }}>為什麼你總是卡關？</h2>
@@ -99,10 +101,10 @@ export default function PricingPage() {
                     選擇適合你的訓練方案
                 </h2>
 
-                {/* 💰 方案卡片區塊 (引入 AI 點數制與能力提升文案) */}
+                {/* 方案卡片區塊 */}
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '2rem', alignItems: 'stretch' }}>
 
-                    {/* 🟢 方案 1：Free（引流） */}
+                    {/* 方案 1：Free */}
                     <div className="pricing-card free-card">
                         <h3 style={{ color: '#94a3b8', fontSize: '1.3rem', marginBottom: '1rem' }}>聽覺覺醒</h3>
                         <div style={{ fontSize: '2.5rem', fontWeight: '900', color: '#fff', marginBottom: '0.5rem' }}>$0</div>
@@ -121,7 +123,7 @@ export default function PricingPage() {
                         </button>
                     </div>
 
-                    {/* 🔵 方案 2：Core（主賺 - 防爆成本設計） */}
+                    {/* 方案 2：Core */}
                     <div className="pricing-card core-card">
                         <div className="popular-badge">推薦方案</div>
                         <h3 style={{ color: '#38bdf8', fontSize: '1.5rem', marginBottom: '1rem', fontWeight: 'bold' }}>核心訓練系統</h3>
@@ -146,7 +148,7 @@ export default function PricingPage() {
                         </button>
                     </div>
 
-                    {/* 🟣 方案 3：Pro（未來） */}
+                    {/* 方案 3：Pro */}
                     <div className="pricing-card pro-card">
                         <h3 style={{ color: '#a78bfa', fontSize: '1.3rem', marginBottom: '1rem' }}>混音實戰系統</h3>
 
@@ -157,7 +159,7 @@ export default function PricingPage() {
                         <p style={{ color: '#a78bfa', fontSize: '0.9rem', marginBottom: '2rem' }}>/ 月 (大師級的極限訓練)</p>
 
                         <ul className="feature-list">
-                            <li>⭐ <strong>進階 AI 混音參數深度分析</strong></li>
+                            <li>⭐ <strong>進階 AI 混音 parameters 深度分析</strong></li>
                             <li>⭐ 針對弱點的個人化訓練建議</li>
                             <li>✔️ 包含 Core 方案所有內容</li>
                             <li>✔️ 每月大額度 AI 分析點數</li>
@@ -171,7 +173,7 @@ export default function PricingPage() {
                 </div>
             </div>
 
-            {/* 🚨 Waitlist 彈出視窗 (Modal) */}
+            {/* Waitlist 彈出視窗 (Modal) */}
             {showWaitlistModal && (
                 <div className="modal-overlay">
                     <div className="modal-content">
@@ -215,7 +217,6 @@ export default function PricingPage() {
                 </div>
             )}
 
-            {/* 💡 修正 3：使用 CSS Classes 取代 Inline Hover 提升效能與 UX */}
             <style jsx global>{`
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
                 

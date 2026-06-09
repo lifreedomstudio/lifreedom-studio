@@ -20,89 +20,88 @@ export default function PrivacyPolicyPage() {
 
                 {/* 標題區 */}
                 <div style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '2rem', marginBottom: '3rem' }}>
-                    {/* 💡 必改清單 4️⃣：Early Access 橫幅提醒 */}
+                    {/* 💡 統一的 Early Access 頂部提醒 */}
                     <div style={{ display: 'inline-block', background: 'rgba(56, 189, 248, 0.1)', border: '1px solid #38bdf8', color: '#38bdf8', padding: '4px 12px', borderRadius: '6px', fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '1rem', fontFamily: 'monospace' }}>
-                        🚀 THIS IS AN EARLY-ACCESS VERSION OF THE PRODUCT.
+                        🚀 YOU&apos;RE CURRENTLY USING AN EARLY ACCESS VERSION OF LIFREEDOM.
                     </div>
-                    <h1 style={{ fontSize: '2.5rem', fontWeight: '900', color: '#fff', margin: '0 0 0.5rem 0' }}>Privacy Policy</h1>
-                    <p style={{ color: '#64748b', fontSize: '0.95rem', margin: 0, fontFamily: 'monospace' }}>Last updated: June 2026</p>
+                    <h1 style={{ fontSize: '2.5rem', fontWeight: '900', color: '#fff', margin: '0 0 0.5rem 0' }}>隱私權政策 (Privacy Policy)</h1>
+                    <p style={{ color: '#64748b', fontSize: '0.95rem', margin: 0, fontFamily: 'monospace' }}>最後更新日期：2026 年 6 月</p>
                 </div>
 
                 {/* 內文區 */}
                 <div style={{ color: '#cbd5e1', lineHeight: '1.8', fontSize: '1.05rem', display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
 
                     <section>
-                        {/* 💡 必改清單 1️⃣ & 3️⃣：品牌名稱統一與平台性質修正 */}
+                        {/* 💡 產品感理念 Intro */}
                         <p style={{ color: '#fff', fontSize: '1.15rem', fontWeight: '500', backgroundColor: 'rgba(255,255,255,0.02)', padding: '1.5rem', borderRadius: '12px', borderLeft: '4px solid #818cf8', marginBottom: '1.5rem' }}>
-                            LiFreedom Studio (&quot;us&quot;, &quot;we&quot;, or &quot;our&quot;) operates Lifreedom - AI Ear Training for Musicians, a web-based interactive training platform (the &quot;Service&quot;).
+                            👋 我們非常重視您的隱私安全。這份政策將清楚說明當您使用 Lifreedom 時，我們如何收集、保護並妥善運用您的資料。
                         </p>
                         <p>
-                            This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service.
+                            LiFreedom Studio（以下簡稱「我們」）負責營運 Lifreedom - AI Ear Training for Musicians 網頁版互動式訓練平台（以下簡稱「本服務」）。
+                            藉由存取或使用本服務，即表示您同意本政策所描述的資料收集與使用方式。
                         </p>
                     </section>
 
                     <section>
-                        <h2 style={{ color: '#38bdf8', fontSize: '1.4rem', fontWeight: 'bold', marginBottom: '1rem' }}>1. Information Collection and Use</h2>
+                        <h2 style={{ color: '#38bdf8', fontSize: '1.4rem', fontWeight: 'bold', marginBottom: '1rem' }}>1. 資訊收集與使用 (Information Collection and Use)</h2>
                         <p style={{ marginBottom: '1rem' }}>
-                            We collect several different types of information for various purposes to provide and improve our Service to you.
+                            為了向您提供並持續優化本服務，我們會收集幾種不同類型的資訊。
                         </p>
 
-                        <h3 style={{ color: '#f8fafc', fontSize: '1.1rem', fontWeight: 'bold', marginTop: '1.5rem', marginBottom: '1rem' }}>Types of Data Collected:</h3>
+                        <h3 style={{ color: '#f8fafc', fontSize: '1.1rem', fontWeight: 'bold', marginTop: '1.5rem', marginBottom: '1rem' }}>收集的資料類型：</h3>
                         <ul style={{ paddingLeft: '1.5rem', listStyleType: 'disc', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                             <li>
-                                <strong style={{ color: '#fff' }}>Personal Data:</strong> While using our Service, we may ask you to provide us with certain personally identifiable information that can be used to contact or identify you. This includes, but is not limited to, your Email address.
+                                <strong style={{ color: '#fff' }}>個人資料 (Personal Data)：</strong> 當您使用本服務時，我們可能會要求您提供某些可用於聯絡或識別您身分的個人資訊，這包含但不限於您的 電子郵件信箱 (Email address)。
                             </li>
                             <li>
-                                <strong style={{ color: '#fff' }}>Device Permissions:</strong> Our Service may request access to your Camera and Photo Library to allow you to take and upload photos of audio hardware/software interfaces for AI analysis features.
-                            </li>
-                            {/* 💡 必改清單 2️⃣：加入 AI / 音訊分析的免責宣告 */}
-                            <li>
-                                <strong style={{ color: '#fca311' }}>Audio & AI Data:</strong> Audio interactions may be analyzed to improve the training experience and provide personalized feedback.
+                                <strong style={{ color: '#fff' }}>裝置權限 (Device Permissions)：</strong> 我們的服務可能會要求存取您的相機與相簿，以便您在使用 AI 分析功能時，能夠拍攝或上傳音訊軟硬體介面的截圖。
                             </li>
                             <li>
-                                <strong style={{ color: '#fff' }}>Local Storage & Sessions:</strong> We use local storage and session technologies to remember your training progress and preferences within the app.
+                                <strong style={{ color: '#fca311' }}>音訊與 AI 數據 (Audio & AI Data)：</strong> 我們可能會對您上傳的音訊互動內容與對話進行分析，以提供專屬的個人化 AI 回饋，並藉此持續提升聽覺訓練的整體體驗。
+                            </li>
+                            <li>
+                                <strong style={{ color: '#fff' }}>本地儲存與工作階段 (Local Storage & Sessions)：</strong> 我們使用本地儲存 (Local Storage) 與 Session 技術來記憶您在平台中的訓練進度與個人偏好設定。
                             </li>
                         </ul>
                     </section>
 
                     <section>
-                        <h2 style={{ color: '#38bdf8', fontSize: '1.4rem', fontWeight: 'bold', marginBottom: '1rem' }}>2. Use of Data</h2>
-                        <p style={{ marginBottom: '1rem' }}>LiFreedom Studio uses the collected data for various purposes:</p>
+                        <h2 style={{ color: '#38bdf8', fontSize: '1.4rem', fontWeight: 'bold', marginBottom: '1rem' }}>2. 資料的使用方式 (Use of Data)</h2>
+                        <p style={{ marginBottom: '1rem' }}>LiFreedom Studio 將收集來的資料用於以下用途：</p>
                         <ul style={{ paddingLeft: '1.5rem', listStyleType: 'disc', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                            <li>To provide and maintain the Service</li>
-                            <li>To allow you to participate in interactive features of our Service</li>
-                            <li>To provide customer care and support</li>
-                            <li>To monitor the usage of the Service</li>
+                            <li>提供並維護本服務的正常運作</li>
+                            <li>讓您能夠順利參與本服務的互動式訓練功能</li>
+                            <li>提供客戶服務與技術支援</li>
+                            <li>監測本服務的使用情況以進行系統優化</li>
                         </ul>
                     </section>
 
                     <section>
-                        <h2 style={{ color: '#38bdf8', fontSize: '1.4rem', fontWeight: 'bold', marginBottom: '1rem' }}>3. Transfer and Disclosure of Data</h2>
+                        <h2 style={{ color: '#38bdf8', fontSize: '1.4rem', fontWeight: 'bold', marginBottom: '1rem' }}>3. 資料的轉移與揭露 (Transfer and Disclosure of Data)</h2>
                         <p>
-                            Your information, including Personal Data, will NOT be sold, shared, or rented to any third parties. We only use secure database management and authentication.
+                            您的所有資訊（包含個人資料）<strong style={{ color: '#fff' }}>絕對不會</strong>被出售、分享或出租給任何第三方。我們僅使用安全可靠的資料庫管理系統與身分驗證機制來存儲與保護您的資料。
                         </p>
                     </section>
 
                     <section>
-                        <h2 style={{ color: '#38bdf8', fontSize: '1.4rem', fontWeight: 'bold', marginBottom: '1rem' }}>4. Security of Data</h2>
+                        <h2 style={{ color: '#38bdf8', fontSize: '1.4rem', fontWeight: 'bold', marginBottom: '1rem' }}>4. 資料安全 (Security of Data)</h2>
                         <p>
-                            The security of your data is important to us, and we strive to use commercially acceptable means to protect your Personal Data. However, remember that no method of transmission over the Internet is 100% secure.
+                            您的資料安全對我們至關重要，我們致力於使用商業上可接受的高標準來保護您的個人資料。但請注意，網際網路上的傳輸方法或電子儲存方式皆無法保證 100% 的絕對安全。
                         </p>
                     </section>
 
                     <section>
-                        <h2 style={{ color: '#38bdf8', fontSize: '1.4rem', fontWeight: 'bold', marginBottom: '1rem' }}>5. Changes to This Privacy Policy</h2>
+                        <h2 style={{ color: '#38bdf8', fontSize: '1.4rem', fontWeight: 'bold', marginBottom: '1rem' }}>5. 隱私權政策的變更 (Changes to This Privacy Policy)</h2>
                         <p>
-                            We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.
+                            我們可能會不定期更新這份隱私權政策。若有任何變更，我們將會在此頁面上發布新的政策內容以通知您。
                         </p>
                     </section>
 
                     <section style={{ background: 'rgba(255,255,255,0.02)', padding: '2rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', marginTop: '1rem' }}>
-                        <h2 style={{ color: '#f8fafc', fontSize: '1.4rem', fontWeight: 'bold', marginBottom: '1rem' }}>6. Contact Us</h2>
+                        <h2 style={{ color: '#f8fafc', fontSize: '1.4rem', fontWeight: 'bold', marginBottom: '1rem' }}>6. 聯絡我們 (Contact Us)</h2>
                         <p style={{ marginBottom: '1rem' }}>
-                            If you have any questions about this Privacy Policy, please contact us by email:
+                            如果您對本隱私權政策有任何疑問，歡迎透過電子郵件與我們聯繫：
                         </p>
-                        {/* 💡 修正 5️⃣：確保 mailto 的信箱與顯示的信箱完全一致 */}
                         <a href="mailto:xlifreedom305x@gmail.com" style={{ color: '#38bdf8', textDecoration: 'none', fontWeight: 'bold', display: 'inline-block', fontSize: '1.1rem' }}>
                             xlifreedom305x@gmail.com
                         </a>

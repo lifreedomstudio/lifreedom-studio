@@ -73,27 +73,66 @@ export default function ContactPage() {
                     </ul>
                 </div>
 
-                {/* Email & Response Time 整合區塊 */}
+                {/* Email & 表單 雙通道區塊 */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '4rem' }}>
 
-                    <div style={{ background: "rgba(56, 189, 248, 0.05)", border: "1px solid rgba(56, 189, 248, 0.2)", padding: "2rem", borderRadius: "16px" }}>
+                    {/* 方式 1: 直接 Email */}
+                    <div style={{ background: "rgba(56, 189, 248, 0.05)", border: "1px solid rgba(56, 189, 248, 0.2)", padding: "2rem", borderRadius: "16px", display: "flex", flexDirection: "column" }}>
                         <h2 style={{ color: "#38bdf8", fontSize: "1.3rem", fontWeight: "bold", marginBottom: "0.5rem", display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            📩 聯絡信箱
+                            📩 寄送 Email
                         </h2>
-                        <p style={{ color: "#94a3b8", fontSize: "0.95rem", marginBottom: "1rem" }}>請將您的需求寄至此信箱：</p>
-                        <a href="mailto:xlifreedom305x@gmail.com" style={{ fontSize: "1.2rem", fontWeight: "900", color: "#fff", textDecoration: "none", borderBottom: "2px solid #38bdf8", paddingBottom: "2px", transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = '#38bdf8'} onMouseOut={(e) => e.currentTarget.style.color = '#fff'}>
+                        <p style={{ color: "#94a3b8", fontSize: "0.95rem", marginBottom: "1rem" }}>直接發送郵件給客服團隊：</p>
+                        <a href="mailto:xlifreedom305x@gmail.com" style={{ fontSize: "1.1rem", fontWeight: "900", color: "#fff", textDecoration: "none", borderBottom: "2px solid #38bdf8", paddingBottom: "2px", transition: "color 0.2s", alignSelf: "flex-start" }} onMouseOver={(e) => e.currentTarget.style.color = '#38bdf8'} onMouseOut={(e) => e.currentTarget.style.color = '#fff'}>
                             xlifreedom305x@gmail.com
                         </a>
+                        <p style={{ color: "#64748b", fontSize: "0.85rem", marginTop: "0.8rem", fontWeight: "bold" }}>
+                            ⏱ 通常 24–48 小時內回覆
+                        </p>
+
+                        {/* 💡 關鍵升級：引導提供具體資訊以加速處理 */}
+                        <div style={{ marginTop: "auto", paddingTop: "1.5rem" }}>
+                            <div style={{ borderTop: "1px dashed rgba(56, 189, 248, 0.3)", paddingTop: "1rem" }}>
+                                <p style={{ color: "#64748b", fontSize: "0.9rem", margin: 0, lineHeight: "1.6" }}>
+                                    <strong>加速處理小技巧：</strong><br />
+                                    請在信件中簡單描述您的問題（例如：使用的裝置、瀏覽器、發生情境），我們可以更快幫助您 🙏
+                                </p>
+                            </div>
+                        </div>
                     </div>
 
-                    <div style={{ background: "rgba(16, 185, 129, 0.05)", border: "1px solid rgba(16, 185, 129, 0.2)", padding: "2rem", borderRadius: "16px" }}>
+                    {/* 方式 2: 線上表單 (Tally) */}
+                    <div style={{ background: "rgba(16, 185, 129, 0.05)", border: "1px solid rgba(16, 185, 129, 0.2)", padding: "2rem", borderRadius: "16px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                         <h2 style={{ color: "#10b981", fontSize: "1.3rem", fontWeight: "bold", marginBottom: "0.5rem", display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            ⏱ 預期回覆時間
+                            📝 線上回饋表單 <span style={{ fontSize: "0.85rem", background: "#10b981", color: "#020617", padding: "2px 8px", borderRadius: "12px", marginLeft: "5px" }}>推薦</span>
                         </h2>
-                        <p style={{ color: "#cbd5e1", lineHeight: "1.7", fontSize: "0.95rem", margin: 0 }}>
-                            我們通常會在 <strong style={{ color: "#fff" }}>24–48 小時內</strong> 回覆您的訊息。<br />
-                            在 Early Access 階段，回覆時間可能會略有波動，感謝您的耐心等候 🙏
+                        <p style={{ color: "#cbd5e1", lineHeight: "1.7", fontSize: "0.95rem", marginBottom: "0.5rem" }}>
+                            適合回報問題、功能建議、或使用體驗。
                         </p>
+                        <p style={{ color: "#64748b", fontSize: "0.85rem", marginBottom: "2rem" }}>
+                            利用表單分類，能幫助我們更快精準定位問題！
+                        </p>
+
+                        <Link href="/feedback" style={{ textDecoration: 'none', marginTop: "auto" }}>
+                            <button
+                                style={{
+                                    background: "#10b981",
+                                    color: "#020617",
+                                    padding: "0.9rem 1.5rem",
+                                    borderRadius: "999px",
+                                    border: "none",
+                                    fontWeight: "900",
+                                    fontSize: "1.05rem",
+                                    cursor: "pointer",
+                                    width: "100%",
+                                    transition: "all 0.2s",
+                                    boxShadow: "0 4px 15px rgba(16, 185, 129, 0.3)"
+                                }}
+                                onMouseOver={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(16, 185, 129, 0.4)"; }}
+                                onMouseOut={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 15px rgba(16, 185, 129, 0.3)"; }}
+                            >
+                                前往填寫回饋表單 ➔
+                            </button>
+                        </Link>
                     </div>
 
                 </div>
