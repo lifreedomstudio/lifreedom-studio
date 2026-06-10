@@ -4,12 +4,13 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 // ==========================================
-// 🎯 一、新增實戰題型 (Problem Solving & Tone Shaping)
+// 🎯 一、新增實戰題型 (加入 track 綁定)
 // ==========================================
 const MISSIONS = [
     {
         id: 1,
         type: "find-problem",
+        track: "guitar", // 👈 綁定木吉他
         question: "這段木吉他聽起來太悶 (Muddy)，請找出問題頻率並削減",
         target: { min: 200, max: 400, mode: "cut" },
         hint: "切換到『🔽 CUTTING (削減)』狀態，在 200Hz-400Hz 之間左右掃描",
@@ -18,6 +19,7 @@ const MISSIONS = [
     {
         id: 2,
         type: "tone-shaping",
+        track: "vocal", // 👈 綁定主唱
         question: "讓這段主唱更清亮、更貼近耳朵 (Presence)",
         target: { min: 3000, max: 5000, mode: "boost" },
         hint: "切換到『🔼 BOOSTING (放大)』狀態，尋找 3kHz-5kHz 區間",
@@ -26,6 +28,7 @@ const MISSIONS = [
     {
         id: 3,
         type: "find-problem",
+        track: "drum", // 👈 綁定大鼓
         question: "找出讓大鼓聽起來像在『敲紙箱 (Boxy)』的頻率並削減",
         target: { min: 350, max: 600, mode: "cut" },
         hint: "切換到『🔽 CUTTING (削減)』狀態，在中低頻段 (350-600Hz) 尋找",
@@ -34,6 +37,7 @@ const MISSIONS = [
     {
         id: 4,
         type: "tone-shaping",
+        track: "vocal", // 👈 綁定主唱
         question: "賦予這段人聲昂貴的『空氣感 (Air)』",
         target: { min: 8000, max: 15000, mode: "boost" },
         hint: "切換到『🔼 BOOSTING (放大)』狀態，往頻譜最右側高頻端 (8kHz 以上) 找找",
@@ -94,10 +98,8 @@ function EQGameContent() {
     const maxLog = Math.log10(maxFreq);
     const frequency = Math.round(Math.pow(10, minLog + ((maxLog - minLog) * (sliderValue / 1000))));
 
-    // 格式化頻率顯示 (ex: 2.5k Hz)
     const displayFreq = frequency >= 1000 ? (frequency / 1000).toFixed(1) + 'k' : frequency;
 
-    // 🔔 內建成功音效
     const playSuccessSound = () => {
         try {
             const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -120,6 +122,13 @@ function EQGameContent() {
         window.addEventListener('resize', checkMobile);
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
+
+    // 💡 新增：自動跟隨題目切換音軌
+    useEffect(() => {
+        if (mode === 'challenge' && currentMission) {
+            setActiveTrack(currentMission.track as 'guitar' | 'drum' | 'vocal');
+        }
+    }, [currentMissionIndex, mode, currentMission]);
 
     // ⚙️ 核心：命中判定
     useEffect(() => {
@@ -155,6 +164,16 @@ function EQGameContent() {
             if (!response.ok) throw new Error('音檔載入失敗');
             const arrayBuffer = await response.arrayBuffer();
             bufferRef.current = await audioCtxRef.current.decodeAudioData(arrayBuffer);
+
+            // 💡 如果在播放狀態下切換音檔，讓它自動繼續播
+            if (isPlayingManual) {
+                const ctx = audioCtxRef.current;
+                sourceRef.current = ctx.createBufferSource();
+                sourceRef.current.buffer = bufferRef.current;
+                sourceRef.current.loop = true;
+                sourceRef.current.connect(filterRef.current!);
+                sourceRef.current.start();
+            }
         } catch (e) {
             console.error(e);
         }
@@ -204,7 +223,6 @@ function EQGameContent() {
         }
     };
 
-    // 🔒 Supabase API 提交
     const handleWaitlistSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!waitlistEmail) return;
@@ -240,7 +258,6 @@ function EQGameContent() {
         <div className={`game-container ${isFlash ? 'correct-flash' : ''}`} style={{ minHeight: '100vh', background: '#020617', color: '#f8fafc', padding: isMobile ? '1.5rem 1rem' : '4rem 2rem', fontFamily: 'sans-serif', transition: 'background-color 0.1s ease' }}>
             <div style={{ maxWidth: '900px', margin: '0 auto' }}>
 
-                {/* 返回按鈕 */}
                 <button onClick={() => router.push('/')} style={{ background: 'transparent', color: '#94a3b8', border: '1px solid #334155', padding: '0.6rem 1.4rem', borderRadius: '50px', cursor: 'pointer', marginBottom: '2rem', fontSize: '0.9rem', fontWeight: 'bold' }}>
                     ← 返回首頁
                 </button>
@@ -251,7 +268,6 @@ function EQGameContent() {
                     </h1>
                 </header>
 
-                {/* 🎮 模式切換 */}
                 <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '2.5rem' }}>
                     <button onClick={() => { setMode("explore"); setIsMissionPassed(false); }} style={{ padding: '10px 24px', borderRadius: '50px', fontWeight: 'bold', cursor: 'pointer', border: 'none', background: mode === 'explore' ? '#10b981' : '#1e293b', color: mode === 'explore' ? '#020617' : '#94a3b8', transition: 'all 0.2s' }}>
                         🧭 EQ Playground
@@ -263,7 +279,6 @@ function EQGameContent() {
 
                 <div style={{ background: 'linear-gradient(180deg, #0f172a 0%, #020617 100%)', padding: isMobile ? '1.5rem' : '3rem', borderRadius: '32px', border: '1px solid #1e293b', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
 
-                    {/* ================= 🏁 遊戲結束：最終銷售頁 ================= */}
                     {mode === "challenge" && currentMissionIndex >= MISSIONS.length ? (
                         <div style={{ padding: '3rem 1rem', textAlign: 'center', animation: 'fadeIn 0.5s ease' }}>
                             <div style={{ fontSize: '5rem', marginBottom: '1rem' }}>🎉</div>
@@ -289,7 +304,6 @@ function EQGameContent() {
                             </Link>
                         </div>
 
-                        // ================= 🔒 中途轉換點：第 2 題後攔截 =================
                     ) : mode === "challenge" && currentMissionIndex === 2 && !hasUnlockedFull ? (
                         <div style={{ padding: '2rem 1rem', textAlign: 'center', animation: 'fadeIn 0.5s ease' }}>
                             <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>👀</div>
@@ -314,9 +328,7 @@ function EQGameContent() {
                         </div>
 
                     ) : (
-                        // ================= 🟢 正常遊戲 / 探索面板 =================
                         <>
-                            {/* 🎯 任務進度與題目面板 */}
                             {mode === "challenge" && currentMission && (
                                 <div style={{ background: 'rgba(251, 191, 36, 0.08)', border: '1px solid rgba(251, 191, 36, 0.3)', padding: '1.5rem', borderRadius: '16px', marginBottom: '2rem', animation: 'fadeIn 0.3s ease' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
@@ -332,7 +344,6 @@ function EQGameContent() {
                                 </div>
                             )}
 
-                            {/* 🧭 即時教練 (Playground) */}
                             {mode === "explore" && (
                                 <div style={{ background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '1.5rem', borderRadius: '16px', marginBottom: '2rem', display: 'flex', gap: '15px', alignItems: 'flex-start' }}>
                                     <div style={{ fontSize: '2rem' }}>👨‍🏫</div>
@@ -343,7 +354,6 @@ function EQGameContent() {
                                 </div>
                             )}
 
-                            {/* 樂器切換 */}
                             <div style={{ display: 'flex', gap: '0.8rem', justifyContent: 'center', marginBottom: '2rem', flexWrap: 'wrap' }}>
                                 {Object.values(TRACKS).map(track => (
                                     <button
@@ -356,7 +366,6 @@ function EQGameContent() {
                                 ))}
                             </div>
 
-                            {/* 📊 1️⃣ 操作狀態顯示器 */}
                             <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
                                 <span style={{
                                     background: eqMode === 'boost' ? 'rgba(16, 185, 129, 0.2)' : eqMode === 'cut' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255,255,255,0.1)',
@@ -367,7 +376,6 @@ function EQGameContent() {
                                 </span>
                             </div>
 
-                            {/* 3D 虛擬頻譜 */}
                             <div style={{ width: '100%', height: isMobile ? '180px' : '240px', background: '#020617', borderRadius: '20px', border: '2px solid #1e293b', marginBottom: '2rem', position: 'relative', overflow: 'hidden' }}>
                                 <div style={{ position: 'absolute', width: '100%', height: '100%' }}>
                                     {[50, 100, 500, 1000, 5000, 10000].map(f => (
@@ -375,7 +383,6 @@ function EQGameContent() {
                                             <span style={{ position: 'absolute', bottom: '10px', left: '6px', color: '#475569', fontSize: '0.75rem', fontWeight: 'bold' }}>{f >= 1000 ? `${f / 1000}k` : f}Hz</span>
                                         </div>
                                     ))}
-                                    {/* 0dB 中心線 */}
                                     <div style={{ position: 'absolute', top: '150px', width: '100%', borderTop: '2px dashed rgba(255,255,255,0.15)' }}>
                                         <span style={{ position: 'absolute', right: '10px', top: '-20px', color: '#475569', fontSize: '0.75rem', fontWeight: 'bold' }}>0 dB</span>
                                     </div>
@@ -390,13 +397,11 @@ function EQGameContent() {
                                         </g>
                                     )}
                                 </svg>
-                                {/* 📊 1️⃣ 頻率數字顯示 */}
                                 <div style={{ position: 'absolute', top: '20px', right: '25px', fontSize: '2.5rem', fontWeight: '900', color: themeColor, fontFamily: 'monospace' }}>
                                     {displayFreq} <span style={{ fontSize: '1.2rem', color: '#64748b' }}>Hz</span>
                                 </div>
                             </div>
 
-                            {/* 控制按鈕 */}
                             <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '1.5rem', marginBottom: '2rem' }}>
                                 <button onClick={togglePlayManual} disabled={isLoading} style={{ flex: 1, padding: '1.2rem', borderRadius: '16px', fontWeight: '900', fontSize: '1.2rem', border: 'none', cursor: 'pointer', background: isPlayingManual ? '#ef4444' : '#10b981', color: '#fff', boxShadow: isPlayingManual ? '0 0 20px rgba(239,68,68,0.2)' : 'none' }}>
                                     {isLoading ? '⏳ 載入音軌中...' : isPlayingManual ? '⏹️ 停止監聽' : '▶️ 開始監聽'}
@@ -412,7 +417,6 @@ function EQGameContent() {
                                 <input type="range" min="0" max="1000" value={sliderValue} onChange={e => setSliderValue(Number(e.target.value))} style={{ width: '100%', cursor: 'pointer', accentColor: themeColor }} />
                             </div>
 
-                            {/* 💬 回饋面板 */}
                             {mode === "challenge" && feedback && (
                                 <div style={{
                                     padding: '1.5rem',
@@ -429,7 +433,6 @@ function EQGameContent() {
                                 </div>
                             )}
 
-                            {/* ⏭ 下一題 */}
                             {mode === "challenge" && isMissionPassed && (
                                 <button
                                     style={{
@@ -458,7 +461,7 @@ function EQGameContent() {
                 @keyframes flash { 0% { background-color: #020617; } 50% { background-color: #064e3b; } 100% { background-color: #020617; } }
                 @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
                 @keyframes pop { 0% { transform: scale(0.95); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-                .correct-flash { animation: flash 0.4s ease-out; }
+                .correct-flash { animation: flash 0.3s ease-out; }
             `}</style>
         </div>
     );

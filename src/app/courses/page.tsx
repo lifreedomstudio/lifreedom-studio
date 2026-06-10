@@ -9,7 +9,6 @@ export default function CoursesPage() {
     const [loading, setLoading] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
 
-    // 佈署守門員：驗證登入狀態
     useEffect(() => {
         const checkUser = async () => {
             const { data: { session } } = await supabase.auth.getSession();
@@ -22,7 +21,6 @@ export default function CoursesPage() {
         checkUser();
     }, [router]);
 
-    // 判斷手機版
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
         checkMobile();
@@ -41,7 +39,6 @@ export default function CoursesPage() {
         );
     }
 
-    // --- 共用樣式定義 ---
     const stepCard = {
         background: 'rgba(30, 41, 59, 0.5)',
         padding: isMobile ? '1.5rem' : '2.5rem',
@@ -53,6 +50,14 @@ export default function CoursesPage() {
         textAlign: 'center' as const,
         width: '100%',
         boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
+    };
+
+    // 🔒 高級鎖定卡片樣式 (拿掉過度灰階，讓誘惑文字能被清楚看見)
+    const lockedStepCard = {
+        ...stepCard,
+        background: 'rgba(15, 23, 42, 0.8)',
+        cursor: 'default',
+        border: '1px solid #334155'
     };
 
     const stepWrapper = {
@@ -76,7 +81,6 @@ export default function CoursesPage() {
         marginBottom: '0.5rem'
     };
 
-    // 高質感 SVG 動態箭頭
     const Arrow = () => (
         <div style={{ margin: '1rem 0 2rem 0', animation: 'bounce 2s infinite', color: '#475569', display: 'flex', justifyContent: 'center' }}>
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -99,7 +103,6 @@ export default function CoursesPage() {
             fontFamily: 'sans-serif'
         }}>
 
-            {/* 🔝 Header */}
             <div style={{
                 display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center',
                 gap: isMobile ? '1.5rem' : '1rem', marginBottom: '3rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1.5rem'
@@ -124,7 +127,6 @@ export default function CoursesPage() {
                 </div>
             </div>
 
-            {/* 💥 HERO 爆擊區 (成功插入於 Header 與進度條中間) */}
             <div style={{
                 marginBottom: '3rem',
                 padding: isMobile ? '2rem 1.5rem' : '3rem',
@@ -166,7 +168,6 @@ export default function CoursesPage() {
                     🎧 讓我聽一次真的音樂
                 </Link>
 
-                {/* ⚡ Killer 心理暗示小字 */}
                 <p style={{
                     marginTop: '1rem',
                     fontSize: '0.85rem',
@@ -177,7 +178,6 @@ export default function CoursesPage() {
                 </p>
             </div>
 
-            {/* 🎯 總體進度條 */}
             <div style={{ marginBottom: '4rem', background: 'rgba(30,41,59,0.4)', padding: '1.5rem', borderRadius: '16px', border: '1px solid #334155' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
                     <span style={{ color: '#94a3b8', fontWeight: 'bold' }}>製作人覺醒進度</span>
@@ -188,14 +188,9 @@ export default function CoursesPage() {
                 </div>
             </div>
 
-            {/* 🧭 主標 */}
             <h2 style={{ textAlign: 'center', marginBottom: '3rem', fontSize: '1.8rem', color: '#fff', fontWeight: 'bold' }}>
                 不是選課，是開始聽懂聲音
             </h2>
-
-            {/* =========================================
-                🔥 新手村主軸 (Step 0 ~ Step 4)
-            ========================================= */}
 
             {/* 🎧 STEP 0: 聽覺啟蒙 */}
             <div style={stepWrapper}>
@@ -231,19 +226,34 @@ export default function CoursesPage() {
 
             <Arrow />
 
-            {/* 🎛️ STEP 2: 基礎混音 */}
+            {/* 🎛️ STEP 2: 基礎混音 🔒 [CTA 付費引爆點] */}
             <div style={stepWrapper}>
-                <div style={{ ...badgeStyle, color: '#38bdf8', borderColor: 'rgba(56, 189, 248, 0.3)' }}>STEP 2 / 控制</div>
-                <Link href="/courses/mixing/intro" style={{ textDecoration: 'none', width: '100%' }}>
-                    <div style={{ ...stepCard }}
-                        onMouseOver={e => { e.currentTarget.style.border = '1px solid #38bdf8'; e.currentTarget.style.transform = 'translateY(-5px)'; }}
-                        onMouseOut={e => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.1)'; e.currentTarget.style.transform = 'none'; }}>
-                        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎛️</div>
-                        <h3 style={{ color: '#38bdf8', fontSize: '1.5rem', marginBottom: '0.5rem', fontWeight: 'bold' }}>基礎混音學</h3>
-                        <p style={{ color: '#94a3b8', lineHeight: '1.6' }}>不是讓聲音變好聽，而是讓你「知道自己在幹嘛」。從混亂到可控，第一次真正聽懂聲音。</p>
-                        <div style={{ marginTop: '1.5rem', color: '#38bdf8', fontWeight: 'bold' }}>開始掌控 ➔</div>
+                <div style={{ ...badgeStyle, color: '#64748b', borderColor: 'rgba(100, 116, 139, 0.2)' }}>STEP 2 / 控制</div>
+                <div style={{ ...lockedStepCard }}>
+                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎛️</div>
+                    <h3 style={{ color: '#cbd5e1', fontSize: '1.5rem', marginBottom: '0.5rem', fontWeight: 'bold' }}>基礎混音學</h3>
+                    <p style={{ color: '#94a3b8', lineHeight: '1.6' }}>不是讓聲音變好聽，而是讓你「知道自己在幹嘛」。從混亂到可控，第一次真正聽懂聲音。</p>
+
+                    {/* 💡 價值誘惑清單 */}
+                    <div style={{ background: 'rgba(0,0,0,0.4)', padding: '1.5rem', borderRadius: '16px', marginTop: '1.5rem', textAlign: 'left', border: '1px solid rgba(251, 191, 36, 0.3)' }}>
+                        <div style={{ color: '#fbbf24', fontSize: '1rem', fontWeight: 'bold', marginBottom: '10px' }}>🔒 解鎖後你會獲得的能力：</div>
+                        <ul style={{ color: '#e2e8f0', fontSize: '0.95rem', lineHeight: '1.8', margin: 0, paddingLeft: '1.5rem' }}>
+                            <li>第一次聽出 EQ 到底在幹嘛</li>
+                            <li>清楚知道為什麼吉他跟人聲會糊在一起</li>
+                            <li>不再憑感覺亂轉旋鈕，建立科學決策力</li>
+                        </ul>
                     </div>
-                </Link>
+
+                    {/* 💡 強力 CTA 按鈕 */}
+                    <button
+                        onClick={() => router.push('/pricing')}
+                        style={{ marginTop: '1.5rem', padding: '1.2rem', background: 'linear-gradient(135deg, #f59e0b, #d97706)', color: '#020617', fontSize: '1.1rem', fontWeight: '900', borderRadius: '50px', border: 'none', cursor: 'pointer', width: '100%', boxShadow: '0 10px 25px rgba(245, 158, 11, 0.3)', transition: 'transform 0.2s' }}
+                        onMouseOver={e => e.currentTarget.style.transform = 'translateY(-3px)'}
+                        onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
+                    >
+                        👉 大部分人卡在這裡 → 你要跨過去嗎？
+                    </button>
+                </div>
             </div>
 
             <Arrow />
@@ -265,19 +275,23 @@ export default function CoursesPage() {
 
             <Arrow />
 
-            {/* 🎓 STEP 4: 新手測驗 */}
+            {/* 🎓 STEP 4: 新手測驗 🔒 [價值誘惑版] */}
             <div style={stepWrapper}>
-                <div style={{ ...badgeStyle, color: '#10b981', borderColor: 'rgba(16, 185, 129, 0.5)' }}>STEP 4 / 驗證</div>
-                <Link href="/certification/novice" style={{ textDecoration: 'none', width: '100%' }}>
-                    <div style={{ ...stepCard, border: '1px dashed rgba(16, 185, 129, 0.5)' }}
-                        onMouseOver={e => { e.currentTarget.style.border = '1px solid #10b981'; e.currentTarget.style.transform = 'translateY(-5px)'; }}
-                        onMouseOut={e => { e.currentTarget.style.border = '1px dashed rgba(16, 185, 129, 0.5)'; e.currentTarget.style.transform = 'none'; }}>
-                        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎓</div>
-                        <h3 style={{ color: '#10b981', fontSize: '1.5rem', marginBottom: '0.5rem', fontWeight: 'bold' }}>新手村畢業測驗</h3>
-                        <p style={{ color: '#94a3b8', lineHeight: '1.6' }}>當你能夠判斷，而不是用猜的，你就過關了。用 12 題確認你跨過了那條線！</p>
-                        <div style={{ marginTop: '1.5rem', color: '#10b981', fontWeight: 'bold' }}>證明自己 ➔</div>
+                <div style={{ ...badgeStyle, color: '#64748b', borderColor: 'rgba(100, 116, 139, 0.2)' }}>STEP 4 / 驗證</div>
+                <div style={{ ...lockedStepCard, border: '1px dashed rgba(100, 116, 139, 0.4)' }}>
+                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎓</div>
+                    <h3 style={{ color: '#cbd5e1', fontSize: '1.5rem', marginBottom: '0.5rem', fontWeight: 'bold' }}>新手村畢業測驗</h3>
+                    <p style={{ color: '#94a3b8', lineHeight: '1.6' }}>當你能夠判斷，而不是用猜的，你就過關了。用 12 題確認你跨過了那條線！</p>
+
+                    <div style={{ background: 'rgba(0,0,0,0.4)', padding: '1.2rem', borderRadius: '12px', marginTop: '1.5rem', textAlign: 'left', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                        <div style={{ color: '#10b981', fontSize: '0.95rem', fontWeight: 'bold', marginBottom: '10px' }}>🔒 解鎖後你會體驗到：</div>
+                        <ul style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.8', margin: 0, paddingLeft: '1.5rem' }}>
+                            <li>12 題嚴苛的綜合聽感盲測</li>
+                            <li>系統量化的耳朵精準度報告</li>
+                            <li>找出你最容易忽略的頻率盲區</li>
+                        </ul>
                     </div>
-                </Link>
+                </div>
             </div>
 
             <div style={{ margin: '4rem 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}></div>
@@ -290,60 +304,68 @@ export default function CoursesPage() {
             </h2>
 
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem', marginBottom: '4rem' }}>
-                {/* 高階編曲區 */}
+
+                {/* 高階編曲區 💡 (加入 Before/After 痛點對比) */}
                 <div style={{
                     background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)', padding: '2.5rem', borderRadius: '24px', border: '1px solid #f97316',
                     boxShadow: '0 20px 50px rgba(249, 115, 22, 0.15)', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden'
                 }}>
                     <div style={{ position: 'absolute', top: '-20px', right: '-20px', fontSize: '8rem', opacity: 0.05 }}>🎼</div>
                     <h3 style={{ color: '#f97316', fontSize: '1.6rem', marginBottom: '1rem', fontWeight: 'bold' }}>高階編曲學</h3>
-                    <p style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.7', marginBottom: '2rem', flex: 1 }}>
+                    <p style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.7', marginBottom: '1.5rem' }}>
                         問題不是混音不夠強，而是你一開始就寫錯了。學會讓聲音「自動不打架」的編曲邏輯。
                     </p>
+                    <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1.2rem', borderRadius: '12px', marginBottom: '2rem', border: '1px solid rgba(249, 115, 22, 0.2)', flex: 1 }}>
+                        <div style={{ color: '#cbd5e1', fontSize: '0.95rem', marginBottom: '8px', lineHeight: '1.6' }}><strong style={{ color: '#fca5a5' }}>❌ Before：</strong> 樂器疊越多越亂，總是找不到主體。</div>
+                        <div style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6' }}><strong style={{ color: '#6ee7b7' }}>✨ After：</strong> 懂得利用頻段與節奏錯位，聲音自動分離。</div>
+                    </div>
                     <Link href="/pricing" style={{
                         padding: '1.2rem', background: '#f97316', color: '#020617', textAlign: 'center',
-                        borderRadius: '12px', fontWeight: '900', fontSize: '1.1rem', textDecoration: 'none', display: 'block'
-                    }}>
+                        borderRadius: '12px', fontWeight: '900', fontSize: '1.1rem', textDecoration: 'none', display: 'block', transition: 'transform 0.2s'
+                    }} onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}>
                         解鎖進階思維 ➔
                     </Link>
                 </div>
 
-                {/* 高階混音區 */}
+                {/* 高階混音區 💡 (加入 Before/After 痛點對比) */}
                 <div style={{
                     background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)', padding: '2.5rem', borderRadius: '24px', border: '1px solid #3b82f6',
                     boxShadow: '0 20px 50px rgba(59, 130, 246, 0.15)', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden'
                 }}>
                     <div style={{ position: 'absolute', top: '-20px', right: '-20px', fontSize: '8rem', opacity: 0.05 }}>🎚️</div>
                     <h3 style={{ color: '#3b82f6', fontSize: '1.6rem', marginBottom: '1rem', fontWeight: 'bold' }}>高階混音學</h3>
-                    <p style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.7', marginBottom: '2rem', flex: 1 }}>
+                    <p style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.7', marginBottom: '1.5rem' }}>
                         從「調整聲音」進入「控制空間」。掌握前後距離、空間深度，讓作品第一次有專業感。
                     </p>
+                    <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1.2rem', borderRadius: '12px', marginBottom: '2rem', border: '1px solid rgba(59, 130, 246, 0.2)', flex: 1 }}>
+                        <div style={{ color: '#cbd5e1', fontSize: '0.95rem', marginBottom: '8px', lineHeight: '1.6' }}><strong style={{ color: '#fca5a5' }}>❌ Before：</strong> 聲音全部擠在同一個平面，聽起來很 2D。</div>
+                        <div style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6' }}><strong style={{ color: '#6ee7b7' }}>✨ After：</strong> 能精準控制誰在臉上、誰在後排，建立 3D 空間感。</div>
+                    </div>
                     <Link href="/pricing" style={{
                         padding: '1.2rem', background: '#3b82f6', color: '#fff', textAlign: 'center',
-                        borderRadius: '12px', fontWeight: '900', fontSize: '1.1rem', textDecoration: 'none', display: 'block'
-                    }}>
+                        borderRadius: '12px', fontWeight: '900', fontSize: '1.1rem', textDecoration: 'none', display: 'block', transition: 'transform 0.2s'
+                    }} onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}>
                         解鎖專業能力 ➔
                     </Link>
                 </div>
             </div>
 
-            {/* 🏆 最終試煉 */}
+            {/* 🏆 最終試煉 🔒 [已鎖定] */}
             <div style={{
                 padding: isMobile ? '2.5rem 1.5rem' : '4rem 2rem', textAlign: 'center',
-                background: 'linear-gradient(135deg, rgba(167, 139, 250, 0.1), rgba(139, 92, 246, 0.05))', borderRadius: '32px',
-                border: '1px solid #a78bfa', boxShadow: '0 20px 40px rgba(167, 139, 250, 0.2)'
+                background: 'rgba(15, 23, 42, 0.8)', borderRadius: '32px',
+                border: '1px solid #334155'
             }}>
-                <span style={{ fontSize: '0.85rem', color: '#a78bfa', fontWeight: 'bold', letterSpacing: '4px' }}>MASTER EXAM</span>
-                <h2 style={{ color: '#fff', fontSize: isMobile ? '1.8rem' : '2.5rem', margin: '1rem 0', fontWeight: '900' }}>最終試煉：大師認證</h2>
-                <p style={{ color: '#e2e8f0', marginBottom: '2.5rem', fontSize: isMobile ? '0.95rem' : '1.1rem', lineHeight: '1.6' }}>
+                <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 'bold', letterSpacing: '4px' }}>MASTER EXAM</span>
+                <h2 style={{ color: '#cbd5e1', fontSize: isMobile ? '1.8rem' : '2.5rem', margin: '1rem 0', fontWeight: '900' }}>最終試煉：大師認證</h2>
+                <p style={{ color: '#94a3b8', marginBottom: '2.5rem', fontSize: isMobile ? '0.95rem' : '1.1rem', lineHeight: '1.6' }}>
                     這不是考試，是你是否真的「聽懂聲音」的分水嶺。<br />當你通過，你已經不再需要依賴教學。
                 </p>
-                <Link href="/certification/master" style={{ display: 'inline-block', padding: '1.2rem 3rem', background: '#a78bfa', color: '#020617', textDecoration: 'none', fontSize: isMobile ? '1rem' : '1.2rem', fontWeight: '900', borderRadius: '50px', boxShadow: '0 10px 20px rgba(167, 139, 250, 0.3)' }}>
-                    👑 挑戰最終試煉
-                </Link>
+                <div style={{ display: 'inline-block', padding: '1.2rem 3rem', background: '#0f172a', color: '#475569', fontSize: isMobile ? '1rem' : '1.2rem', fontWeight: '900', borderRadius: '50px', border: '1px solid #334155', cursor: 'not-allowed' }}>
+                    🔒 需先通關所有前置訓練
+                </div>
             </div>
 
-            {/* 加入 CSS 動畫 */}
             <style dangerouslySetInnerHTML={{
                 __html: `
                 @keyframes bounce {
