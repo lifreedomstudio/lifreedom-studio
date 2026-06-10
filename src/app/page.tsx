@@ -8,6 +8,7 @@ const HomeInteractivePlayer = ({ isMobile }: { isMobile: boolean }) => {
   const [activeVersion, setActiveVersion] = useState<'A' | 'B'>('A');
   const [isPlaying, setIsPlaying] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
+  const [userChoice, setUserChoice] = useState<'heard' | 'not_heard' | null>(null);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const router = useRouter();
@@ -40,6 +41,11 @@ const HomeInteractivePlayer = ({ isMobile }: { isMobile: boolean }) => {
     }
   };
 
+  const handleReveal = (choice: 'heard' | 'not_heard') => {
+    setUserChoice(choice);
+    setShowAnswer(true);
+  };
+
   return (
     <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '24px', padding: isMobile ? '2rem 1.5rem' : '3.5rem', maxWidth: '850px', margin: '0 auto', textAlign: 'center', boxShadow: '0 20px 50px rgba(0,0,0,0.3)' }}>
       <h2 style={{ fontSize: isMobile ? '1.5rem' : '2rem', color: '#fff', margin: '0 0 1rem 0', fontWeight: '900' }}>
@@ -47,8 +53,7 @@ const HomeInteractivePlayer = ({ isMobile }: { isMobile: boolean }) => {
       </h2>
       <p style={{ color: '#94a3b8', fontSize: '1.05rem', lineHeight: '1.8', margin: '0 0 2rem 0' }}>
         這兩段音樂的樂器與旋律<strong style={{ color: '#fff' }}>完全一模一樣</strong>。<br />
-        請戴上耳機，先聽版本 A，再切換到版本 B。<br />
-        <span style={{ color: '#fca311' }}>你能聽出版本 B 裡，主唱和吉他的輪廓發生了什麼變化嗎？</span>
+        請戴上耳機，先聽版本 A，再切換到版本 B。
       </p>
 
       {/* 播放器 UI */}
@@ -66,45 +71,65 @@ const HomeInteractivePlayer = ({ isMobile }: { isMobile: boolean }) => {
             onClick={() => handleSwitchVersion('A')}
             style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', transition: 'all 0.2s', background: activeVersion === 'A' ? '#475569' : 'transparent', color: activeVersion === 'A' ? '#fff' : '#64748b' }}
           >
-            版本 A
+            版本 A (原始)
           </button>
           <button
             onClick={() => handleSwitchVersion('B')}
             style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', transition: 'all 0.2s', background: activeVersion === 'B' ? '#38bdf8' : 'transparent', color: activeVersion === 'B' ? '#020617' : '#64748b' }}
           >
-            版本 B
+            版本 B (調整後)
           </button>
         </div>
       </div>
 
       <audio ref={audioRef} src="/audio/demo-mono-masked.mp3" onEnded={() => setIsPlaying(false)} />
 
-      {/* 答案揭曉區 */}
+      {/* 答案揭曉區 (加入參與感與社會認同) */}
       <div style={{ borderTop: '1px dashed rgba(255,255,255,0.1)', paddingTop: '2.5rem' }}>
-        <p style={{ color: '#cbd5e1', fontSize: '1.1rem', marginBottom: '1.5rem', fontWeight: 'bold' }}>
-          🤯 聽到了嗎？主唱突然變得清晰，吉他的輪廓也浮現出來了。
-        </p>
 
         {!showAnswer ? (
-          <button
-            onClick={() => setShowAnswer(true)}
-            style={{ padding: '1rem 4.5rem', background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff', fontSize: '1.1rem', fontWeight: 'bold', borderRadius: '50px', border: 'none', cursor: 'pointer', boxShadow: '0 10px 25px rgba(16, 185, 129, 0.3)', transition: 'transform 0.2s' }}
-            onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.03)"}
-            onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
-          >
-            解鎖答案
-          </button>
+          <div style={{ animation: 'fadeIn 0.5s ease' }}>
+            <p style={{ color: '#fff', fontSize: '1.2rem', marginBottom: '1.5rem', fontWeight: 'bold' }}>
+              🤔 聽完 A 與 B 之後，你覺得主唱跟吉他發生了什麼變化？
+            </p>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
+              <button
+                onClick={() => handleReveal('heard')}
+                style={{ padding: '1rem 2rem', background: 'transparent', color: '#10b981', border: '2px solid #10b981', fontSize: '1.05rem', fontWeight: 'bold', borderRadius: '50px', cursor: 'pointer', transition: 'all 0.2s' }}
+                onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)'; }}
+                onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; }}
+              >
+                👂 我有聽到明顯差別
+              </button>
+              <button
+                onClick={() => handleReveal('not_heard')}
+                style={{ padding: '1rem 2rem', background: 'transparent', color: '#fca311', border: '2px solid #fca311', fontSize: '1.05rem', fontWeight: 'bold', borderRadius: '50px', cursor: 'pointer', transition: 'all 0.2s' }}
+                onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(252, 163, 17, 0.1)'; }}
+                onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; }}
+              >
+                🤷‍♂️ 老實說，我聽不出來
+              </button>
+            </div>
+            {/* 社會認同 (Social Proof) */}
+            <p style={{ color: '#64748b', fontSize: '0.9rem', margin: 0, fontWeight: 'bold' }}>
+              🔥 目前已有 1,428 人完成測試，其中 <span style={{ color: '#fca311' }}>63% 的人第一次完全聽不出差別</span>
+            </p>
+          </div>
         ) : (
-          <div style={{ background: 'rgba(56, 189, 248, 0.05)', border: '1px solid #38bdf8', padding: '1.5rem', borderRadius: '16px', textAlign: 'left', animation: 'fadeIn 0.4s ease-out' }}>
-            <h4 style={{ color: '#38bdf8', fontWeight: 'bold', fontSize: '1.1rem', margin: '0 0 8px 0' }}>💡 空間分配的真相：</h4>
-            <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>
-              在<strong>版本 A</strong> 中，所有樂器都擠在正中央。這會造成「頻率遮蔽」，導致主唱的聲音被吉他稍微悶住、覆蓋，吉他本身的細節也聽不清楚。<br /><br />
+          <div style={{ background: 'rgba(56, 189, 248, 0.05)', border: '1px solid #38bdf8', padding: '2rem', borderRadius: '16px', textAlign: 'left', animation: 'fadeIn 0.4s ease-out' }}>
+            <h4 style={{ color: '#38bdf8', fontWeight: 'bold', fontSize: '1.2rem', margin: '0 0 12px 0' }}>
+              {userChoice === 'heard' ? '🎉 敏銳的耳朵！空間分配的真相是：' : '💡 沒關係！這是因為頻率遮蔽。真相是：'}
+            </h4>
+            <p style={{ color: '#cbd5e1', fontSize: '1rem', lineHeight: '1.8', margin: 0 }}>
+              在<strong>版本 A</strong> 中，所有樂器都擠在正中央。這會造成嚴重的「頻率遮蔽」，導致主唱的聲音被吉他稍微悶住、覆蓋，吉他本身的細節也聽不清楚。<br /><br />
               而在<strong>版本 B</strong> 中，我們只是把兩把吉他往左右兩側拉開（LCR 空間佈局）。中間的通道一清空，主唱瞬間就變得立體清晰，兩側的吉他細節也自然有了呼吸的空間！<br /><br />
-              這就是為什麼你需要建立「聽覺系統」。你的耳朵其實漏掉了許多頻率與空間的細節，讓我們在接下來的訓練裡把它們找回來！
+              這就是為什麼你需要建立「聽覺系統」。你的耳朵其實漏掉了許多頻率與空間的細節，讓我們把它們找回來。
             </p>
             <button
               onClick={() => { window.scrollTo(0, 0); router.push('/courses/ear-opening/intro'); }}
-              style={{ marginTop: '1.5rem', width: '100%', padding: '10px', background: '#38bdf8', color: '#020617', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
+              style={{ marginTop: '2rem', width: '100%', padding: '15px', background: 'linear-gradient(135deg, #38bdf8, #2563eb)', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '1.1rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(56, 189, 248, 0.3)', transition: 'transform 0.2s' }}
+              onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+              onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
             >
               進入正式聽覺特訓 ➔
             </button>
@@ -145,7 +170,6 @@ export default function HomePage() {
           style={{ height: isMobile ? '120px' : '150px', objectFit: 'contain', marginBottom: '1.5rem', filter: 'drop-shadow(0 0 20px rgba(56, 189, 248, 0.4))' }}
         />
 
-        {/* 💡 品牌升級：換上專屬音樂人的 AI 聽覺訓練副標 */}
         <div style={{ color: '#38bdf8', letterSpacing: '4px', fontWeight: 'bold', marginBottom: '1.5rem', fontSize: isMobile ? '0.75rem' : '0.85rem', opacity: 0.9 }}>
           LIFREEDOM | AI EAR TRAINING FOR MUSICIANS
         </div>
@@ -194,7 +218,70 @@ export default function HomePage() {
         <HomeInteractivePlayer isMobile={isMobile} />
       </div>
 
-      {/* ================= 3️⃣ 👥 適合對象 ================= */}
+      {/* ================= 🚀 3️⃣ EQ 體驗 CTA (鉤子強化版) ================= */}
+      <div style={{
+        padding: isMobile ? '4rem 1.5rem' : '5rem 2rem',
+        background: 'linear-gradient(180deg, #020617 0%, #0f172a 100%)',
+        borderTop: '1px solid rgba(255,255,255,0.03)',
+        borderBottom: '1px solid rgba(255,255,255,0.03)',
+        textAlign: 'center'
+      }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+
+          <span style={{ color: '#f59e0b', fontWeight: '900', letterSpacing: '3px', fontSize: '0.85rem' }}>
+            INTERACTIVE EQ LAB
+          </span>
+
+          <h2 style={{
+            fontSize: isMobile ? '1.6rem' : '2.4rem',
+            fontWeight: '900',
+            color: '#fff',
+            margin: '1rem 0 1.5rem 0',
+            lineHeight: 1.3
+          }}>
+            你真的知道「悶」、「刺」、「亮」是什麼聲音嗎？
+          </h2>
+
+          <p style={{
+            color: '#94a3b8',
+            fontSize: '1.1rem',
+            lineHeight: '1.8',
+            marginBottom: '3rem'
+          }}>
+            多數人只是用形容詞在猜聲音。<br />
+            在這個 EQ 實驗室裡，你可以<strong style={{ color: '#fff' }}>親手掃過頻率</strong>，<br />
+            直接聽見每個區域對人聲與吉他的破壞與美化。
+          </p>
+
+          <button
+            onClick={() => { window.scrollTo(0, 0); router.push('/eq-game'); }}
+            style={{
+              padding: '1.4rem 3rem',
+              background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+              color: '#020617',
+              fontWeight: '900',
+              fontSize: '1.2rem',
+              borderRadius: '50px',
+              border: 'none',
+              cursor: 'pointer',
+              boxShadow: '0 10px 30px rgba(245, 158, 11, 0.4)',
+              transition: 'transform 0.2s',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '5px',
+              margin: '0 auto'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+            onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
+          >
+            <span>🎛 30 秒內，你能找出讓人聲變清晰的頻率嗎？</span>
+            <span style={{ fontSize: '0.85rem', opacity: 0.8, fontWeight: 'bold' }}>多數人都找不到，你可以嗎？ ➔</span>
+          </button>
+        </div>
+      </div>
+
+      {/* ================= 4️⃣ 👥 適合對象 ================= */}
       <div style={{ padding: isMobile ? '4rem 1.5rem' : '5rem 2rem', background: '#070a13', borderTop: '1px solid rgba(255,255,255,0.02)' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
           <span style={{ color: '#facc15', fontWeight: '900', letterSpacing: '3px', fontSize: '0.85rem' }}>TARGET AUDIENCE</span>
@@ -221,14 +308,13 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ================= 4️⃣ 🧠 系統定義：Lifreedom 是什麼？ ================= */}
+      {/* ================= 5️⃣ 🧠 系統定義：Lifreedom 是什麼？ ================= */}
       <div style={{ padding: isMobile ? '4rem 1.5rem' : '5rem 2rem', background: '#020617', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           <span style={{ color: '#38bdf8', fontWeight: 'bold', letterSpacing: '3px', fontSize: '0.85rem' }}>SYSTEM OVERVIEW</span>
           <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.5rem', color: '#fff', margin: '1rem 0 1.5rem 0', fontWeight: '900' }}>這不是一堂傳統的混音課</h2>
           <p style={{ color: '#94a3b8', fontSize: '1.1rem', lineHeight: '1.8', marginBottom: '2.5rem' }}>
             我們不教你死板地去調整特定的插件數值。<br />
-            {/* 💡 品牌升級：強調音樂人與 AI 陪練定位 */}
             Lifreedom 是一套專為音樂人打造，專門<strong style={{ color: '#fff' }}>「訓練聽覺判斷力與空間感知」</strong>的 AI 陪練系統。
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '550px', margin: '0 auto', textAlign: 'left', background: 'rgba(255,255,255,0.02)', padding: '2rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
@@ -242,7 +328,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ================= 5️⃣ 🤖 AI 區塊 ================= */}
+      {/* ================= 6️⃣ 🤖 AI 區塊 ================= */}
       <div style={{ padding: isMobile ? '4rem 1.5rem' : '6rem 2rem', background: 'linear-gradient(135deg, #0f172a, #020617)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
         <div style={{ maxWidth: '950px', margin: '0 auto', display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '3rem', alignItems: 'center' }}>
           <div style={{ flex: 1.2 }}>
@@ -277,7 +363,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ================= 6️⃣ 🔓 未來解鎖 ================= */}
+      {/* ================= 7️⃣ 🔓 未來解鎖 ================= */}
       <div style={{ padding: isMobile ? '4rem 1.5rem' : '6rem 2rem', background: '#020617', textAlign: 'center' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           <span style={{ color: '#22c55e', fontWeight: 'bold', letterSpacing: '3px', fontSize: '0.85rem' }}>ROADMAP</span>
@@ -299,15 +385,20 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ================= 7️⃣ 最終 CTA ================= */}
-      <div style={{ padding: isMobile ? '4rem 1.5rem' : '6rem 2rem', textAlign: 'center', background: 'radial-gradient(circle at 50% 100%, #111827 0%, #020617 80%)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-        <h2 style={{ fontSize: isMobile ? '1.6rem' : '2.2rem', color: '#fff', marginBottom: '1rem', fontWeight: '900', maxWidth: '750px', margin: '0 auto 2rem' }}>
-          開始訓練你的耳朵，建立受用終身的聽覺判斷力
+      {/* ================= 8️⃣ 最終 CTA (心理拉力強化版) ================= */}
+      <div style={{ padding: isMobile ? '5rem 1.5rem' : '8rem 2rem', textAlign: 'center', background: 'radial-gradient(circle at 50% 100%, #111827 0%, #020617 80%)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.8rem', color: '#fff', marginBottom: '1rem', fontWeight: '900', maxWidth: '850px', margin: '0 auto 1.5rem', lineHeight: 1.3 }}>
+          🎧 你現在的耳朵，其實漏掉了 80% 的聲音細節
         </h2>
+        <p style={{ color: '#94a3b8', fontSize: '1.2rem', marginBottom: '3.5rem', fontWeight: 'bold' }}>
+          要不要試著把它們找回來？
+        </p>
 
         <button
           onClick={() => { window.scrollTo(0, 0); router.push('/courses/ear-opening/intro'); }}
-          style={{ display: 'inline-block', padding: '1.3rem 4.5rem', background: '#fff', color: '#020617', fontSize: '1.15rem', fontWeight: '900', borderRadius: '50px', border: 'none', cursor: 'pointer', boxShadow: '0 10px 30px rgba(255,255,255,0.2)', marginBottom: '4rem' }}
+          style={{ display: 'inline-block', padding: '1.4rem 5rem', background: '#fff', color: '#020617', fontSize: '1.2rem', fontWeight: '900', borderRadius: '50px', border: 'none', cursor: 'pointer', boxShadow: '0 10px 40px rgba(255,255,255,0.3)', marginBottom: '4rem', transition: 'transform 0.2s' }}
+          onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+          onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
         >
           🚀 立即開啟免費訓練
         </button>
@@ -322,14 +413,16 @@ export default function HomePage() {
           <Link href="/terms" style={{ color: '#475569', textDecoration: 'none', fontSize: '0.85rem' }}>使用條款</Link>
           <Link href="/privacy" style={{ color: '#475569', textDecoration: 'none', fontSize: '0.85rem' }}>隱私權政策</Link>
           <Link href="/refund" style={{ color: '#475569', textDecoration: 'none', fontSize: '0.85rem' }}>退款政策</Link>
-          {/* 💡 統一修正信箱 */}
           <a href="mailto:xlifreedom305x@gmail.com" style={{ color: '#475569', textDecoration: 'none', fontSize: '0.85rem' }}>聯絡我們</a>
         </div>
         <div style={{ marginTop: '2rem', color: '#334155', fontSize: '0.8rem', fontFamily: 'monospace' }}>
-          {/* 💡 統一修正公司版權名稱 */}
           © 2026 LiFreedom Studio. All rights reserved.
         </div>
       </div>
+
+      <style jsx global>{`
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+      `}</style>
     </div>
   );
 }
