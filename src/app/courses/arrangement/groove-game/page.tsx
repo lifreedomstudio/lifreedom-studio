@@ -92,8 +92,10 @@ export default function GrooveGamePage() {
     useEffect(() => {
         if (showResult) return;
         if (audioARef.current && audioBRef.current && q) {
-            audioARef.current.volume = 0.8;
-            audioBRef.current.volume = 0.8;
+
+            // 💡 統一輸出音量：強制鎖定為 1.0 (100%)，確保前端不干涉音訊原始響度
+            audioARef.current.volume = 1.0;
+            audioBRef.current.volume = 1.0;
 
             audioARef.current.src = q.fileA;
             audioBRef.current.src = q.fileB;
@@ -107,7 +109,7 @@ export default function GrooveGamePage() {
         setCurrentTrack('A');
         setSelectedAnswer(null);
         setCheatMode('idle');
-    }, [currentIndex, showResult, q]);
+    }, [currentIndex, showResult, q, isPlaying]);
 
     const togglePlay = () => {
         if (!audioARef.current || !audioBRef.current) return;
@@ -261,7 +263,6 @@ export default function GrooveGamePage() {
     }
 
     // 🎮 遊戲本體畫面
-    // 🚨 修正重點：改用 justifyContent: 'center' 讓內容自然居中，移除 flex: 1 避免擠壓
     return (
         <div style={{ minHeight: '100vh', background: '#020617', color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '2rem 1rem' : '4rem 1rem', fontFamily: 'sans-serif' }}>
 
