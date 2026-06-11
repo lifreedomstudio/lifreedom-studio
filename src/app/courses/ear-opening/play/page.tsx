@@ -42,7 +42,7 @@ const QUESTIONS = [
     }
 ];
 
-type Phase = 'quiz' | 'level-reveal' | 'detailed-analysis';
+type Phase = 'quiz' | 'calculating' | 'result';
 
 export default function EarOpeningPlayPage() {
     const router = useRouter();
@@ -56,24 +56,17 @@ export default function EarOpeningPlayPage() {
     const [score, setScore] = useState(0);
     const [wrongQuestions, setWrongQuestions] = useState<number[]>([]);
 
-    // 漏斗狀態
-    const [email, setEmail] = useState('');
-    const [isUnlocking, setIsUnlocking] = useState(false);
-    const [isWaitlistJoined, setIsWaitlistJoined] = useState(false);
-
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const q = QUESTIONS[currentIndex];
 
     // 🔁 換題時的初始化
     useEffect(() => {
         if (!audioRef.current || !q || phase !== 'quiz') return;
-
         audioRef.current.src = q.fileA;
         audioRef.current.currentTime = 0;
         setCurrentTrack('A');
         setIsPlaying(false);
         setSelectedAnswer(null);
-
     }, [currentIndex, phase, q]);
 
     const playTrack = (track: 'A' | 'B') => {
@@ -123,84 +116,52 @@ export default function EarOpeningPlayPage() {
             setCurrentIndex(prev => prev + 1);
         } else {
             if (audioRef.current) audioRef.current.pause();
-            setPhase('level-reveal');
+
+            // 💡 假裝在計算，增加神秘感與儀式感
+            setPhase('calculating');
+            setTimeout(() => {
+                setPhase('result');
+            }, 2500);
         }
     };
 
-    // 🎯 漏斗第一階段：解鎖分析
-    const handleUnlockAnalysis = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!email) return;
-        setIsUnlocking(true);
-
-        try {
-            await fetch('/api/waitlist', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, plan: '耳力測驗分析名單' })
-            });
-        } catch (error) {
-            console.error(error);
-        }
-
-        setTimeout(() => {
-            setIsUnlocking(false);
-            setPhase('detailed-analysis');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }, 800);
-    };
-
-    // 🎯 漏斗第二階段：輕量級早鳥轉換
-    const handleJoinWaitlist = async () => {
-        setIsWaitlistJoined(true);
-        try {
-            await fetch('/api/waitlist', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, plan: '完整版早鳥名單' })
-            });
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    // 📊 🔥 升級 1：等級演算 (人格打擊 + 現實對照)
+    // 📊 等級演算 (白話文版)
     const getEarLevel = () => {
         if (score === 7) return {
             name: 'Level 4：混音腦',
-            state: '聽得出差異，且能精準定位問題頻段與空間。',
+            state: '聽得出差異，且能精準定位問題在哪裡。',
             consequence: '你已經具備製作人的直覺。但要保證每次輸出都不翻車，你需要的是系統化的流程，而不是只靠直覺。',
             color: '#a78bfa'
         };
         if (score >= 5) return {
             name: 'Level 3：準確辨識',
-            state: '開始能定位問題，但對微小的動態變化還會猶豫。',
-            consequence: '你不是聽不出來，是你的耳朵「還沒有被系統化訓練過怎麼聽」。這導致你的判斷時常飄忽不定。',
+            state: '能抓到大致方向，但對微小的動態變化還會猶豫。',
+            consequence: '你不是聽不出來，是你的耳朵「還沒被系統化訓練過怎麼聽」。這導致你的判斷時常飄忽不定。',
             color: '#10b981'
         };
         if (score >= 3) return {
             name: 'Level 2：模糊辨識',
-            state: '聽得出哪個比較好，但不確定為什麼。',
-            consequence: '這就是為什麼你的混音總是「靠運氣」。套 Preset 祈禱好聽，只要換個環境聽就全毀。',
+            state: '聽得出哪個比較好聽，但完全不知道為什麼。',
+            consequence: '這就是為什麼你的混音總是「靠運氣」。套個設定祈禱好聽，只要換個耳機或到車上聽就全毀了。',
             color: '#38bdf8'
         };
         return {
             name: 'Level 1：感覺派',
             state: '聽得出有一點點差異，但完全說不出來差在哪。',
-            consequence: '你目前極容易被「音量錯覺」欺騙。如果不找出盲點，用再貴的外掛跟器材也是白費力氣。',
+            consequence: '你目前極容易被「大聲就是好聽」的錯覺欺騙。如果不找出盲點，買再貴的設備跟軟體也是白費力氣。',
             color: '#fca311'
         };
     };
 
-    // 🧠 動態弱點診斷
+    // 🧠 動態弱點診斷 (白話文解釋)
     const getDynamicWeaknesses = () => {
         const weaknesses = [];
-        if (wrongQuestions.includes(1) || wrongQuestions.includes(7)) weaknesses.push('低頻判斷偏弱 (容易造成作品聽起來鬆散混濁)');
-        if (wrongQuestions.includes(3) || wrongQuestions.includes(4)) weaknesses.push('2–4kHz 辨識不穩 (容易讓作品刺耳或失去立體感)');
-        if (wrongQuestions.includes(2) || wrongQuestions.includes(6)) weaknesses.push('空間與微小動態較難察覺 (Compressor 與 Reverb 掌握度低)');
-        if (wrongQuestions.includes(5)) weaknesses.push('容易被「音量錯覺」欺騙 (新手最常踩的坑，導致越混越大聲但不好聽)');
+        if (wrongQuestions.includes(1) || wrongQuestions.includes(7)) weaknesses.push('低頻判斷偏弱：你容易忽視大鼓與貝斯的衝突，這會造成作品聽起來鬆散、糊糊的。');
+        if (wrongQuestions.includes(3) || wrongQuestions.includes(4)) weaknesses.push('刺耳頻率辨識不穩：你對 2–4kHz 這種人耳最敏感的頻段掌握度較弱，容易讓作品聽起來刺耳或扁平。');
+        if (wrongQuestions.includes(2) || wrongQuestions.includes(6)) weaknesses.push('微小動態較難察覺：你還感受不太到聲音的「穩度」與「遠近」（也就是壓縮器與空間效果的運用）。');
+        if (wrongQuestions.includes(5)) weaknesses.push('容易被「音量」欺騙：這是新手最常踩的坑，覺得聲音大就是好聽，導致混音越推越大聲，最後完全失真。');
 
-        if (weaknesses.length === 0) weaknesses.push('你的聽覺非常精準，基礎盲點極少！');
+        if (weaknesses.length === 0) weaknesses.push('你的聽覺非常精準，幾乎沒有基礎盲點！');
         return weaknesses;
     };
 
@@ -260,7 +221,7 @@ export default function EarOpeningPlayPage() {
                         </div>
                         <div style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '1.5rem', lineHeight: '1.6' }}>{q?.insight}</div>
                         <button onClick={handleNext} style={{ width: '100%', padding: '1rem', background: '#fff', color: '#000', borderRadius: '12px', fontWeight: 'bold', fontSize: '1.1rem', cursor: 'pointer' }}>
-                            {currentIndex === QUESTIONS.length - 1 ? '查看聽覺診斷結果 ➔' : '下一題 ➔'}
+                            {currentIndex === QUESTIONS.length - 1 ? '分析聽覺能力 ➔' : '下一題 ➔'}
                         </button>
                     </div>
                 </div>
@@ -270,82 +231,51 @@ export default function EarOpeningPlayPage() {
     }
 
     // ==========================================
-    // 渲染：階段二 (部分結果 + 損失感解鎖牆)
+    // 渲染：過場動畫
     // ==========================================
-    if (phase === 'level-reveal') {
-        const level = getEarLevel();
+    if (phase === 'calculating') {
         return (
-            <div style={{ minHeight: '100vh', background: '#020617', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem', fontFamily: 'sans-serif' }}>
-                <div style={{ background: 'linear-gradient(145deg, #0f172a, #020617)', border: `1px solid ${level.color}`, padding: '3rem 2rem', borderRadius: '24px', width: '100%', maxWidth: '550px', boxShadow: `0 20px 50px ${level.color}20`, animation: 'fadeIn 0.5s' }}>
-
-                    <h2 style={{ fontSize: '1.1rem', color: '#94a3b8', textAlign: 'center', marginBottom: '0.5rem', fontWeight: 'bold' }}>你的耳朵等級：</h2>
-                    <h1 style={{ fontSize: '2.4rem', color: level.color, fontWeight: '900', textAlign: 'center', margin: '0 0 2rem 0' }}>{level.name}</h1>
-
-                    <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1.5rem', borderRadius: '16px', marginBottom: '1.5rem', border: '1px solid rgba(255,255,255,0.05)' }}>
-                        <p style={{ color: '#fff', fontSize: '1.1rem', fontWeight: 'bold', margin: '0 0 10px 0' }}>👉 你目前的狀態：</p>
-                        <p style={{ color: '#cbd5e1', fontSize: '1.05rem', margin: 0, lineHeight: '1.6' }}>- {level.state}</p>
-                    </div>
-
-                    <div style={{ background: 'rgba(239, 68, 68, 0.05)', padding: '1.5rem', borderRadius: '16px', marginBottom: '2.5rem', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-                        <p style={{ color: '#fca5a5', fontSize: '1.1rem', fontWeight: 'bold', margin: '0 0 10px 0' }}>👉 這會導致：</p>
-                        <p style={{ color: '#fecaca', fontSize: '1.05rem', margin: 0, lineHeight: '1.6' }}>- {level.consequence}</p>
-                    </div>
-
-                    {/* 🔥 升級 2：Email 解鎖牆 (損失感與恐懼) */}
-                    <div style={{ borderTop: '1px dashed rgba(255,255,255,0.1)', paddingTop: '2rem', textAlign: 'center' }}>
-
-                        <div style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '16px', padding: '1.5rem', marginBottom: '1.5rem', textAlign: 'left' }}>
-                            <h3 style={{ color: '#fbbf24', fontSize: '1.2rem', fontWeight: 'bold', margin: '0 0 0.8rem 0' }}>🔒 你已經完成測驗</h3>
-                            <p style={{ color: '#e2e8f0', fontSize: '1rem', lineHeight: '1.6', margin: '0 0 1rem 0' }}>
-                                但 80% 的人都卡在這一步，<strong style={{ color: '#fff' }}>因為他們不知道自己的「聽覺盲區」到底在哪裡。</strong><br /><br />
-                                <span style={{ color: '#fca5a5' }}>如果你現在離開，你每次做音樂依然會遇到同樣的瓶頸。</span>
-                            </p>
-                            <p style={{ color: '#38bdf8', fontSize: '1rem', fontWeight: 'bold', margin: 0, textAlign: 'center' }}>
-                                輸入 Email，立刻解鎖你的專屬聽力盲點報告 👇
-                            </p>
-                        </div>
-
-                        <form onSubmit={handleUnlockAnalysis} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                            <input
-                                type="email" required placeholder="輸入你的 Email 看報告"
-                                value={email} onChange={(e) => setEmail(e.target.value)}
-                                style={{ padding: '1.2rem', borderRadius: '12px', border: '1px solid #334155', background: '#020617', color: '#fff', fontSize: '1.1rem', outline: 'none', textAlign: 'center' }}
-                            />
-                            <button type="submit" disabled={isUnlocking} style={{ padding: '1.2rem', background: '#38bdf8', color: '#020617', border: 'none', borderRadius: '12px', fontSize: '1.1rem', fontWeight: '900', cursor: isUnlocking ? 'not-allowed' : 'pointer', transition: 'background 0.2s' }}>
-                                {isUnlocking ? '報告生成中...' : '🔓 免費解鎖分析報告'}
-                            </button>
-                        </form>
-                    </div>
-                </div>
+            <div style={{ minHeight: '100vh', background: '#020617', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#38bdf8' }}>
+                <div style={{ fontSize: '3rem', marginBottom: '1rem', animation: 'spin 2s linear infinite' }}>⚙️</div>
+                <h2 style={{ fontWeight: 'bold', animation: 'pulse 1s infinite alternate' }}>正在分析你的聽覺盲區...</h2>
+                <style dangerouslySetInnerHTML={{ __html: `@keyframes spin { 100% { transform: rotate(360deg); } } @keyframes pulse { 0% { opacity: 0.5; } 100% { opacity: 1; } }` }} />
             </div>
-        );
+        )
     }
 
     // ==========================================
-    // 渲染：階段三 (完整報告與不解決的恐懼放大)
+    // 渲染：階段三 (完整報告揭曉 & 問卷 CTA)
     // ==========================================
-    if (phase === 'detailed-analysis') {
+    if (phase === 'result') {
+        const level = getEarLevel();
         const weaknesses = getDynamicWeaknesses();
 
         return (
             <div style={{ minHeight: '100vh', background: '#020617', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '3rem 1rem', fontFamily: 'sans-serif' }}>
                 <div style={{ width: '100%', maxWidth: '600px', animation: 'fadeIn 0.6s' }}>
 
-                    <h1 style={{ fontSize: '2.2rem', color: '#fff', fontWeight: '900', textAlign: 'center', marginBottom: '2rem' }}>你的專屬聽力分析報告</h1>
+                    {/* 揭曉等級 */}
+                    <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+                        <h2 style={{ fontSize: '1.1rem', color: '#94a3b8', marginBottom: '0.5rem', fontWeight: 'bold' }}>你的耳朵目前屬於：</h2>
+                        <h1 style={{ fontSize: '2.8rem', color: level.color, fontWeight: '900', margin: '0 0 1.5rem 0' }}>{level.name}</h1>
+                        <p style={{ color: '#fff', fontSize: '1.15rem', fontWeight: 'bold', margin: '0 0 10px 0' }}>👉 你目前的狀態：</p>
+                        <p style={{ color: '#cbd5e1', fontSize: '1.05rem', margin: '0 0 1rem 0', lineHeight: '1.6' }}>{level.state}</p>
+                        <p style={{ color: '#fca5a5', fontSize: '1.05rem', margin: 0, lineHeight: '1.6' }}>{level.consequence}</p>
+                    </div>
 
                     {/* 弱點區 */}
                     <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '2rem', borderRadius: '20px', marginBottom: '2rem' }}>
                         <h3 style={{ color: '#ef4444', fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span>⚠️</span> 你的聽覺弱點：
+                            <span>⚠️</span> 你的聽覺盲區分析：
                         </h3>
-                        <ul style={{ color: '#e2e8f0', fontSize: '1.1rem', lineHeight: '1.8', margin: 0, paddingLeft: '1.5rem' }}>
+                        <ul style={{ color: '#e2e8f0', fontSize: '1.05rem', lineHeight: '1.8', margin: 0, paddingLeft: '1.5rem' }}>
                             {weaknesses.map((w, i) => (
-                                <li key={i} style={{ marginBottom: '10px' }}>{w}</li>
+                                <li key={i} style={{ marginBottom: '15px' }}>{w}</li>
                             ))}
                         </ul>
                     </div>
 
-                    {/* 🔥 升級 3：如果不解決會怎樣的恐懼放大區 */}
+                    {/* 恐懼放大區 */}
                     <div style={{ background: 'rgba(239, 68, 68, 0.05)', border: '1px solid rgba(239, 68, 68, 0.2)', padding: '2rem', borderRadius: '20px', marginBottom: '2rem' }}>
                         <h3 style={{ color: '#ef4444', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '1.2rem' }}>
                             🚨 如果這些問題沒有被解決，你會繼續遇到：
@@ -362,47 +292,39 @@ export default function EarOpeningPlayPage() {
                         <h3 style={{ color: '#10b981', fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <span>💡</span> 建議你從這幾個練習開始：
                         </h3>
-                        <ul style={{ color: '#a7f3d0', fontSize: '1.1rem', lineHeight: '1.8', margin: 0, paddingLeft: '1.5rem' }}>
+                        <ul style={{ color: '#a7f3d0', fontSize: '1.05rem', lineHeight: '1.8', margin: 0, paddingLeft: '1.5rem' }}>
                             <li style={{ marginBottom: '10px' }}><strong>互動 EQ 實驗室：</strong>親自掃頻，記住「刺」與「悶」的真實聲音。</li>
-                            <li style={{ marginBottom: '10px' }}><strong>Groove 律動感知：</strong>訓練耳朵捕捉 10ms 以內的微小時間差。</li>
-                            <li style={{ marginBottom: '10px' }}><strong>空間感 (Voicing) 重塑：</strong>學習如何把樂器分配到不打架的位置。</li>
+                            <li style={{ marginBottom: '10px' }}><strong>Groove 律動感知：</strong>訓練耳朵捕捉細微的節奏推拉感。</li>
+                            <li style={{ marginBottom: '10px' }}><strong>空間感重塑：</strong>學習如何把樂器分配到不打架的位置。</li>
                         </ul>
                     </div>
 
-                    {/* 🟣 漏斗第五階段：輕 CTA (不硬賣) */}
+                    {/* 🟣 問卷/共創者 CTA (不留 Email，直接引導去填問卷) */}
                     <div style={{ textAlign: 'center', padding: '2.5rem 2rem', background: 'linear-gradient(145deg, #1e1b4b, #0f172a)', borderRadius: '24px', border: '1px solid #a78bfa', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
-                        <div style={{ color: '#a78bfa', fontSize: '0.9rem', fontWeight: 'bold', letterSpacing: '3px', marginBottom: '1rem' }}>SYSTEM UPGRADE</div>
-                        <h2 style={{ color: '#fff', fontSize: '1.6rem', fontWeight: '900', marginBottom: '1rem' }}>完整版聽覺訓練系統 正在開發中</h2>
+                        <div style={{ color: '#a78bfa', fontSize: '0.9rem', fontWeight: 'bold', letterSpacing: '3px', marginBottom: '1rem' }}>CO-CREATOR PROGRAM</div>
+                        <h2 style={{ color: '#fff', fontSize: '1.6rem', fontWeight: '900', marginBottom: '1rem' }}>我們正在打造「完整版聽覺訓練系統」</h2>
                         <p style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.7', marginBottom: '2rem' }}>
-                            這套系統會包含：<br />
-                            ✔️ 完整的混音特訓模組<br />
-                            ✔️ 系統化的耳朵肌肉養成計畫<br />
-                            ✔️ AI 混音深度分析點數
+                            與其自己閉門造車，我們更想聽聽你的聲音。<br />
+                            告訴我們你最想解決的混音痛點，幫我們打造最適合你的功能！
                         </p>
 
-                        {!isWaitlistJoined ? (
-                            <>
-                                <p style={{ color: '#fca311', fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '1.5rem' }}>👉 目前開放早鳥優先名單，上線時享專屬優惠</p>
+                        <p style={{ color: '#fca311', fontWeight: 'bold', fontSize: '1.05rem', marginBottom: '1.5rem' }}>
+                            🎁 填寫問卷，可於表單內留下 Email 領取上線 5 折優惠。
+                        </p>
 
-                                {/* 🔥 升級 4：身份認同型 CTA */}
-                                <button
-                                    onClick={handleJoinWaitlist}
-                                    style={{ width: '100%', padding: '1.2rem', background: '#a78bfa', color: '#020617', border: 'none', borderRadius: '50px', fontSize: '1.1rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(167, 139, 250, 0.3)', transition: 'transform 0.2s' }}
-                                    onMouseOver={e => e.currentTarget.style.transform = 'scale(1.02)'}
-                                    onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
-                                >
-                                    搶先進入「混音耳訓練系統」內測名單 🚀
-                                </button>
-                            </>
-                        ) : (
-                            <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid #10b981', padding: '1rem', borderRadius: '16px', color: '#10b981', fontWeight: 'bold', fontSize: '1.1rem', animation: 'fadeIn 0.3s' }}>
-                                🎉 已將 {email} 加入早鳥優先名單！
-                            </div>
-                        )}
+                        <button
+                            // 💡 這裡放你的 Google Form 或 Typeform 連結
+                            onClick={() => window.open('https://your-survey-link.com', '_blank')}
+                            style={{ width: '100%', padding: '1.2rem', background: '#a78bfa', color: '#020617', border: 'none', borderRadius: '50px', fontSize: '1.1rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(167, 139, 250, 0.3)', transition: 'transform 0.2s' }}
+                            onMouseOver={e => e.currentTarget.style.transform = 'scale(1.02)'}
+                            onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+                        >
+                            📝 參與開發調查 (約需 1 分鐘) 🚀
+                        </button>
 
-                        <div style={{ marginTop: '2rem' }}>
-                            <button onClick={() => router.push('/')} style={{ background: 'transparent', color: '#94a3b8', border: 'none', textDecoration: 'underline', cursor: 'pointer', fontSize: '0.95rem' }}>
-                                先回到首頁逛逛
+                        <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <button onClick={() => router.push('/courses/ear-opening/bridge')} style={{ background: 'transparent', color: '#38bdf8', border: 'none', textDecoration: 'underline', cursor: 'pointer', fontSize: '1.05rem', fontWeight: 'bold' }}>
+                                不了，我想繼續前往下一個教學 ➔
                             </button>
                         </div>
                     </div>
