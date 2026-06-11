@@ -39,7 +39,6 @@ export default function FrequencyClashGamePage() {
             const ctx = audioCtxRef.current;
 
             try {
-                // 請確保這兩個音檔在 public/audio 資料夾中
                 const [resClash, resFixed] = await Promise.all([
                     fetch('/audio/voicing-clash.mp3'),
                     fetch('/audio/voicing-fixed.mp3')
@@ -58,6 +57,31 @@ export default function FrequencyClashGamePage() {
         loadAudio();
     }, []);
 
+    // 🛑 核心安全修正：徹底停止音訊並銷毀節點，防止背景空轉與洩漏
+    const stopAudio = () => {
+        if (clashSourceRef.current) {
+            try { clashSourceRef.current.stop(); } catch (e) { }
+            clashSourceRef.current.disconnect();
+            clashSourceRef.current = null;
+        }
+        if (fixedSourceRef.current) {
+            try { fixedSourceRef.current.stop(); } catch (e) { }
+            fixedSourceRef.current.disconnect();
+            fixedSourceRef.current = null;
+        }
+        setIsPlaying(false);
+    };
+
+    // 🚨 核心生命週期修正：當元件卸載、離開頁面時，全自動切斷電源、釋放系統時鐘
+    useEffect(() => {
+        return () => {
+            stopAudio();
+            if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') {
+                audioCtxRef.current.close();
+            }
+        };
+    }, []);
+
     const playAudio = async () => {
         if (!clashBufferRef.current || !fixedBufferRef.current) return;
         const ctx = audioCtxRef.current;
@@ -65,9 +89,8 @@ export default function FrequencyClashGamePage() {
 
         if (ctx.state === 'suspended') await ctx.resume();
 
-        // 確保不會重複創建
-        if (clashSourceRef.current) clashSourceRef.current.disconnect();
-        if (fixedSourceRef.current) fixedSourceRef.current.disconnect();
+        // 建立新節點前，先徹底清理舊的殘留
+        stopAudio();
 
         clashSourceRef.current = ctx.createBufferSource();
         fixedSourceRef.current = ctx.createBufferSource();
@@ -99,21 +122,20 @@ export default function FrequencyClashGamePage() {
         playAudio();
     };
 
-    // 🛑 玩家主動停止混亂
+    // 🛑 玩家主動停止混亂（直接切斷，不使用會殘留的 suspend）
     const stopChaosAndAnswer = () => {
-        if (audioCtxRef.current) audioCtxRef.current.suspend();
-        setIsPlaying(false);
+        stopAudio();
         setStage("answer");
     };
 
     // 🎚️ 結算頁面的無縫切換
     const switchTrack = async (track: 'clash' | 'fixed') => {
         setActiveTrack(track);
-        if (audioCtxRef.current?.state === 'suspended') {
-            await audioCtxRef.current.resume();
-            setIsPlaying(true);
-        } else if (!isPlaying) {
+
+        // 如果目前不是播放狀態，點擊切換直接啟動播放
+        if (!isPlaying) {
             await playAudio();
+            return;
         }
 
         if (clashGainRef.current && fixedGainRef.current && audioCtxRef.current) {
@@ -199,7 +221,6 @@ export default function FrequencyClashGamePage() {
                             木吉他、電吉他、鋼琴 正在爭奪同一個空間...
                         </p>
 
-                        {/* 🎯 視覺化提示：假的擠壓頻譜 */}
                         <div style={{
                             margin: "3rem auto",
                             display: "flex",
@@ -213,13 +234,8 @@ export default function FrequencyClashGamePage() {
                             border: "1px dashed rgba(239, 68, 68, 0.3)",
                             maxWidth: "400px"
                         }}>
-                            {/* Lows */}
                             {[...Array(6)].map((_, i) => <div key={`low-${i}`} style={{ width: "12px", height: `${20 + Math.random() * 20}px`, background: "#3b82f6", borderRadius: "2px", opacity: 0.5 }} />)}
-
-                            {/* Mids (Clash Zone) */}
                             {[...Array(12)].map((_, i) => <div key={`mid-${i}`} style={{ width: "14px", height: `${80 + Math.random() * 40}px`, background: "#ef4444", borderRadius: "2px", animation: "glitchBar 0.3s infinite alternate", animationDelay: `${Math.random() * 0.2}s`, boxShadow: "0 0 10px rgba(239,68,68,0.5)" }} />)}
-
-                            {/* Highs */}
                             {[...Array(6)].map((_, i) => <div key={`high-${i}`} style={{ width: "12px", height: `${15 + Math.random() * 25}px`, background: "#10b981", borderRadius: "2px", opacity: 0.5 }} />)}
                         </div>
 
@@ -239,7 +255,7 @@ export default function FrequencyClashGamePage() {
                             onMouseOver={e => { e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)"; e.currentTarget.style.color = "#fff"; }}
                             onMouseOut={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#fca5a5"; }}
                         >
-                            受不了了，停止播放 ➔
+                            聽夠了，停止測試 ➔
                         </button>
                     </section>
                 )}
@@ -336,39 +352,51 @@ export default function FrequencyClashGamePage() {
                             <h3 style={{ color: "#10b981", margin: "0 0 1.5rem 0", fontSize: "1.2rem" }}>✨ 親耳驗證：空間分配的力量</h3>
                             <p style={{ color: "#94a3b8", fontSize: "0.95rem", marginBottom: "1.5rem" }}>我們把原本的樂器分別移動到高低八度 (Octave) 與不同的節奏空隙，<strong style={{ color: "#fff" }}>音量完全沒變</strong>，聽聽看差異：</p>
 
-                            <div style={{ display: "flex", background: "#020617", borderRadius: "50px", padding: "6px", border: "1px solid #334155" }}>
+                            <div style={{ display: "flex", background: "#020617", borderRadius: "50px", padding: "6px", border: "1px solid #334155", marginBottom: "1rem" }}>
                                 <button
                                     onClick={() => switchTrack('clash')}
                                     style={{
                                         flex: 1, padding: "1rem", borderRadius: "50px", border: "none", fontWeight: "900", fontSize: "1.1rem", cursor: "pointer", transition: "all 0.2s",
-                                        background: activeTrack === 'clash' ? '#ef4444' : 'transparent', color: activeTrack === 'clash' ? '#fff' : '#64748b'
+                                        background: activeTrack === 'clash' && isPlaying ? '#ef4444' : 'transparent', color: activeTrack === 'clash' && isPlaying ? '#fff' : '#64748b'
                                     }}
                                 >
-                                    👈 撞車版 (Chaos)
+                                    👈 聽撞車版 (Chaos)
                                 </button>
                                 <button
                                     onClick={() => switchTrack('fixed')}
                                     style={{
                                         flex: 1, padding: "1rem", borderRadius: "50px", border: "none", fontWeight: "900", fontSize: "1.1rem", cursor: "pointer", transition: "all 0.2s",
-                                        background: activeTrack === 'fixed' ? '#10b981' : 'transparent', color: activeTrack === 'fixed' ? '#fff' : '#64748b'
+                                        background: activeTrack === 'fixed' && isPlaying ? '#10b981' : 'transparent', color: activeTrack === 'fixed' && isPlaying ? '#fff' : '#64748b'
                                     }}
                                 >
-                                    修正版 (Voiced) 👉
+                                    聽修正版 (Voiced) 👉
                                 </button>
                             </div>
-                            {isPlaying && (
-                                <div style={{ marginTop: '1rem', color: '#10b981', fontSize: '0.9rem', animation: 'pulseText 1s infinite alternate' }}>
-                                    🔊 播放中... 點擊上方按鈕無縫切換
-                                </div>
-                            )}
+
+                            {/* 🛠️ 修正 3：加入結算頁面專屬的「手動停止播放」控制鈕 */}
+                            <div style={{ minHeight: "24px", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                                {isPlaying ? (
+                                    <button
+                                        onClick={stopAudio}
+                                        style={{ background: "rgba(255,255,255,0.05)", border: "1px solid #475569", color: "#94a3b8", padding: "6px 16px", borderRadius: "20px", cursor: "pointer", fontSize: "0.85rem", fontWeight: "bold" }}
+                                    >
+                                        ⏹️ 停止播放比對
+                                    </button>
+                                ) : (
+                                    <div style={{ color: '#64748b', fontSize: '0.9rem' }}>
+                                        💡 點擊上方任一版本即可重新啟動無縫切換
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         <button
                             onClick={() => {
-                                if (audioCtxRef.current) audioCtxRef.current.suspend();
+                                stopAudio(); // 離開前徹底清理，防止背景空轉
                                 router.push("/courses/arrangement/voicing-theory");
                             }}
                             style={{
+                                marginTop: "1rem",
                                 background: "linear-gradient(135deg, #22c55e, #16a34a)",
                                 color: "#fff",
                                 border: "none",
@@ -390,7 +418,6 @@ export default function FrequencyClashGamePage() {
 
             </div>
 
-            {/* 🎨 animations */}
             <style dangerouslySetInnerHTML={{
                 __html: `
                 @keyframes fadeIn {

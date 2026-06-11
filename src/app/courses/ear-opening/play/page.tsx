@@ -249,6 +249,7 @@ export default function EarOpeningPlayPage() {
     if (phase === 'result') {
         const level = getEarLevel();
         const weaknesses = getDynamicWeaknesses();
+        const isLevel4 = score === 7;
 
         return (
             <div style={{ minHeight: '100vh', background: '#020617', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '3rem 1rem', fontFamily: 'sans-serif' }}>
@@ -260,44 +261,81 @@ export default function EarOpeningPlayPage() {
                         <h1 style={{ fontSize: '2.8rem', color: level.color, fontWeight: '900', margin: '0 0 1.5rem 0' }}>{level.name}</h1>
                         <p style={{ color: '#fff', fontSize: '1.15rem', fontWeight: 'bold', margin: '0 0 10px 0' }}>👉 你目前的狀態：</p>
                         <p style={{ color: '#cbd5e1', fontSize: '1.05rem', margin: '0 0 1rem 0', lineHeight: '1.6' }}>{level.state}</p>
-                        <p style={{ color: '#fca5a5', fontSize: '1.05rem', margin: 0, lineHeight: '1.6' }}>{level.consequence}</p>
+                        <p style={{ color: isLevel4 ? '#a7f3d0' : '#fca5a5', fontSize: '1.05rem', margin: 0, lineHeight: '1.6' }}>{level.consequence}</p>
                     </div>
 
-                    {/* 弱點區 */}
-                    <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '2rem', borderRadius: '20px', marginBottom: '2rem' }}>
-                        <h3 style={{ color: '#ef4444', fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span>⚠️</span> 你的聽覺盲區分析：
-                        </h3>
-                        <ul style={{ color: '#e2e8f0', fontSize: '1.05rem', lineHeight: '1.8', margin: 0, paddingLeft: '1.5rem' }}>
-                            {weaknesses.map((w, i) => (
-                                <li key={i} style={{ marginBottom: '15px' }}>{w}</li>
-                            ))}
-                        </ul>
-                    </div>
+                    {/* 弱點 / 強項區 */}
+                    {isLevel4 ? (
+                        <div style={{ background: 'rgba(167, 139, 250, 0.05)', border: '1px solid rgba(167, 139, 250, 0.2)', padding: '2rem', borderRadius: '20px', marginBottom: '2rem' }}>
+                            <h3 style={{ color: '#a78bfa', fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <span>🏆</span> 你的聽覺能力評估：
+                            </h3>
+                            <p style={{ color: '#e2e8f0', fontSize: '1.1rem', lineHeight: '1.8', margin: 0 }}>
+                                你的聽覺非常精準，基礎盲點極少！你已經能準確分辨出極細微的頻率、空間與動態變化，這在創作者中非常難得。
+                            </p>
+                        </div>
+                    ) : (
+                        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '2rem', borderRadius: '20px', marginBottom: '2rem' }}>
+                            <h3 style={{ color: '#ef4444', fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <span>⚠️</span> 你的聽覺盲區分析：
+                            </h3>
+                            <ul style={{ color: '#e2e8f0', fontSize: '1.05rem', lineHeight: '1.8', margin: 0, paddingLeft: '1.5rem' }}>
+                                {weaknesses.map((w, i) => (
+                                    <li key={i} style={{ marginBottom: '15px' }}>{w}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
 
-                    {/* 恐懼放大區 */}
-                    <div style={{ background: 'rgba(239, 68, 68, 0.05)', border: '1px solid rgba(239, 68, 68, 0.2)', padding: '2rem', borderRadius: '20px', marginBottom: '2rem' }}>
-                        <h3 style={{ color: '#ef4444', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '1.2rem' }}>
-                            🚨 如果這些問題沒有被解決，你會繼續遇到：
-                        </h3>
-                        <ul style={{ color: '#fca5a5', fontSize: '1.05rem', lineHeight: '1.8', margin: 0, paddingLeft: '1.5rem' }}>
-                            <li style={{ marginBottom: '8px' }}>每次混音結果都不穩，<strong>就像在買彩券</strong></li>
-                            <li style={{ marginBottom: '8px' }}>在自己耳機聽很棒，<strong>換到車上或手機聽就直接崩掉</strong></li>
-                            <li style={{ marginBottom: '8px' }}>永遠覺得「差了一點點」，但<strong>死都不知道要轉哪個旋鈕</strong></li>
-                        </ul>
-                    </div>
+                    {/* 恐懼放大區 / 高階挑戰區 */}
+                    {isLevel4 ? (
+                        <div style={{ background: 'rgba(56, 189, 248, 0.05)', border: '1px solid rgba(56, 189, 248, 0.2)', padding: '2rem', borderRadius: '20px', marginBottom: '2rem' }}>
+                            <h3 style={{ color: '#38bdf8', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '1.2rem' }}>
+                                🚀 你的下一個突破口：
+                            </h3>
+                            <ul style={{ color: '#bae6fd', fontSize: '1.05rem', lineHeight: '1.8', margin: 0, paddingLeft: '1.5rem' }}>
+                                <li style={{ marginBottom: '8px' }}>面對 50 軌以上的複雜專案時，<strong>如何保持大局觀，不迷失在細節裡</strong></li>
+                                <li style={{ marginBottom: '8px' }}>建立專屬的 Mixing Template，<strong>將直覺轉化為穩定的產出速度</strong></li>
+                                <li style={{ marginBottom: '8px' }}>突破母帶後期 (Mastering) 的極限，<strong>達到商業級的響度與壓迫感</strong></li>
+                            </ul>
+                        </div>
+                    ) : (
+                        <div style={{ background: 'rgba(239, 68, 68, 0.05)', border: '1px solid rgba(239, 68, 68, 0.2)', padding: '2rem', borderRadius: '20px', marginBottom: '2rem' }}>
+                            <h3 style={{ color: '#ef4444', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '1.2rem' }}>
+                                🚨 如果這些問題沒有被解決，你會繼續遇到：
+                            </h3>
+                            <ul style={{ color: '#fca5a5', fontSize: '1.05rem', lineHeight: '1.8', margin: 0, paddingLeft: '1.5rem' }}>
+                                <li style={{ marginBottom: '8px' }}>每次混音結果都不穩，<strong>就像在買彩券</strong></li>
+                                <li style={{ marginBottom: '8px' }}>在自己耳機聽很棒，<strong>換到車上或手機聽就直接崩掉</strong></li>
+                                <li style={{ marginBottom: '8px' }}>永遠覺得「差了一點點」，但<strong>死都不知道要轉哪個旋鈕</strong></li>
+                            </ul>
+                        </div>
+                    )}
 
                     {/* 建議區 */}
-                    <div style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '2rem', borderRadius: '20px', marginBottom: '3rem' }}>
-                        <h3 style={{ color: '#10b981', fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span>💡</span> 建議你從這幾個練習開始：
-                        </h3>
-                        <ul style={{ color: '#a7f3d0', fontSize: '1.05rem', lineHeight: '1.8', margin: 0, paddingLeft: '1.5rem' }}>
-                            <li style={{ marginBottom: '10px' }}><strong>互動 EQ 實驗室：</strong>親自掃頻，記住「刺」與「悶」的真實聲音。</li>
-                            <li style={{ marginBottom: '10px' }}><strong>Groove 律動感知：</strong>訓練耳朵捕捉細微的節奏推拉感。</li>
-                            <li style={{ marginBottom: '10px' }}><strong>空間感重塑：</strong>學習如何把樂器分配到不打架的位置。</li>
-                        </ul>
-                    </div>
+                    {isLevel4 ? (
+                        <div style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '2rem', borderRadius: '20px', marginBottom: '3rem' }}>
+                            <h3 style={{ color: '#10b981', fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <span>💡</span> 給混音腦的進階建議：
+                            </h3>
+                            <ul style={{ color: '#a7f3d0', fontSize: '1.05rem', lineHeight: '1.8', margin: 0, paddingLeft: '1.5rem' }}>
+                                <li style={{ marginBottom: '10px' }}><strong>跳過基礎訓練：</strong>你可以直接挑戰多軌實戰與母帶處理。</li>
+                                <li style={{ marginBottom: '10px' }}><strong>尋找自己的 Tone：</strong>嘗試運用硬體模擬插件 (Analog) 來塑造獨特音色。</li>
+                                <li style={{ marginBottom: '10px' }}><strong>加入高階內測：</strong>我們需要像你一樣耳朵敏銳的創作者，來幫助我們測試未來的 AI 聲學功能。</li>
+                            </ul>
+                        </div>
+                    ) : (
+                        <div style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '2rem', borderRadius: '20px', marginBottom: '3rem' }}>
+                            <h3 style={{ color: '#10b981', fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <span>💡</span> 建議你從這幾個練習開始：
+                            </h3>
+                            <ul style={{ color: '#a7f3d0', fontSize: '1.05rem', lineHeight: '1.8', margin: 0, paddingLeft: '1.5rem' }}>
+                                <li style={{ marginBottom: '10px' }}><strong>互動 EQ 實驗室：</strong>親自掃頻，記住「刺」與「悶」的真實聲音。</li>
+                                <li style={{ marginBottom: '10px' }}><strong>Groove 律動感知：</strong>訓練耳朵捕捉細微的節奏推拉感。</li>
+                                <li style={{ marginBottom: '10px' }}><strong>空間感重塑：</strong>學習如何把樂器分配到不打架的位置。</li>
+                            </ul>
+                        </div>
+                    )}
 
                     {/* 🟣 問卷/共創者 CTA (不留 Email，直接引導去填問卷) */}
                     <div style={{ textAlign: 'center', padding: '2.5rem 2rem', background: 'linear-gradient(145deg, #1e1b4b, #0f172a)', borderRadius: '24px', border: '1px solid #a78bfa', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
