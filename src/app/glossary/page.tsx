@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 // 📖 混音魔導書：終極字彙庫
-// 🚀 升級 A & C：加入可驗證的 miniTask 與帶參數的 learnMoreLink
 const DICTIONARY = [
     {
         term: "BPM", type: "基礎與錄音",
@@ -33,7 +32,6 @@ const DICTIONARY = [
         desc: "聲波的時間關係。若兩個波形相反會產生抵銷，導致低頻消失。",
         example: "想像兩個人同時推一扇門，如果兩邊推的力氣一樣大方向卻相反，門就不會動（聲音互相抵銷不見）。",
         whenToUse: "當你用兩支麥克風錄木吉他，聽起來卻像在桶子裡一樣乾扁的時候。",
-        // 🔥 任務升級為選擇題
         miniTask: {
             instruction: "試著在兩軌木吉他中，把其中一軌的 Phase 反轉 (Ø) 按下去。",
             question: "當相位反轉後，如果原本有『相位抵銷』的問題，聲音會有什麼變化？",
@@ -44,7 +42,6 @@ const DICTIONARY = [
             ],
             answer: "低頻跟厚度突然跑出來了"
         },
-        // 🚀 傳送門升級：帶 context
         learnMoreLink: "/mix-assistant?topic=phase_issue&from=glossary"
     },
     { term: "Phase Flip", type: "物理與聲學", desc: "相位反轉。常用於處理鼓組錄音，修正兩支麥克風之間產生的相位抵銷。" },
@@ -116,7 +113,7 @@ const DICTIONARY = [
     { term: "Summing", type: "混音神技", desc: "將多軌混合成兩軌的過程。類比 Summing 能增加聲音的寬度與染色。" },
     {
         term: "Pan (聲相)", type: "混音神技",
-        desc: "調整聲音在左右聲道的位置，創造立體聲舞台感。除了單純的左右，還包含 LCR (極左、中、極右) 的極端擺位法。",
+        desc: "調整聲音在左右聲道的位置，創造立體聲舞台感。除了單純的左右，還包含 LCR 的極端擺位法。",
         example: "就像是安排樂團成員在舞台上的站位，如果你把所有人都擠在正中央 (Pan = 0)，聲音聽起來就會很悶且打架。",
         whenToUse: "當你覺得主唱被伴奏的吉他蓋住，中間空間很擠的時候。",
         miniTask: {
@@ -148,14 +145,13 @@ export default function GlossaryPage() {
     const [activeTab, setActiveTab] = useState("全部");
     const [searchTerm, setSearchTerm] = useState("");
 
-    // 🧠 學習進度狀態
+    // 學習進度狀態
     const [learnedItems, setLearnedItems] = useState<string[]>([]);
     // 控制任務展開狀態
     const [activeTask, setActiveTask] = useState<string | null>(null);
     // 控制答題回饋
     const [feedback, setFeedback] = useState<{ term: string, isCorrect: boolean, msg: string } | null>(null);
 
-    // 🔥 B：只有答對才能算學會
     const checkAnswer = (term: string, selected: string, correct: string) => {
         if (selected === correct) {
             if (!learnedItems.includes(term)) {
@@ -163,14 +159,13 @@ export default function GlossaryPage() {
             }
             setFeedback({ term, isCorrect: true, msg: "✅ 答對了！你已經掌握了這個技巧！" });
             setTimeout(() => setFeedback(null), 3000);
-            setActiveTask(null); // 答對後收起任務面板
+            setActiveTask(null);
         } else {
             setFeedback({ term, isCorrect: false, msg: "❌ 好像有點怪... 聽聽看再試一次？" });
             setTimeout(() => setFeedback(null), 3000);
         }
     };
 
-    // 🏆 計算升級目標 (Rank System)
     const getRankMessage = () => {
         const count = learnedItems.length;
         if (count < 3) return `再解鎖 ${3 - count} 個，你將升級為「見習混音師」！`;
@@ -181,7 +176,6 @@ export default function GlossaryPage() {
 
     const filteredData = DICTIONARY.filter(item => {
         const matchesTab = activeTab === "全部" || item.type === activeTab;
-        // ✅ 修正 1：搜尋支援 whenToUse (這超猛，搜"主唱"就能找到解法)
         const matchesSearch =
             item.term.toLowerCase().includes(searchTerm.toLowerCase()) ||
             item.desc.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -199,7 +193,7 @@ export default function GlossaryPage() {
                     <p style={{ color: '#94a3b8' }}>不只是查字典。從懂概念到會操作，解鎖你的混音技能樹。</p>
                 </div>
 
-                {/* 🔥 刺激的進度條與段位 (Rank System) */}
+                {/* 進度條與段位 */}
                 <div style={{ maxWidth: '800px', margin: '0 auto 2rem auto', background: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.2)', padding: '1.5rem', borderRadius: '12px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
                     <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '2px', background: 'linear-gradient(90deg, transparent, #10b981, transparent)' }} />
                     <p style={{ margin: '0 0 0.5rem 0', color: '#6ee7b7', fontWeight: 'bold', fontSize: '1.2rem' }}>
@@ -211,13 +205,12 @@ export default function GlossaryPage() {
                             background: 'linear-gradient(90deg, #10b981, #34d399)', height: '100%', transition: 'width 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
                         }} />
                     </div>
-                    {/* 🎮 段位刺激文字 */}
                     <p style={{ margin: 0, color: '#fca311', fontSize: '0.95rem', fontWeight: 'bold' }}>
                         {getRankMessage()}
                     </p>
                 </div>
 
-                {/* 🔍 強化的搜尋列 */}
+                {/* 搜尋列 */}
                 <input
                     type="text"
                     placeholder="搜尋名詞或情境 (例如：相位、主唱被蓋住...)"
@@ -228,7 +221,7 @@ export default function GlossaryPage() {
                     onBlur={(e) => e.target.style.border = '1px solid #334155'}
                 />
 
-                {/* 📑 分類標籤 */}
+                {/* 分類標籤 */}
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '3rem', justifyContent: 'center' }}>
                     {CATEGORIES.map(cat => (
                         <button
@@ -246,7 +239,7 @@ export default function GlossaryPage() {
                     ))}
                 </div>
 
-                {/* 🃏 卡牌列表 */}
+                {/* 卡牌列表 */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.5rem' }}>
                     {filteredData.map((item, idx) => {
                         const isLearned = learnedItems.includes(item.term);
@@ -254,7 +247,6 @@ export default function GlossaryPage() {
 
                         return (
                             <div key={idx}
-                                // ✅ 修正 2：Hover 升級加陰影，體感更高級
                                 onMouseEnter={e => {
                                     e.currentTarget.style.transform = 'translateY(-5px)';
                                     e.currentTarget.style.boxShadow = '0 10px 25px rgba(0,0,0,0.3)';
@@ -307,7 +299,7 @@ export default function GlossaryPage() {
 
                                 <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
 
-                                    {/* 🔥 A：將靜態任務升級為可驗證的任務挑戰面板 */}
+                                    {/* 實戰挑戰挑戰面板 */}
                                     {item.miniTask && !isLearned && (
                                         <div style={{ background: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.3)', padding: '12px', borderRadius: '8px', transition: 'all 0.3s' }}>
                                             {!isTaskOpen ? (
@@ -351,29 +343,26 @@ export default function GlossaryPage() {
                                         </div>
                                     )}
 
-                                    {/* ✅ 已掌握標籤（取代原本的按鈕） */}
+                                    {/* 已掌握標籤 */}
                                     {isLearned && (
                                         <div style={{ padding: '10px', background: 'rgba(16,185,129,0.1)', border: '1px solid #10b981', borderRadius: '8px', color: '#10b981', textAlign: 'center', fontWeight: 'bold' }}>
                                             ✅ 你已成功掌握此技巧
                                         </div>
                                     )}
 
-                                    {/* 🔥 C：升級的傳送門，帶有 context，引導至深度診斷 */}
+                                    {/* 🔒 修正：將原本直接開啟的實戰診斷按鈕鎖定，改為「即將開放」狀態 */}
                                     {item.learnMoreLink && (
-                                        <Link
-                                            href={item.learnMoreLink}
+                                        <div
                                             style={{
-                                                display: 'block', textAlign: 'center',
-                                                padding: '12px 15px', background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
-                                                color: '#fff', textDecoration: 'none', borderRadius: '8px',
-                                                fontWeight: 'bold', fontSize: '0.9rem', transition: 'all 0.2s',
-                                                boxShadow: '0 4px 10px rgba(59, 130, 246, 0.3)'
+                                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                                                padding: '12px 15px', background: '#1e293b',
+                                                color: '#64748b', borderRadius: '8px',
+                                                fontWeight: 'bold', fontSize: '0.9rem', border: '1px dashed #334155',
+                                                cursor: 'not-allowed', boxSizing: 'border-box'
                                             }}
-                                            onMouseOver={e => e.currentTarget.style.boxShadow = '0 6px 15px rgba(59, 130, 246, 0.5)'}
-                                            onMouseOut={e => e.currentTarget.style.boxShadow = '0 4px 10px rgba(59, 130, 246, 0.3)'}
                                         >
-                                            🚀 進入專屬實戰診斷
-                                        </Link>
+                                            🔒 專屬實戰診斷 (即將開放)
+                                        </div>
                                     )}
                                 </div>
                             </div>
