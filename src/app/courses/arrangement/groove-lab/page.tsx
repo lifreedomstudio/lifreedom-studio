@@ -2,45 +2,67 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-// 輔助函數：精準延遲
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-type Phase = 'listen' | 'contrast' | 'result';
-
-// 🎯 題庫移至組件外部 (未來可獨立為 config 檔)
+// 🎯 題庫升級：加入診斷選擇與 3 層翻譯 (技術 -> 聽感 -> 身體感)
 const labChallenges = [
     {
         id: 1,
-        title: 'STEP 1: Kick / Bass 沒有鎖住',
-        problemDesc: '這段低頻聽起來有點鬆散、沒有拳頭感。',
-        fixName: '鎖定 Kick & Bass',
+        title: 'STEP 1: 尋找低頻的錨點',
+        problemDesc: '這段低頻聽起來有點鬆散、沒有拳頭感。你覺得問題出在哪？',
         fileBad: '/audio/groove/groove_1_bad.mp3',
         fileFixed: '/audio/groove/groove_1_fix.mp3',
-        badSymptom: '❌ 低頻像在拖地、沒有 Punch。Bass 稍微晚了 15~30ms。',
-        fixedSymptom: '✅ 低頻變「一拳打出去」，身體會想點頭，Groove 明顯變穩。',
-        insight: 'Kick = 100% on grid，Bass 完全貼齊 Kick (或微提前)，這就是低頻力量的來源。'
+        options: [
+            { id: 'A', text: 'Kick (大鼓) 太小聲了' },
+            { id: 'B', text: 'Kick 跟 Bass 時間沒對齊' },
+            { id: 'C', text: 'Bass 缺少高頻的亮度' }
+        ],
+        correct: 'B',
+        feedbackCorrect: '完全命中！微小的時間差正是低頻鬆散的元兇。',
+        feedbackIncorrect: '其實音量跟頻率沒問題，真正的原因藏在「時間」裡。',
+        insight: {
+            tech: 'Bass 發聲點比 Kick 晚了約 15~30ms',
+            audio: '低頻互相拉扯，聽起來像在拖地、沒有 Punch',
+            physical: '沒有「一拳打在胸口」的感覺，身體點不下頭'
+        }
     },
     {
         id: 2,
-        title: 'STEP 2: 機器人 vs 真人 (Humanize)',
-        problemDesc: '這段節奏聽起來非常乾，像死板的 MIDI Demo。',
-        fixName: '微人性化 (Humanize)',
+        title: 'STEP 2: 機器人 vs 真人',
+        problemDesc: '這段節奏聽起來非常乾，像死板的 MIDI Demo。為什麼？',
         fileBad: '/audio/groove/groove_2_bad.mp3',
         fileFixed: '/audio/groove/groove_2_fix.mp3',
-        badSymptom: '❌ 全 Quantize (100% grid)，力度全部一樣，沒有呼吸感。',
-        fixedSymptom: '✅ 加入微小的時間偏移與力度變化後，音樂開始「活起來」了。',
-        insight: '不用每一次都敲在正拍上。隨機的 ±5~15ms 偏移與輕重音，正是人類演奏的靈魂。'
+        options: [
+            { id: 'A', text: '沒有加 Reverb (空間殘響)' },
+            { id: 'B', text: '樂器的音色選錯了' },
+            { id: 'C', text: '100% 對齊網格，力度死板' }
+        ],
+        correct: 'C',
+        feedbackCorrect: '太敏銳了！不完美的「微小時間差」才是人類演奏的靈魂。',
+        feedbackIncorrect: '其實音色與空間沒問題，問題出在「太過完美」的機械感。',
+        insight: {
+            tech: '100% Quantize (全對齊)，且力度 (Velocity) 毫無變化',
+            audio: '聲音極度死板、乾扁，像機器人打鼓',
+            physical: '聽了覺得身體很僵硬，沒有呼吸的感覺'
+        }
     },
     {
         id: 3,
-        title: 'STEP 3: Hi-hat 推進感',
-        problemDesc: '這段節奏聽起來很平、很無聊，音樂感覺「停在原地」。',
-        fixName: '加入動態推進 (Groove Push)',
+        title: 'STEP 3: 隱形的推進器',
+        problemDesc: '音樂感覺「停在原地」，沒有前進的動力。問題是？',
         fileBad: '/audio/groove/groove_3_bad.mp3',
         fileFixed: '/audio/groove/groove_3_fix.mp3',
-        badSymptom: '❌ 16 分音符完全機械化，Hi-hat 力度平坦無 Accent。',
-        fixedSymptom: '✅ 加入 Accent (強弱音) 與微 Swing，音樂瞬間有了「走路感」。',
-        insight: '速度感不只是 BPM，利用 Hi-hat 做出 1-弱-強-弱 的動態，才能推著音樂往前走。'
+        options: [
+            { id: 'A', text: 'BPM (拍速) 設定得太慢了' },
+            { id: 'B', text: 'Hi-hat 缺乏輕重音 (Accent) 變化' },
+            { id: 'C', text: 'Bass 彈得太少了' }
+        ],
+        correct: 'B',
+        feedbackCorrect: '專業！速度感不只是 BPM，而是藏在輕重音的起伏裡。',
+        feedbackIncorrect: '其實 BPM 是一樣的！真正的推進力藏在 Hi-hat 的動態裡。',
+        insight: {
+            tech: '16 分音符 Hi-hat 缺乏 Accent 與微 Swing',
+            audio: '節奏平坦無聊，缺乏起伏的律動感',
+            physical: '音樂停滯不前，沒有帶著你「往前走」的推力'
+        }
     }
 ];
 
@@ -50,12 +72,13 @@ export default function GrooveCorrectionLabPage() {
 
     // 核心狀態
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [phase, setPhase] = useState<Phase>('listen');
+    const [phase, setPhase] = useState<'listen' | 'result'>('listen');
     const [isPlaying, setIsPlaying] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [currentTrack, setCurrentTrack] = useState<'bad' | 'fixed'>('bad');
+    const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
-    // 🎧 專業 Web Audio API Refs
+    // 🎧 Web Audio API Refs (零延遲切換核心)
     const audioCtxRef = useRef<AudioContext | null>(null);
     const badBufferRef = useRef<AudioBuffer | null>(null);
     const fixedBufferRef = useRef<AudioBuffer | null>(null);
@@ -64,37 +87,30 @@ export default function GrooveCorrectionLabPage() {
     const badGainRef = useRef<GainNode | null>(null);
     const fixedGainRef = useRef<GainNode | null>(null);
 
-    // 鎖定機制
-    const isProcessingRef = useRef(false);
-
     const q = labChallenges[currentIndex];
 
     // 視窗偵測 (Debounced)
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-
         let timeoutId: NodeJS.Timeout;
         const checkMobile = () => {
             clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => setIsMobile(window.innerWidth < 768), 150);
+            timeoutId = setTimeout(() => setIsMobile(window.innerWidth < 768), 300);
         };
-
         checkMobile();
         window.addEventListener('resize', checkMobile);
-
         return () => {
             window.removeEventListener('resize', checkMobile);
             clearTimeout(timeoutId);
         };
     }, []);
 
-    // 🔄 載入與解碼音檔 (每次換題時觸發)
+    // 🔄 載入與解碼音檔
     useEffect(() => {
         let isCurrentEffect = true;
-
         const loadAudio = async () => {
             setIsLoading(true);
-            stopAudio(); // 確保上一題的聲音被停止
+            stopAudio();
 
             if (!audioCtxRef.current) {
                 audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -106,14 +122,12 @@ export default function GrooveCorrectionLabPage() {
                     fetch(q.fileBad),
                     fetch(q.fileFixed)
                 ]);
-
                 const [bufBad, bufFixed] = await Promise.all([
                     resBad.arrayBuffer(),
                     resFixed.arrayBuffer()
                 ]);
 
-                if (!isCurrentEffect) return; // 避免組件卸載後繼續解碼
-
+                if (!isCurrentEffect) return;
                 badBufferRef.current = await ctx.decodeAudioData(bufBad);
                 fixedBufferRef.current = await ctx.decodeAudioData(bufFixed);
             } catch (error) {
@@ -124,19 +138,18 @@ export default function GrooveCorrectionLabPage() {
                 setIsLoading(false);
                 setPhase('listen');
                 setCurrentTrack('bad');
-                isProcessingRef.current = false;
+                setSelectedOption(null);
             }
         };
 
         loadAudio();
-
         return () => {
             isCurrentEffect = false;
             stopAudio();
         };
     }, [currentIndex, q]);
 
-    // ⏹️ 停止音訊並清理 Node
+    // ⏹️ 停止音訊
     const stopAudio = () => {
         if (badSourceRef.current) {
             badSourceRef.current.stop();
@@ -151,10 +164,9 @@ export default function GrooveCorrectionLabPage() {
         setIsPlaying(false);
     };
 
-    // ▶️ Web Audio 播放控制
+    // ▶️ 大顆播放按鈕
     const togglePlay = async () => {
         if (isLoading || !badBufferRef.current || !fixedBufferRef.current) return;
-
         const ctx = audioCtxRef.current;
         if (!ctx) return;
 
@@ -163,12 +175,8 @@ export default function GrooveCorrectionLabPage() {
             return;
         }
 
-        // 必須在使用者互動時 Resume 確保 Safari 允許播放
-        if (ctx.state === 'suspended') {
-            await ctx.resume();
-        }
+        if (ctx.state === 'suspended') await ctx.resume();
 
-        // 建立 Source
         badSourceRef.current = ctx.createBufferSource();
         fixedSourceRef.current = ctx.createBufferSource();
         badSourceRef.current.buffer = badBufferRef.current;
@@ -176,19 +184,16 @@ export default function GrooveCorrectionLabPage() {
         badSourceRef.current.loop = true;
         fixedSourceRef.current.loop = true;
 
-        // 建立 Gain (音量) 控制器
         badGainRef.current = ctx.createGain();
         fixedGainRef.current = ctx.createGain();
 
-        // 初始音量設定
+        // 初始音量設定：依據 currentTrack 決定誰發聲
         badGainRef.current.gain.value = currentTrack === 'bad' ? 1 : 0;
         fixedGainRef.current.gain.value = currentTrack === 'fixed' ? 1 : 0;
 
-        // 連接線路：Source -> Gain -> Destination(喇叭)
         badSourceRef.current.connect(badGainRef.current).connect(ctx.destination);
         fixedSourceRef.current.connect(fixedGainRef.current).connect(ctx.destination);
 
-        // 確保兩者在未來同一個精準時間點一起播放 (Sample-accurate sync)
         const startTime = ctx.currentTime + 0.05;
         badSourceRef.current.start(startTime);
         fixedSourceRef.current.start(startTime);
@@ -196,44 +201,29 @@ export default function GrooveCorrectionLabPage() {
         setIsPlaying(true);
     };
 
-    // 🎚️ 使用 GainNode 進行無縫音軌切換 (0.02秒 Crossfade 防爆音)
+    // 🎚️ A/B 瞬間無縫切換 (Crossfade)
     const switchTrack = (track: 'bad' | 'fixed') => {
         setCurrentTrack(track);
         if (badGainRef.current && fixedGainRef.current && audioCtxRef.current) {
-            const ctx = audioCtxRef.current;
-            const now = ctx.currentTime;
-
-            // 使用 setTargetAtTime 建立平滑的淡入淡出曲線
+            const now = audioCtxRef.current.currentTime;
             badGainRef.current.gain.setTargetAtTime(track === 'bad' ? 1 : 0, now, 0.02);
             fixedGainRef.current.gain.setTargetAtTime(track === 'fixed' ? 1 : 0, now, 0.02);
         }
     };
 
-    // 🔧 執行修正，觸發安全保護的自動切段對比
-    const handleApplyFix = async () => {
-        if (phase === 'contrast' || !isPlaying || isProcessingRef.current) return;
+    // 🎯 答題邏輯
+    const handleDiagnose = (optionId: string) => {
+        if (selectedOption) return; // 鎖定作答
+        setSelectedOption(optionId);
+        setPhase('result');
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
 
-        isProcessingRef.current = true;
-        setPhase('contrast');
-
-        const steps = ['bad', 'fixed', 'bad', 'fixed'] as const;
-
-        for (const track of steps) {
-            if (!isProcessingRef.current) break; // 如果提早按了下一題，立刻中斷
-            switchTrack(track);
-            await delay(1200); // Groove 需要稍微長一點的時間感受
-        }
-
-        if (isProcessingRef.current) {
-            setPhase('result');
-            isProcessingRef.current = false;
-        }
+        // 答題後，自動切換到正確的聲音，讓使用者瞬間感受差異
+        switchTrack('fixed');
     };
 
     const handleNext = () => {
-        isProcessingRef.current = false; // 中斷正在進行的動畫與切換
         stopAudio();
-
         if (currentIndex < labChallenges.length - 1) {
             setCurrentIndex(prev => prev + 1);
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -261,127 +251,120 @@ export default function GrooveCorrectionLabPage() {
                         ))}
                     </div>
                 </div>
-
-                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', display: 'inline-block', marginBottom: '1.5rem' }}>
-                    <p style={{ color: '#94a3b8', margin: 0, fontSize: isMobile ? '1rem' : '1.15rem' }}>
-                        你現在不是在學理論。<br />
-                        <strong style={{ color: '#fca311' }}>你是在「修一段壞掉的音樂」。</strong>
-                    </p>
-                </div>
             </header>
 
             <div style={{ maxWidth: '650px', width: '100%', display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
 
-                {/* 🎧 SECTION 1: 問題音 (核心刺激) */}
-                <section style={{ background: 'rgba(15, 23, 42, 0.6)', padding: '2rem', borderRadius: '24px', border: '1px solid rgba(56, 189, 248, 0.2)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-                    {phase === 'contrast' && (
-                        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(16, 185, 129, 0.1)', zIndex: 0, animation: 'pulseBg 0.8s infinite alternate' }} />
-                    )}
+                {/* 🎧 主互動區 (播放與 A/B 切換) */}
+                <section style={{ background: 'rgba(15, 23, 42, 0.6)', padding: isMobile ? '1.5rem' : '2.5rem', borderRadius: '24px', border: '1px solid rgba(56, 189, 248, 0.2)', textAlign: 'center' }}>
 
-                    <div style={{ position: 'relative', zIndex: 1 }}>
-                        <div style={{ color: '#38bdf8', fontWeight: 'bold', letterSpacing: '2px', fontSize: '0.9rem', marginBottom: '0.5rem' }}>{q.title}</div>
-                        <h2 style={{ fontSize: '1.4rem', color: '#fff', marginBottom: '1rem', fontWeight: 'bold' }}>{q.problemDesc}</h2>
-                        <p style={{ color: '#94a3b8', lineHeight: '1.6', marginBottom: '2rem' }}>
-                            點擊播放，先聽聽看哪裡出了狀況。
-                        </p>
+                    <div style={{ color: '#38bdf8', fontWeight: 'bold', letterSpacing: '2px', fontSize: '0.9rem', marginBottom: '0.5rem' }}>{q.title}</div>
+                    <h2 style={{ fontSize: isMobile ? '1.3rem' : '1.5rem', color: '#fff', marginBottom: '2rem', fontWeight: 'bold', lineHeight: '1.5' }}>
+                        {q.problemDesc}
+                    </h2>
 
-                        <button
-                            onClick={togglePlay}
-                            disabled={isLoading}
-                            style={{ background: isPlaying ? '#1e293b' : '#fff', color: isPlaying ? '#38bdf8' : '#000', border: isPlaying ? '1px solid #475569' : 'none', padding: '1rem 3rem', fontSize: '1.2rem', fontWeight: 'bold', borderRadius: '50px', cursor: isLoading ? 'not-allowed' : 'pointer', boxShadow: isPlaying ? 'none' : '0 10px 20px rgba(255,255,255,0.2)', marginBottom: '1.5rem', width: isMobile ? '100%' : 'auto', transition: 'all 0.3s' }}
-                        >
-                            {isLoading ? '⏳ 載入高音質圖檔中...' : isPlaying ? '⏹ 停止播放' : '▶ 載入並播放'}
-                        </button>
+                    {/* 🚀 Giant Play Button */}
+                    <button
+                        onClick={togglePlay}
+                        disabled={isLoading}
+                        style={{
+                            background: isPlaying ? 'rgba(56, 189, 248, 0.1)' : 'linear-gradient(135deg, #38bdf8, #2563eb)',
+                            color: isPlaying ? '#38bdf8' : '#fff',
+                            border: isPlaying ? '1px solid #38bdf8' : 'none',
+                            padding: isMobile ? '1.2rem 2rem' : '1.5rem 4rem',
+                            fontSize: isMobile ? '1.2rem' : '1.4rem',
+                            fontWeight: '900',
+                            borderRadius: '50px',
+                            cursor: isLoading ? 'not-allowed' : 'pointer',
+                            boxShadow: isPlaying ? 'none' : '0 10px 30px rgba(56, 189, 248, 0.3)',
+                            marginBottom: '2rem', width: '100%', transition: 'all 0.3s'
+                        }}
+                    >
+                        {isLoading ? '⏳ 載入高音質音軌中...' : isPlaying ? '⏹ 停止播放' : '▶️ 播放 Loop 試聽'}
+                    </button>
 
-                        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                            <button
-                                onClick={() => switchTrack('bad')}
-                                disabled={phase === 'contrast' || !isPlaying}
-                                style={{ padding: '0.8rem 1.5rem', borderRadius: '12px', border: currentTrack === 'bad' && isPlaying ? '2px solid #ef4444' : '1px solid #334155', background: currentTrack === 'bad' && isPlaying ? 'rgba(239, 68, 68, 0.1)' : '#0f172a', color: currentTrack === 'bad' && isPlaying ? '#ef4444' : '#64748b', fontWeight: 'bold', cursor: (phase === 'contrast' || !isPlaying) ? 'not-allowed' : 'pointer', transition: 'all 0.2s', flex: 1, boxShadow: currentTrack === 'bad' && isPlaying ? '0 0 15px rgba(239,68,68,0.3)' : 'none' }}
-                            >
-                                ❌ 問題版 (Bad)
-                            </button>
-                            <button
-                                onClick={() => switchTrack('fixed')}
-                                disabled={phase === 'listen' || phase === 'contrast' || !isPlaying}
-                                style={{ padding: '0.8rem 1.5rem', borderRadius: '12px', border: currentTrack === 'fixed' && isPlaying ? '2px solid #10b981' : '1px solid #334155', background: currentTrack === 'fixed' && isPlaying ? 'rgba(16, 185, 129, 0.1)' : '#0f172a', color: currentTrack === 'fixed' && isPlaying ? '#10b981' : '#64748b', fontWeight: 'bold', cursor: (phase === 'listen' || phase === 'contrast' || !isPlaying) ? 'not-allowed' : 'pointer', opacity: phase === 'listen' ? 0.5 : 1, transition: 'all 0.2s', flex: 1, boxShadow: currentTrack === 'fixed' && isPlaying ? '0 0 15px rgba(16,185,129,0.3)' : 'none' }}
-                            >
-                                {phase === 'listen' ? '🔒 正常版 (未解鎖)' : '✅ 對照版 (Good)'}
-                            </button>
+                    {/* 🔥 A/B Toggle (答題後解鎖) */}
+                    {phase === 'result' && (
+                        <div style={{ animation: 'fadeInUp 0.5s' }}>
+                            <p style={{ color: '#10b981', fontWeight: 'bold', marginBottom: '10px' }}>
+                                ✨ 已為你解鎖雙軌切換！在播放中點擊聽聽差異：
+                            </p>
+                            <div style={{ display: 'flex', background: '#020617', borderRadius: '50px', padding: '6px', border: '1px solid #334155' }}>
+                                <button
+                                    onClick={() => switchTrack('bad')}
+                                    style={{
+                                        flex: 1, padding: '1rem', borderRadius: '50px', border: 'none', fontWeight: '900', fontSize: '1.1rem', cursor: 'pointer', transition: 'all 0.2s',
+                                        background: currentTrack === 'bad' ? '#ef4444' : 'transparent', color: currentTrack === 'bad' ? '#fff' : '#64748b'
+                                    }}
+                                >
+                                    👈 聽問題版
+                                </button>
+                                <button
+                                    onClick={() => switchTrack('fixed')}
+                                    style={{
+                                        flex: 1, padding: '1rem', borderRadius: '50px', border: 'none', fontWeight: '900', fontSize: '1.1rem', cursor: 'pointer', transition: 'all 0.2s',
+                                        background: currentTrack === 'fixed' ? '#10b981' : 'transparent', color: currentTrack === 'fixed' ? '#fff' : '#64748b'
+                                    }}
+                                >
+                                    聽修正版 👉
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </section>
 
-                {/* 🔧 SECTION 2: 修正工具 */}
-                {(phase === 'listen' || phase === 'contrast' || phase === 'result') && (
+                {/* 🤔 診斷任務區 (Listen Phase) */}
+                {phase === 'listen' && (
                     <section style={{ animation: 'fadeInUp 0.5s' }}>
-                        <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-                            <h3 style={{ fontSize: '1.4rem', color: '#fff', marginTop: '1rem', fontWeight: 'bold' }}>現在，親手修復這段 Groove</h3>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            {q.options.map((opt) => (
+                                <button
+                                    key={opt.id}
+                                    onClick={() => handleDiagnose(opt.id)}
+                                    disabled={!isPlaying}
+                                    style={{
+                                        background: '#1e293b', border: '1px solid transparent', padding: isMobile ? '1.2rem' : '1.5rem', borderRadius: '16px', color: '#fff', fontSize: '1.1rem', textAlign: 'left', cursor: isPlaying ? 'pointer' : 'not-allowed', opacity: isPlaying ? 1 : 0.5, transition: 'all 0.2s', display: 'flex', gap: '1rem'
+                                    }}
+                                    onMouseOver={e => isPlaying && (e.currentTarget.style.border = '1px solid #38bdf8')}
+                                    onMouseOut={e => e.currentTarget.style.border = '1px solid transparent'}
+                                >
+                                    <span style={{ color: '#38bdf8', fontWeight: 'bold' }}>{opt.id}.</span> {opt.text}
+                                </button>
+                            ))}
                         </div>
-
-                        <button
-                            onClick={handleApplyFix}
-                            disabled={phase === 'contrast' || !isPlaying || phase === 'result'}
-                            style={{
-                                width: '100%', background: phase === 'result' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255,255,255,0.03)',
-                                border: phase === 'result' ? '2px solid #10b981' : '1px solid rgba(255,255,255,0.2)',
-                                padding: '1.5rem', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '1.5rem',
-                                cursor: (phase === 'contrast' || !isPlaying || phase === 'result') ? 'not-allowed' : 'pointer',
-                                transition: 'all 0.3s', textAlign: 'left',
-                                boxShadow: phase === 'listen' && isPlaying ? '0 0 20px rgba(16, 185, 129, 0.3)' : 'none'
-                            }}
-                        >
-                            <div style={{ fontSize: '2.5rem' }}>🔧</div>
-                            <div style={{ flex: 1 }}>
-                                <div style={{ color: phase === 'result' ? '#10b981' : '#fff', fontWeight: '900', fontSize: '1.3rem', marginBottom: '4px' }}>
-                                    套用修正：{q.fixName}
-                                </div>
-                                <div style={{ color: '#94a3b8', fontSize: '0.95rem' }}>{isPlaying ? '點擊立刻對比聽感差異' : '請先點擊上方載入播放'}</div>
-                            </div>
-                        </button>
-
-                        {/* 🧨 視覺化 Feedback：動態 Waveform */}
-                        {phase === 'contrast' && (
-                            <div style={{ textAlign: 'center', marginTop: '2rem', animation: 'fadeIn 0.3s' }}>
-                                <div style={{ color: currentTrack === 'fixed' ? '#10b981' : '#ef4444', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem', transition: 'color 0.3s' }}>
-                                    ✨ 正在自動切換比對... ({currentTrack === 'fixed' ? 'Good' : 'Bad'})
-                                </div>
-                                <div style={{ display: 'flex', justifyContent: 'center', gap: '4px', height: '40px', alignItems: 'center' }}>
-                                    {[...Array(10)].map((_, i) => (
-                                        <div key={i} style={{ width: '6px', background: currentTrack === 'fixed' ? '#10b981' : '#ef4444', borderRadius: '3px', transition: 'background 0.3s', animation: `wave 1s infinite alternate ${i * 0.1}s` }} />
-                                    ))}
-                                </div>
-                            </div>
-                        )}
+                        {!isPlaying && <p style={{ textAlign: 'center', color: '#64748b', marginTop: '1rem', fontSize: '0.9rem' }}>請先點擊上方播放按鈕，再進行作答</p>}
                     </section>
                 )}
 
-                {/* 🧠 SECTION 3: 認知重塑 (結果解析) */}
+                {/* 🎯 結果與 3 層翻譯 Insight (Result Phase) */}
                 {phase === 'result' && (
-                    <section style={{ animation: 'fadeInUp 0.8s', marginTop: '1rem' }}>
-                        <div style={{ background: 'linear-gradient(145deg, #1e1b4b, #0f172a)', border: '1px solid #a78bfa', padding: '2.5rem 2rem', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
-                            <h2 style={{ fontSize: '1.6rem', color: '#10b981', fontWeight: '900', marginBottom: '1.5rem', textAlign: 'center' }}>
-                                👏 聽出差異了嗎？
-                            </h2>
+                    <section style={{ animation: 'fadeInUp 0.5s' }}>
+                        <div style={{ background: 'linear-gradient(145deg, #1e1b4b, #0f172a)', border: '1px solid #a78bfa', padding: isMobile ? '1.5rem' : '2.5rem', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
 
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
-                                <div style={{ background: 'rgba(239, 68, 68, 0.1)', borderLeft: '4px solid #ef4444', padding: '1rem 1.5rem', borderRadius: '0 12px 12px 0' }}>
-                                    <div style={{ color: '#ef4444', fontWeight: 'bold', marginBottom: '5px' }}>修正前 (Bad)</div>
-                                    <div style={{ color: '#e2e8f0', fontSize: '1.05rem', lineHeight: '1.6' }}>{q.badSymptom}</div>
-                                </div>
-                                <div style={{ background: 'rgba(16, 185, 129, 0.1)', borderLeft: '4px solid #10b981', padding: '1rem 1.5rem', borderRadius: '0 12px 12px 0' }}>
-                                    <div style={{ color: '#10b981', fontWeight: 'bold', marginBottom: '5px' }}>修正後 (Good)</div>
-                                    <div style={{ color: '#e2e8f0', fontSize: '1.05rem', lineHeight: '1.6' }}>{q.fixedSymptom}</div>
+                            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                                <div style={{ color: selectedOption === q.correct ? '#34d399' : '#f87171', fontSize: '1.2rem', fontWeight: '900', marginBottom: '0.5rem' }}>
+                                    {selectedOption === q.correct ? q.feedbackCorrect : q.feedbackIncorrect}
                                 </div>
                             </div>
 
-                            <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px dashed #fca311', borderRadius: '12px', padding: '1.5rem', textAlign: 'center', marginBottom: '2rem' }}>
-                                <div style={{ color: '#fca311', fontWeight: 'bold', marginBottom: '8px' }}>💡 製作人心法</div>
-                                <div style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.6' }}>{q.insight}</div>
+                            {/* 💡 3 層翻譯：技術 -> 聽感 -> 身體 */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2.5rem' }}>
+                                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1.2rem', borderRadius: '12px', borderLeft: '4px solid #94a3b8' }}>
+                                    <div style={{ color: '#94a3b8', fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '5px' }}>🔧 技術層面</div>
+                                    <div style={{ color: '#fff', fontSize: '1.05rem', lineHeight: '1.5' }}>{q.insight.tech}</div>
+                                </div>
+                                <div style={{ background: 'rgba(56, 189, 248, 0.05)', padding: '1.2rem', borderRadius: '12px', borderLeft: '4px solid #38bdf8' }}>
+                                    <div style={{ color: '#38bdf8', fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '5px' }}>🎧 聽感表現</div>
+                                    <div style={{ color: '#e0f2fe', fontSize: '1.05rem', lineHeight: '1.5' }}>{q.insight.audio}</div>
+                                </div>
+                                <div style={{ background: 'rgba(252, 163, 17, 0.08)', padding: '1.2rem', borderRadius: '12px', borderLeft: '4px solid #fca311' }}>
+                                    <div style={{ color: '#fca311', fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '5px' }}>🕺 身體感受</div>
+                                    <div style={{ color: '#fef3c7', fontSize: '1.05rem', lineHeight: '1.5' }}>{q.insight.physical}</div>
+                                </div>
                             </div>
 
                             <button onClick={handleNext} style={{ width: '100%', padding: '1.2rem', background: '#fff', color: '#020617', border: 'none', borderRadius: '50px', fontSize: '1.2rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(255,255,255,0.2)' }}>
-                                {currentIndex < labChallenges.length - 1 ? '進入下一關修復 ➔' : '完成 Groove 修復，進入下一章 ➔'}
+                                {currentIndex < labChallenges.length - 1 ? '挑戰下一關 ➔' : '完成 Groove 修復 ➔'}
                             </button>
                         </div>
                     </section>
@@ -392,9 +375,6 @@ export default function GrooveCorrectionLabPage() {
             <style dangerouslySetInnerHTML={{
                 __html: `
                 @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-                @keyframes pulseBg { 0% { opacity: 0.3; } 100% { opacity: 0.8; } }
-                @keyframes pulseText { 0% { opacity: 0.6; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } 100% { opacity: 0.6; transform: scale(0.98); } }
-                @keyframes wave { 0% { height: 10px; } 100% { height: 40px; } }
             ` }} />
         </div>
     );

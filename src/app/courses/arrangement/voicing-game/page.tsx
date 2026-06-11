@@ -8,8 +8,18 @@ export default function FrequencyClashGamePage() {
 
     const [stage, setStage] = useState<"intro" | "play" | "answer" | "reveal">("intro");
     const [selected, setSelected] = useState<string | null>(null);
+    const [activeTrack, setActiveTrack] = useState<'clash' | 'fixed'>('clash');
+    const [isLoading, setIsLoading] = useState(false);
+    const [isPlaying, setIsPlaying] = useState(false);
 
-    const audioRef = useRef<HTMLAudioElement>(null);
+    // Web Audio API Refs
+    const audioCtxRef = useRef<AudioContext | null>(null);
+    const clashBufferRef = useRef<AudioBuffer | null>(null);
+    const fixedBufferRef = useRef<AudioBuffer | null>(null);
+    const clashSourceRef = useRef<AudioBufferSourceNode | null>(null);
+    const fixedSourceRef = useRef<AudioBufferSourceNode | null>(null);
+    const clashGainRef = useRef<GainNode | null>(null);
+    const fixedGainRef = useRef<GainNode | null>(null);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -19,23 +29,98 @@ export default function FrequencyClashGamePage() {
         return () => window.removeEventListener("resize", check);
     }, []);
 
-    // ▶️ 開始播放混亂音 (解決 Safari Autoplay 阻擋問題)
+    // 載入音檔
+    useEffect(() => {
+        const loadAudio = async () => {
+            setIsLoading(true);
+            if (!audioCtxRef.current) {
+                audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+            }
+            const ctx = audioCtxRef.current;
+
+            try {
+                // 請確保這兩個音檔在 public/audio 資料夾中
+                const [resClash, resFixed] = await Promise.all([
+                    fetch('/audio/voicing-clash.mp3'),
+                    fetch('/audio/voicing-fixed.mp3')
+                ]);
+                const [bufClash, bufFixed] = await Promise.all([
+                    resClash.arrayBuffer(),
+                    resFixed.arrayBuffer()
+                ]);
+                clashBufferRef.current = await ctx.decodeAudioData(bufClash);
+                fixedBufferRef.current = await ctx.decodeAudioData(bufFixed);
+            } catch (error) {
+                console.error("Audio Decode Error:", error);
+            }
+            setIsLoading(false);
+        };
+        loadAudio();
+    }, []);
+
+    const playAudio = async () => {
+        if (!clashBufferRef.current || !fixedBufferRef.current) return;
+        const ctx = audioCtxRef.current;
+        if (!ctx) return;
+
+        if (ctx.state === 'suspended') await ctx.resume();
+
+        // 確保不會重複創建
+        if (clashSourceRef.current) clashSourceRef.current.disconnect();
+        if (fixedSourceRef.current) fixedSourceRef.current.disconnect();
+
+        clashSourceRef.current = ctx.createBufferSource();
+        fixedSourceRef.current = ctx.createBufferSource();
+        clashSourceRef.current.buffer = clashBufferRef.current;
+        fixedSourceRef.current.buffer = fixedBufferRef.current;
+        clashSourceRef.current.loop = true;
+        fixedSourceRef.current.loop = true;
+
+        clashGainRef.current = ctx.createGain();
+        fixedGainRef.current = ctx.createGain();
+
+        clashGainRef.current.gain.value = activeTrack === 'clash' ? 1 : 0;
+        fixedGainRef.current.gain.value = activeTrack === 'fixed' ? 1 : 0;
+
+        clashSourceRef.current.connect(clashGainRef.current).connect(ctx.destination);
+        fixedSourceRef.current.connect(fixedGainRef.current).connect(ctx.destination);
+
+        const startTime = ctx.currentTime + 0.05;
+        clashSourceRef.current.start(startTime);
+        fixedSourceRef.current.start(startTime);
+
+        setIsPlaying(true);
+    };
+
+    // ▶️ 開始播放混亂音
     const startChaos = () => {
         setStage("play");
-        setTimeout(() => {
-            if (audioRef.current) {
-                audioRef.current.volume = 0.8;
-                audioRef.current.play().catch(e => console.error("Audio block:", e));
-            }
-        }, 50);
+        setActiveTrack('clash');
+        playAudio();
     };
 
     // 🛑 玩家主動停止混亂
     const stopChaosAndAnswer = () => {
-        if (audioRef.current) {
-            audioRef.current.pause();
-        }
+        if (audioCtxRef.current) audioCtxRef.current.suspend();
+        setIsPlaying(false);
         setStage("answer");
+    };
+
+    // 🎚️ 結算頁面的無縫切換
+    const switchTrack = async (track: 'clash' | 'fixed') => {
+        setActiveTrack(track);
+        if (audioCtxRef.current?.state === 'suspended') {
+            await audioCtxRef.current.resume();
+            setIsPlaying(true);
+        } else if (!isPlaying) {
+            await playAudio();
+        }
+
+        if (clashGainRef.current && fixedGainRef.current && audioCtxRef.current) {
+            const now = audioCtxRef.current.currentTime;
+            clashGainRef.current.gain.setTargetAtTime(track === 'clash' ? 1 : 0, now, 0.02);
+            fixedGainRef.current.gain.setTargetAtTime(track === 'fixed' ? 1 : 0, now, 0.02);
+        }
     };
 
     const reveal = () => {
@@ -50,10 +135,10 @@ export default function FrequencyClashGamePage() {
             padding: isMobile ? "2rem 1rem" : "4rem 2rem",
             fontFamily: "sans-serif",
             display: "flex",
-            justifyContent: "center",
+            flexDirection: "column",
             alignItems: "center"
         }}>
-            <div style={{ maxWidth: "800px", width: "100%" }}>
+            <div style={{ maxWidth: "800px", width: "100%", flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
 
                 {/* 🧠 INTRO */}
                 {stage === "intro" && (
@@ -81,23 +166,24 @@ export default function FrequencyClashGamePage() {
 
                         <button
                             onClick={startChaos}
+                            disabled={isLoading}
                             style={{
                                 marginTop: "3rem",
-                                background: "linear-gradient(135deg, #38bdf8, #2563eb)",
+                                background: isLoading ? "#1e293b" : "linear-gradient(135deg, #38bdf8, #2563eb)",
                                 border: "none",
                                 padding: "1.2rem 3.5rem",
                                 borderRadius: "50px",
-                                color: "#fff",
+                                color: isLoading ? "#94a3b8" : "#fff",
                                 fontWeight: 900,
                                 fontSize: "1.2rem",
-                                cursor: "pointer",
-                                boxShadow: "0 10px 30px rgba(56,189,248,0.3)",
+                                cursor: isLoading ? "not-allowed" : "pointer",
+                                boxShadow: isLoading ? "none" : "0 10px 30px rgba(56,189,248,0.3)",
                                 transition: "transform 0.2s"
                             }}
-                            onMouseOver={e => e.currentTarget.style.transform = "scale(1.05)"}
-                            onMouseOut={e => e.currentTarget.style.transform = "scale(1)"}
+                            onMouseOver={e => !isLoading && (e.currentTarget.style.transform = "scale(1.05)")}
+                            onMouseOut={e => !isLoading && (e.currentTarget.style.transform = "scale(1)")}
                         >
-                            ▶ 進入混亂測試
+                            {isLoading ? '⏳ 載入高音質測試檔中...' : '▶ 進入混亂測試'}
                         </button>
                     </section>
                 )}
@@ -106,33 +192,35 @@ export default function FrequencyClashGamePage() {
                 {stage === "play" && (
                     <section style={{ textAlign: "center", animation: "fadeIn 0.3s ease" }}>
                         <h2 style={{ color: "#ef4444", fontWeight: 900, fontSize: "2.5rem", letterSpacing: "2px", animation: "pulseText 0.5s infinite alternate" }}>
-                            ⚠️ SYSTEM OVERLOAD
+                            ⚠️ MID RANGE OVERLOAD
                         </h2>
 
                         <p style={{ color: "#cbd5e1", marginTop: "1rem", fontSize: "1.2rem" }}>
                             木吉他、電吉他、鋼琴 正在爭奪同一個空間...
                         </p>
 
-                        {/* 強化版：錯落有致的 Glitch 視覺 */}
+                        {/* 🎯 視覺化提示：假的擠壓頻譜 */}
                         <div style={{
-                            marginTop: "4rem",
-                            marginBottom: "4rem",
+                            margin: "3rem auto",
                             display: "flex",
                             justifyContent: "center",
-                            alignItems: "center",
-                            gap: "6px",
-                            height: "80px"
+                            alignItems: "flex-end",
+                            gap: "4px",
+                            height: "120px",
+                            padding: "1rem",
+                            background: "rgba(239, 68, 68, 0.05)",
+                            borderRadius: "16px",
+                            border: "1px dashed rgba(239, 68, 68, 0.3)",
+                            maxWidth: "400px"
                         }}>
-                            {[...Array(24)].map((_, i) => (
-                                <div key={i} style={{
-                                    width: "8px",
-                                    height: "20px",
-                                    background: i % 3 === 0 ? "#ef4444" : i % 2 === 0 ? "#f97316" : "#fca311",
-                                    borderRadius: "4px",
-                                    animation: `glitchBar 0.4s infinite alternate`,
-                                    animationDelay: `${Math.random() * 0.5}s` // 隨機延遲製造混亂感
-                                }} />
-                            ))}
+                            {/* Lows */}
+                            {[...Array(6)].map((_, i) => <div key={`low-${i}`} style={{ width: "12px", height: `${20 + Math.random() * 20}px`, background: "#3b82f6", borderRadius: "2px", opacity: 0.5 }} />)}
+
+                            {/* Mids (Clash Zone) */}
+                            {[...Array(12)].map((_, i) => <div key={`mid-${i}`} style={{ width: "14px", height: `${80 + Math.random() * 40}px`, background: "#ef4444", borderRadius: "2px", animation: "glitchBar 0.3s infinite alternate", animationDelay: `${Math.random() * 0.2}s`, boxShadow: "0 0 10px rgba(239,68,68,0.5)" }} />)}
+
+                            {/* Highs */}
+                            {[...Array(6)].map((_, i) => <div key={`high-${i}`} style={{ width: "12px", height: `${15 + Math.random() * 25}px`, background: "#10b981", borderRadius: "2px", opacity: 0.5 }} />)}
                         </div>
 
                         <button
@@ -151,14 +239,8 @@ export default function FrequencyClashGamePage() {
                             onMouseOver={e => { e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)"; e.currentTarget.style.color = "#fff"; }}
                             onMouseOut={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#fca5a5"; }}
                         >
-                            聽夠了，停止測試 ➔
+                            受不了了，停止播放 ➔
                         </button>
-
-                        <audio
-                            ref={audioRef}
-                            src="/audio/voicing-clash.mp3"
-                            loop
-                        />
                     </section>
                 )}
 
@@ -179,7 +261,7 @@ export default function FrequencyClashGamePage() {
                             {[
                                 { key: "A", text: "某個樂器音量太大了" },
                                 { key: "B", text: "節奏沒有對準 (Groove 問題)" },
-                                { key: "C", text: "頻率空間重疊了" } // 🚨 移除了「(正解)」
+                                { key: "C", text: "頻率空間重疊了" }
                             ].map((opt) => (
                                 <button
                                     key={opt.key}
@@ -227,7 +309,7 @@ export default function FrequencyClashGamePage() {
                     </section>
                 )}
 
-                {/* 🔥 REVEAL */}
+                {/* 🔥 REVEAL & A/B TEST */}
                 {stage === "reveal" && (
                     <section style={{ textAlign: "center", animation: "fadeIn 0.6s ease" }}>
 
@@ -241,22 +323,52 @@ export default function FrequencyClashGamePage() {
                             真相不是「混音技術」不夠
                         </h1>
 
-                        <div style={{ background: "rgba(255,255,255,0.03)", padding: "2.5rem", borderRadius: "24px", border: "1px solid rgba(255,255,255,0.05)", textAlign: "left", maxWidth: "600px", margin: "0 auto" }}>
-                            <p style={{ marginTop: 0, fontSize: "1.2rem", lineHeight: 1.8, color: "#cbd5e1" }}>
-                                ❌ 不是因為某個樂器太大聲<br />
-                                ❌ 更不是因為節奏沒有對準<br /><br />
-
-                                真正的兇手是：<strong style={{ color: "#38bdf8", fontSize: "1.3rem" }}>「頻率空間重疊」</strong>。<br /><br />
-
+                        <div style={{ background: "rgba(255,255,255,0.03)", padding: "2rem", borderRadius: "24px", border: "1px solid rgba(255,255,255,0.05)", textAlign: "left", maxWidth: "600px", margin: "0 auto 2rem auto" }}>
+                            <p style={{ marginTop: 0, fontSize: "1.1rem", lineHeight: 1.8, color: "#cbd5e1", marginBottom: 0 }}>
+                                真正的兇手是：<strong style={{ color: "#38bdf8", fontSize: "1.2rem" }}>「頻率空間重疊」</strong>。<br /><br />
                                 你剛剛聽到的「糊」，就是所有中頻樂器（吉他、鋼琴、合成器）都在搶同一個樓層。<br />
-                                <strong style={{ color: "#fff" }}>不解決這個問題，用再多 EQ 也是白費力氣。</strong>
+                                不解決這個問題，用再多 EQ 也是白費力氣。
                             </p>
                         </div>
 
+                        {/* 🎧 A/B 對照面板 */}
+                        <div style={{ background: "rgba(16, 185, 129, 0.05)", padding: "2rem", borderRadius: "24px", border: "1px solid rgba(16, 185, 129, 0.2)", maxWidth: "600px", margin: "0 auto 3rem auto" }}>
+                            <h3 style={{ color: "#10b981", margin: "0 0 1.5rem 0", fontSize: "1.2rem" }}>✨ 親耳驗證：空間分配的力量</h3>
+                            <p style={{ color: "#94a3b8", fontSize: "0.95rem", marginBottom: "1.5rem" }}>我們把原本的樂器分別移動到高低八度 (Octave) 與不同的節奏空隙，<strong style={{ color: "#fff" }}>音量完全沒變</strong>，聽聽看差異：</p>
+
+                            <div style={{ display: "flex", background: "#020617", borderRadius: "50px", padding: "6px", border: "1px solid #334155" }}>
+                                <button
+                                    onClick={() => switchTrack('clash')}
+                                    style={{
+                                        flex: 1, padding: "1rem", borderRadius: "50px", border: "none", fontWeight: "900", fontSize: "1.1rem", cursor: "pointer", transition: "all 0.2s",
+                                        background: activeTrack === 'clash' ? '#ef4444' : 'transparent', color: activeTrack === 'clash' ? '#fff' : '#64748b'
+                                    }}
+                                >
+                                    👈 撞車版 (Chaos)
+                                </button>
+                                <button
+                                    onClick={() => switchTrack('fixed')}
+                                    style={{
+                                        flex: 1, padding: "1rem", borderRadius: "50px", border: "none", fontWeight: "900", fontSize: "1.1rem", cursor: "pointer", transition: "all 0.2s",
+                                        background: activeTrack === 'fixed' ? '#10b981' : 'transparent', color: activeTrack === 'fixed' ? '#fff' : '#64748b'
+                                    }}
+                                >
+                                    修正版 (Voiced) 👉
+                                </button>
+                            </div>
+                            {isPlaying && (
+                                <div style={{ marginTop: '1rem', color: '#10b981', fontSize: '0.9rem', animation: 'pulseText 1s infinite alternate' }}>
+                                    🔊 播放中... 點擊上方按鈕無縫切換
+                                </div>
+                            )}
+                        </div>
+
                         <button
-                            onClick={() => router.push("/courses/arrangement/voicing-theory")}
+                            onClick={() => {
+                                if (audioCtxRef.current) audioCtxRef.current.suspend();
+                                router.push("/courses/arrangement/voicing-theory");
+                            }}
                             style={{
-                                marginTop: "3rem",
                                 background: "linear-gradient(135deg, #22c55e, #16a34a)",
                                 color: "#fff",
                                 border: "none",
@@ -294,8 +406,8 @@ export default function FrequencyClashGamePage() {
                     to { opacity: 1; text-shadow: 0 0 20px rgba(239, 68, 68, 0.8); }
                 }
                 @keyframes glitchBar {
-                    from { transform: scaleY(0.2); opacity: 0.4; }
-                    to { transform: scaleY(1.8); opacity: 1; }
+                    from { transform: scaleY(0.5); opacity: 0.6; }
+                    to { transform: scaleY(1.5); opacity: 1; }
                 }
                 `
             }} />
