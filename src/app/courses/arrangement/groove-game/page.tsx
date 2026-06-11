@@ -39,13 +39,8 @@ const grooveQuestions = [
     }
 ];
 
-// 輔助函數：延遲
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
 export default function GrooveGamePage() {
     const router = useRouter();
-
-    // 📱 新增：手機版偵測狀態
     const [isMobile, setIsMobile] = useState(false);
 
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -56,19 +51,15 @@ export default function GrooveGamePage() {
     const [streak, setStreak] = useState(0);
     const [showResult, setShowResult] = useState(false);
 
-    const [isAutoContrasting, setIsAutoContrasting] = useState(false);
-    const [cheatMode, setCheatMode] = useState<'idle' | 'slow' | 'fast'>('idle');
-
     const audioARef = useRef<HTMLAudioElement | null>(null);
     const audioBRef = useRef<HTMLAudioElement | null>(null);
     const isMounted = useRef(true);
-    const activeSequence = useRef(0);
 
     const q = grooveQuestions[currentIndex];
 
     // 視窗偵測與音檔清理
     useEffect(() => {
-        window.scrollTo(0, 0); // 確保每次進入都在最上面
+        window.scrollTo(0, 0);
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
         checkMobile();
         window.addEventListener('resize', checkMobile);
@@ -92,8 +83,6 @@ export default function GrooveGamePage() {
     useEffect(() => {
         if (showResult) return;
         if (audioARef.current && audioBRef.current && q) {
-
-            // 💡 統一輸出音量：強制鎖定為 1.0 (100%)，確保前端不干涉音訊原始響度
             audioARef.current.volume = 1.0;
             audioBRef.current.volume = 1.0;
 
@@ -108,7 +97,6 @@ export default function GrooveGamePage() {
         }
         setCurrentTrack('A');
         setSelectedAnswer(null);
-        setCheatMode('idle');
     }, [currentIndex, showResult, q, isPlaying]);
 
     const togglePlay = () => {
@@ -132,37 +120,9 @@ export default function GrooveGamePage() {
         }
     };
 
-    // ⚡ 兩段式作弊按鈕 (上癮探索機制)
-    const handleFastSwitch = async () => {
-        if (selectedAnswer || isAutoContrasting || !isPlaying) return;
-
-        let speed = 800;
-        if (cheatMode === 'idle') {
-            setCheatMode('slow');
-            speed = 800;
-        } else if (cheatMode === 'slow') {
-            setCheatMode('fast');
-            speed = 400;
-        } else {
-            return;
-        }
-
-        const seq = Date.now();
-        activeSequence.current = seq;
-        const originalTrack = currentTrack;
-
-        switchTrack('A'); await delay(speed); if (activeSequence.current !== seq || !isMounted.current) return;
-        switchTrack('B'); await delay(speed); if (activeSequence.current !== seq || !isMounted.current) return;
-        switchTrack('A'); await delay(speed); if (activeSequence.current !== seq || !isMounted.current) return;
-        switchTrack('B'); await delay(speed); if (activeSequence.current !== seq || !isMounted.current) return;
-
-        switchTrack(originalTrack);
-        setCheatMode('idle');
-    };
-
-    // 🎯 答題與不對等時間爆點對比
-    const handleSelect = async (answer: 'A' | 'B') => {
-        if (selectedAnswer || isAutoContrasting || cheatMode !== 'idle') return;
+    // 🎯 答題邏輯 (移除自動切換，改為直接給反饋)
+    const handleSelect = (answer: 'A' | 'B') => {
+        if (selectedAnswer) return;
         setSelectedAnswer(answer);
 
         if (answer === q.correct) {
@@ -174,14 +134,8 @@ export default function GrooveGamePage() {
 
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
 
-        setIsAutoContrasting(true);
-        switchTrack('A'); await delay(700); if (!isMounted.current) return;
-        switchTrack('B'); await delay(700); if (!isMounted.current) return;
-        switchTrack('A'); await delay(700); if (!isMounted.current) return;
-        switchTrack('B'); await delay(1200); if (!isMounted.current) return;
-
+        // 答題後自動將聲音切換到正確的軌道，讓使用者感受
         switchTrack(q.correct as 'A' | 'B');
-        setIsAutoContrasting(false);
     };
 
     const handleNext = () => {
@@ -312,10 +266,9 @@ export default function GrooveGamePage() {
 
                 {/* 🎧 聽力切換區 */}
                 <div style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '0.8rem', textAlign: 'center' }}>👉 點擊切換聆聽，兩者在「同一時間點」播放</div>
-                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginBottom: '2.5rem' }}>
                     <button
                         onClick={() => switchTrack('A')}
-                        disabled={isAutoContrasting || cheatMode !== 'idle'}
                         style={{
                             flex: 1, padding: isMobile ? '1rem 0' : '1.5rem 0', fontSize: isMobile ? '1.1rem' : '1.3rem', fontWeight: 'bold', borderRadius: '16px', cursor: 'pointer', transition: 'all 0.2s',
                             background: currentTrack === 'A' ? '#334155' : '#0f172a', color: currentTrack === 'A' ? '#fff' : '#64748b',
@@ -326,7 +279,6 @@ export default function GrooveGamePage() {
                     </button>
                     <button
                         onClick={() => switchTrack('B')}
-                        disabled={isAutoContrasting || cheatMode !== 'idle'}
                         style={{
                             flex: 1, padding: isMobile ? '1rem 0' : '1.5rem 0', fontSize: isMobile ? '1.1rem' : '1.3rem', fontWeight: 'bold', borderRadius: '16px', cursor: 'pointer', transition: 'all 0.2s',
                             background: currentTrack === 'B' ? '#334155' : '#0f172a', color: currentTrack === 'B' ? '#fff' : '#64748b',
@@ -337,46 +289,26 @@ export default function GrooveGamePage() {
                     </button>
                 </div>
 
-                {/* ⚡ 兩段式作弊按鈕 */}
-                {!selectedAnswer && (
-                    <button
-                        onClick={handleFastSwitch}
-                        disabled={cheatMode === 'fast' || !isPlaying}
-                        style={{ background: 'transparent', color: '#fca311', border: '1px dashed #fca311', padding: isMobile ? '0.8rem' : '1rem', borderRadius: '50px', fontSize: isMobile ? '0.9rem' : '1rem', fontWeight: 'bold', cursor: 'pointer', marginBottom: '1.5rem', opacity: isPlaying ? 1 : 0.5, width: '100%' }}
-                    >
-                        {cheatMode === 'idle' ? '🔄 幫我對比（慢）' : cheatMode === 'slow' ? '⚡ 極速對比（快）' : '👂 自動對比中...'}
-                    </button>
-                )}
-
                 {/* 🎯 作答區 */}
                 {!selectedAnswer ? (
-                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.5rem', marginTop: '1rem' }}>
+                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.5rem' }}>
                         <div style={{ color: '#fff', fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '1rem', textAlign: 'center' }}>決定好了嗎？</div>
                         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                            <button onClick={() => handleSelect('A')} disabled={cheatMode !== 'idle'} style={{ flex: 1, padding: isMobile ? '0.8rem 0' : '1rem 0', fontSize: '1.1rem', fontWeight: 'bold', borderRadius: '50px', background: '#f97316', color: '#000', border: 'none', cursor: 'pointer' }}>👉 我選 A</button>
-                            <button onClick={() => handleSelect('B')} disabled={cheatMode !== 'idle'} style={{ flex: 1, padding: isMobile ? '0.8rem 0' : '1rem 0', fontSize: '1.1rem', fontWeight: 'bold', borderRadius: '50px', background: '#a78bfa', color: '#000', border: 'none', cursor: 'pointer' }}>👉 我選 B</button>
+                            <button onClick={() => handleSelect('A')} style={{ flex: 1, padding: isMobile ? '0.8rem 0' : '1rem 0', fontSize: '1.1rem', fontWeight: 'bold', borderRadius: '50px', background: '#f97316', color: '#000', border: 'none', cursor: 'pointer' }}>👉 我選 A</button>
+                            <button onClick={() => handleSelect('B')} style={{ flex: 1, padding: isMobile ? '0.8rem 0' : '1rem 0', fontSize: '1.1rem', fontWeight: 'bold', borderRadius: '50px', background: '#a78bfa', color: '#000', border: 'none', cursor: 'pointer' }}>👉 我選 B</button>
                         </div>
                     </div>
                 ) : (
-                    <div style={{ marginTop: '1.5rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '1.5rem', borderRadius: '20px', animation: 'fadeIn 0.3s' }}>
-
-                        {isAutoContrasting ? (
-                            <div style={{ color: '#38bdf8', fontSize: '1.2rem', fontWeight: 'bold', padding: '2rem 0', textAlign: 'center', animation: 'pulseText 1s infinite' }}>
-                                🤯 仔細聽！抓到差異了嗎...
-                            </div>
-                        ) : (
-                            <>
-                                <div style={{ color: selectedAnswer === q?.correct ? '#34d399' : '#f87171', fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.5rem', textAlign: 'center' }}>
-                                    {selectedAnswer === q?.correct ? q?.feedbackCorrect : q?.feedbackIncorrect}
-                                </div>
-                                <div style={{ color: '#cbd5e1', fontSize: '0.95rem', marginBottom: '1.5rem', lineHeight: '1.6', textAlign: 'center' }}>
-                                    {q?.insight}
-                                </div>
-                                <button onClick={handleNext} style={{ width: '100%', padding: '1rem', background: '#fff', color: '#000', borderRadius: '12px', fontWeight: 'bold', fontSize: '1.1rem', cursor: 'pointer' }}>
-                                    {currentIndex === grooveQuestions.length - 1 ? '查看診斷結果 ➔' : '下一題 ➔'}
-                                </button>
-                            </>
-                        )}
+                    <div style={{ marginTop: '0.5rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '1.5rem', borderRadius: '20px', animation: 'fadeIn 0.3s' }}>
+                        <div style={{ color: selectedAnswer === q?.correct ? '#34d399' : '#f87171', fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.5rem', textAlign: 'center' }}>
+                            {selectedAnswer === q?.correct ? q?.feedbackCorrect : q?.feedbackIncorrect}
+                        </div>
+                        <div style={{ color: '#cbd5e1', fontSize: '0.95rem', marginBottom: '1.5rem', lineHeight: '1.6', textAlign: 'center' }}>
+                            {q?.insight}
+                        </div>
+                        <button onClick={handleNext} style={{ width: '100%', padding: '1rem', background: '#fff', color: '#000', borderRadius: '12px', fontWeight: 'bold', fontSize: '1.1rem', cursor: 'pointer' }}>
+                            {currentIndex === grooveQuestions.length - 1 ? '查看診斷結果 ➔' : '下一題 ➔'}
+                        </button>
                     </div>
                 )}
             </div>
@@ -385,7 +317,6 @@ export default function GrooveGamePage() {
                 __html: `
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
                 @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 50% { transform: scale(1.2); } 100% { transform: scale(1); opacity: 1; } }
-                @keyframes pulseText { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
             ` }} />
         </div>
     );
