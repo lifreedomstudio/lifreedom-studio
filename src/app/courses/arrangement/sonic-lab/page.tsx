@@ -181,7 +181,6 @@ export default function SonicLabPage() {
 
                 {/* 1. 標題區 */}
                 <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-                    {/* 💡 修正：將副標題對齊 Ear Training 精神 */}
                     <span style={{ color: '#38bdf8', letterSpacing: '4px', fontWeight: 'bold', fontSize: '0.9rem' }}>LIFREEDOM EAR TRAINING : SPATIAL PERCEPTION</span>
                     <h1 style={{ fontSize: isMobile ? '2rem' : '3rem', fontWeight: '900', margin: '0.5rem 0', background: 'linear-gradient(135deg, #38bdf8, #818cf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                         立體聲場構築實驗室
@@ -271,7 +270,7 @@ export default function SonicLabPage() {
                 </div>
 
                 {/* 6. 樂器實時控制推軌 */}
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1.5rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1.5rem', marginBottom: '4rem' }}>
                     {INSTRUMENTS.map(inst => (
                         <div key={inst.id} style={{ background: '#0f172a', padding: '1.5rem', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '1.5rem', border: '1px solid #1e293b' }}>
                             <div style={{ flex: 1 }}>
@@ -290,6 +289,35 @@ export default function SonicLabPage() {
                             </div>
                         </div>
                     ))}
+                </div>
+
+                {/* 🟣 底部問卷/共創者 CTA */}
+                <div style={{ textAlign: 'center', padding: '2.5rem 2rem', background: 'linear-gradient(145deg, #1e1b4b, #0f172a)', borderRadius: '24px', border: '1px solid #a78bfa', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
+                    <div style={{ color: '#a78bfa', fontSize: '0.9rem', fontWeight: 'bold', letterSpacing: '3px', marginBottom: '1rem' }}>CO-CREATOR PROGRAM</div>
+                    <h2 style={{ color: '#fff', fontSize: '1.6rem', fontWeight: '900', marginBottom: '1rem' }}>我們正在打造「完整版聽覺訓練系統」</h2>
+                    <p style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.7', marginBottom: '2rem' }}>
+                        與其自己閉門造車，我們更想聽聽你的聲音。<br />
+                        告訴我們你最想解決的混音痛點，幫我們打造最適合你的功能！
+                    </p>
+
+                    <p style={{ color: '#fca311', fontWeight: 'bold', fontSize: '1.05rem', marginBottom: '1.5rem' }}>
+                        🎁 填寫問卷，可於表單內留下 Email 領取上線 5 折早鳥優惠。
+                    </p>
+
+                    <button
+                        onClick={() => router.push('/feedback')}
+                        style={{ width: '100%', maxWidth: '400px', padding: '1.2rem', background: '#a78bfa', color: '#020617', border: 'none', borderRadius: '50px', fontSize: '1.1rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(167, 139, 250, 0.3)', transition: 'transform 0.2s' }}
+                        onMouseOver={e => e.currentTarget.style.transform = 'scale(1.02)'}
+                        onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+                    >
+                        📝 參與開發調查 (約需 1 分鐘) 🚀
+                    </button>
+
+                    <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <button onClick={() => router.push('/courses')} style={{ background: 'transparent', color: '#38bdf8', border: 'none', textDecoration: 'underline', cursor: 'pointer', fontSize: '1.05rem', fontWeight: 'bold' }}>
+                            回到訓練總部 ➔
+                        </button>
+                    </div>
                 </div>
 
             </div>

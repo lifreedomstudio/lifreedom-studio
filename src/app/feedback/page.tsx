@@ -5,14 +5,23 @@ import { useRouter } from 'next/navigation';
 export default function FeedbackPage() {
     const router = useRouter();
 
-    // 在 React 裡安全載入 Tally 的腳本，確保 iframe 高度會自動展開
     useEffect(() => {
+        // 1. 進入頁面瞬間，強制將畫面推回最上方
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+
+        // 2. 為了防止 Tally iframe 載入完成瞬間的自動對焦把畫面往下拉，加一個短延遲保護
+        const scrollTimeout = setTimeout(() => {
+            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        }, 300);
+
+        // 3. 安全載入 Tally 的腳本，確保 iframe 高度會自動展開
         const script = document.createElement("script");
         script.src = "https://tally.so/widgets/embed.js";
         script.async = true;
         document.body.appendChild(script);
 
         return () => {
+            clearTimeout(scrollTimeout);
             if (document.body.contains(script)) {
                 document.body.removeChild(script);
             }

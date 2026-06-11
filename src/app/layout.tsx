@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import "./globals.css";
-// 引入問卷按鈕 (如果你決定不懸浮，可以把這行跟最下面的 <FeedbackButton /> 刪掉)
+// 引入問卷按鈕
 import FeedbackButton from '@/components/FeedbackButton';
 
 const inter = Inter({ subsets: ["latin"] });
@@ -27,7 +27,6 @@ export default function RootLayout({
 
   return (
     <html lang="zh-TW">
-      {/* 💡 修正 1：手動注入 Head 與 Title，完美解決 SEO 與分頁名稱問題 */}
       <head>
         <title>Lifreedom - AI Ear Training for Musicians</title>
         <meta name="description" content="專為音樂人打造的 AI 聽覺與空間感知訓練系統。" />
@@ -68,7 +67,6 @@ export default function RootLayout({
           <Link href="/" onClick={closeMenu} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ fontSize: isMobile ? '1.2rem' : '1.5rem' }}>🎧</span>
 
-            {/* 💡 修正 2：品牌 Logo 視覺升級，加入 AI 副標 */}
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <span style={{ fontWeight: '900', fontSize: isMobile ? '1.1rem' : '1.25rem', color: '#fff', letterSpacing: '0.5px' }}>
                 Lifreedom
@@ -93,6 +91,7 @@ export default function RootLayout({
             // 💻 電腦版選單 
             <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', fontSize: '0.85rem', fontWeight: 'bold' }}>
               <Link href="/courses" style={{ color: '#e2e8f0', textDecoration: 'none' }}>📚 課程計劃</Link>
+              <Link href="/eq-game" style={{ color: '#e2e8f0', textDecoration: 'none' }}>🎛️ EQ體驗館</Link>
               <Link href="/courses/arrangement/sonic-lab" style={{ color: '#e2e8f0', textDecoration: 'none' }}>🧪 聲學實驗室</Link>
               <Link href="/glossary" style={{ color: '#e2e8f0', textDecoration: 'none' }}>📖 混音字典</Link>
               <Link href="/collection" style={{ color: '#fbbf24', textDecoration: 'none' }}>📜 參數圖鑑</Link>
@@ -122,6 +121,7 @@ export default function RootLayout({
             boxShadow: '0 10px 30px rgba(0,0,0,0.8)'
           }}>
             <Link href="/courses" onClick={closeMenu} style={{ color: '#e2e8f0', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold' }}>📚 課程計劃 <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>(建築所)</span></Link>
+            <Link href="/eq-game" onClick={closeMenu} style={{ color: '#e2e8f0', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold' }}>🎛️ EQ體驗館</Link>
             <Link href="/courses/arrangement/sonic-lab" onClick={closeMenu} style={{ color: '#e2e8f0', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold' }}>🧪 聲學實驗室</Link>
             <Link href="/glossary" onClick={closeMenu} style={{ color: '#e2e8f0', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold' }}>📖 混音字典 <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>(魔導書)</span></Link>
             <Link href="/collection" onClick={closeMenu} style={{ color: '#fbbf24', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold' }}>📜 參數圖鑑</Link>
