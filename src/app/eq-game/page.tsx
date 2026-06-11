@@ -493,7 +493,20 @@ function EQGameContent() {
                     )}
                 </div>
             </div>
-
+            {/* 放在「解鎖完整混音實戰課程 🔒」按鈕的下方 */}
+            <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '1rem' }}>
+                    💡 覺得這個 EQ 實驗室好玩嗎？告訴我們你想增加什麼功能！
+                </p>
+                <button
+                    onClick={() => router.push('/feedback')}
+                    style={{ background: 'transparent', color: '#38bdf8', border: '1px solid #38bdf8', padding: '0.8rem 2rem', borderRadius: '50px', fontSize: '0.95rem', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s' }}
+                    onMouseOver={e => { e.currentTarget.style.background = 'rgba(56, 189, 248, 0.1)' }}
+                    onMouseOut={e => { e.currentTarget.style.background = 'transparent' }}
+                >
+                    填寫回饋送早鳥 5 折優惠 ➔
+                </button>
+            </div>
             <style jsx global>{`
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
                 @keyframes flash { 0% { background-color: #020617; } 50% { background-color: #064e3b; } 100% { background-color: #020617; } }
