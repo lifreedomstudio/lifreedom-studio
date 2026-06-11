@@ -6,14 +6,14 @@ import { useRouter } from 'next/navigation';
 const grooveQuestions = [
     {
         id: 1,
-        title: 'Round 1: 穩定與死板',
-        question: '哪一個比較讓你想「點頭」？',
+        title: 'Round 1: 機器人 vs 真人',
+        question: '哪一段節奏聽起來比較有「人味」（有呼吸感）？',
         fileA: '/audio/groove/q1dead.mp3',
         fileB: '/audio/groove/q1alive.mp3',
         correct: 'B',
-        feedbackCorrect: '你感受到了！微小的時間偏移反而帶來了律動。',
-        feedbackIncorrect: '完全對齊 (Quantized) 的節奏聽起來其實會像機器人。',
-        insight: '🎧 好的 Groove 不是 100% 準準對在格子上，而是有呼吸的空間。'
+        feedbackCorrect: '沒錯！一點點不完美的「時間差」，正是人類演奏的靈魂。',
+        feedbackIncorrect: '完全對準網格 (Quantized) 的節奏，聽起來其實就像死板的機器人。',
+        insight: '🎧 微小時間偏移 (Micro-timing) 會產生推拉感，這就是 Groove 的本質。'
     },
     {
         id: 2,
