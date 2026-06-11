@@ -313,8 +313,7 @@ export default function EarOpeningPlayPage() {
                         </p>
 
                         <button
-                            // 💡 這裡放你的 Google Form 或 Typeform 連結
-                            onClick={() => window.open('https://your-survey-link.com', '_blank')}
+                            onClick={() => router.push('/feedback')}
                             style={{ width: '100%', padding: '1.2rem', background: '#a78bfa', color: '#020617', border: 'none', borderRadius: '50px', fontSize: '1.1rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(167, 139, 250, 0.3)', transition: 'transform 0.2s' }}
                             onMouseOver={e => e.currentTarget.style.transform = 'scale(1.02)'}
                             onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
