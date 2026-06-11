@@ -3,6 +3,36 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
+// --- 💡 專有名詞小補帖元件 ---
+const ExpandableGlossary = ({ title, icon, terms }: { title: string, icon: string, terms: { name: string, desc: string }[] }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    return (
+        <div style={{ background: 'rgba(56, 189, 248, 0.05)', border: '1px solid rgba(56, 189, 248, 0.2)', borderRadius: '16px', overflow: 'hidden', marginTop: '1.5rem', marginBottom: '2rem', transition: 'all 0.3s ease', textAlign: 'left', maxWidth: '850px', margin: '1.5rem auto 2rem auto' }}>
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                style={{ width: '100%', padding: '1.2rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: isOpen ? 'rgba(56, 189, 248, 0.1)' : 'transparent', border: 'none', color: '#38bdf8', fontSize: '1.05rem', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.2s' }}
+            >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '1.2rem' }}>{icon}</span> {title}
+                </span>
+                <span>{isOpen ? '▲' : '▼'}</span>
+            </button>
+            {isOpen && (
+                <div style={{ padding: '0 1.5rem 1.5rem 1.5rem', animation: 'fadeIn 0.3s ease-out' }}>
+                    <div style={{ height: '1px', background: 'rgba(56, 189, 248, 0.2)', marginBottom: '1rem' }}></div>
+                    <ul style={{ color: '#cbd5e1', lineHeight: '1.8', fontSize: '0.95rem', paddingLeft: '1.2rem', margin: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {terms.map(t => (
+                            <li key={t.name}>
+                                <strong style={{ color: '#fff', fontSize: '1rem' }}>{t.name}：</strong>{t.desc}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+        </div>
+    );
+};
+
 export default function ArrangementIntro() {
     const router = useRouter();
 
@@ -26,7 +56,7 @@ export default function ArrangementIntro() {
         boxSizing: 'border-box' as const,
         width: '100%',
         overflowWrap: 'break-word' as const,
-        position: 'relative' as const, // 讓進度標籤可以絕對定位
+        position: 'relative' as const,
     };
 
     const levelBadgeStyle = {
@@ -66,16 +96,24 @@ export default function ArrangementIntro() {
                         從 0 到 1 的劇本設計
                     </h1>
 
-                    {/* 重新定義編曲與旋律 */}
-                    <div style={{ background: 'rgba(15, 23, 42, 0.9)', border: '1px solid rgba(249, 115, 22, 0.4)', padding: '22px', borderRadius: '14px', width: '100%', maxWidth: '850px', margin: '0 auto 2rem auto', textAlign: 'left' }}>
+                    {/* 編曲意境引導 */}
+                    <div style={{ background: 'rgba(15, 23, 42, 0.9)', border: '1px solid rgba(249, 115, 22, 0.4)', padding: '22px', borderRadius: '14px', width: '100%', maxWidth: '850px', margin: '0 auto 1.5rem auto', textAlign: 'left' }}>
                         <p style={{ color: '#f8fafc', marginBottom: 0, fontSize: isMobile ? '1.05rem' : '1.15rem', lineHeight: '1.7' }}>
-                            <strong style={{ color: '#38bdf8' }}>🎵 旋律 (Melody)</strong> 是這首歌的主角在「說什麼話」。<br />
-                            <strong style={{ color: '#f97316' }}>📖 編曲 (Arrangement)</strong> 則是為這段對話設計出完美的場景、燈光與配角。<br /><br />
                             編曲不是單純把一堆樂器全加上去，而是決定：<br />
                             👉 什麼時候出現｜👉 誰該站前面｜👉 誰該退後｜👉 哪裡該讓開。<br /><br />
                             這是把一段凌亂的「想法」，變成一個<strong style={{ color: '#fff' }}>「可以被記住的聲音」</strong>的過程。
                         </p>
                     </div>
+
+                    {/* 📝 新增：段落一知識補帖 */}
+                    <ExpandableGlossary
+                        title="專有名詞小補帖：旋律與編曲的正式定義"
+                        icon="📖"
+                        terms={[
+                            { name: "旋律 (Melody)", desc: "一段連續的單音排列，構成歌曲的核心記憶點（也就是你聽完歌後會跟著哼的那條主線）。它單獨存在時就已經具備了輪廓與情感傾向。" },
+                            { name: "編曲 (Arrangement)", desc: "在既有的旋律與和弦基礎上，設計配器（選用什麼樂器）、節奏骨架、和聲結構與段落起伏的工程。簡單來說，就是精準分配「哪一個樂器、在什麼時間點、用什麼頻率與方式發聲」，將單調的旋律立體化為一首完整的商業作品。" }
+                        ]}
+                    />
 
                     <p style={{
                         color: '#94a3b8', fontSize: isMobile ? '1rem' : '1.15rem', maxWidth: '700px', margin: '0 auto',
@@ -144,7 +182,7 @@ export default function ArrangementIntro() {
                     </div>
                 </section>
 
-                {/* --- 🔬 2.5 實驗室傳送門 (強化點擊版) --- */}
+                {/* --- 🔬 2.5 實驗室傳送門 --- */}
                 <section style={{ marginBottom: isMobile ? '3rem' : '5rem' }}>
                     <div style={{
                         background: 'linear-gradient(135deg, rgba(249, 115, 22, 0.03), rgba(252, 163, 17, 0.08))',
@@ -177,8 +215,8 @@ export default function ArrangementIntro() {
                     </div>
                 </section>
 
-                {/* --- 3. 四大里程碑 (加入 LEVEL 標籤與名詞解釋) --- */}
-                <section style={{ marginBottom: isMobile ? '3rem' : '4rem' }}>
+                {/* --- 3. 四大里程碑 --- */}
+                <section style={{ marginBottom: isMobile ? '1rem' : '2rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem', marginBottom: '2rem' }}>
                         <h2 style={{ fontSize: isMobile ? '1.5rem' : '2.2rem', color: '#fff', margin: 0, wordBreak: 'keep-all' }}>🗺️ 編曲破關路線圖</h2>
                     </div>
@@ -205,7 +243,7 @@ export default function ArrangementIntro() {
                             <div style={{ fontSize: isMobile ? '2.5rem' : '3.5rem', marginBottom: '1rem' }}>🎹</div>
                             <h3 style={{ color: '#fff', fontSize: '1.2rem', margin: '0 0 0.8rem 0' }}>Voicing (把位與音區)</h3>
                             <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>
-                                決定每個樂器要在哪一個「八度」或「指板位置」發聲。學會把樂器錯開在不同頻率樓層，而不是全擠在一樓，你會第一次聽到清澈的「空間感」。
+                                決定每個樂器要在哪一個「八度」或「指板位置」發聲。學會把樂器錯開在不同頻率樓層，你會第一次聽到清澈的「空間感」。
                             </p>
                         </div>
 
@@ -215,7 +253,7 @@ export default function ArrangementIntro() {
                             <div style={{ fontSize: isMobile ? '2.5rem' : '3.5rem', marginBottom: '1rem' }}>🛡️</div>
                             <h3 style={{ color: '#fff', fontSize: '1.2rem', margin: '0 0 0.8rem 0' }}>Masking (頻率遮蔽預防)</h3>
                             <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>
-                                當兩個聲音頻率重疊，強勢的聲音會把弱勢的聲音「吃掉」或變糊。問題不是 EQ 不夠強，而是你一開始就寫錯了。這關教你在編曲階段就避開頻率車禍。
+                                當兩個聲音頻率重疊，強勢的聲音會把弱勢的聲音變糊。問題不是 EQ 不夠強，而是你一開始就寫錯了。這關教你避開頻率車禍。
                             </p>
                         </div>
 
@@ -225,15 +263,25 @@ export default function ArrangementIntro() {
                             <div style={{ fontSize: isMobile ? '2.5rem' : '3.5rem', marginBottom: '1rem' }}>🎢</div>
                             <h3 style={{ color: '#fff', fontSize: '1.2rem', margin: '0 0 0.8rem 0' }}>Dynamics (動態與曲式)</h3>
                             <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>
-                                音樂的呼吸與劇情張力。不是從頭到尾把音軌塞滿、弄得很大聲，而是精心設計「收與放、起與伏」。何時該安靜、何時該爆發，這才是讓人起雞皮疙瘩的關鍵。
+                                音樂的呼吸與劇情張力。精心設計「收與放、起與伏」。何時該安靜、何時該爆發，這才是讓人起雞皮疙瘩的關鍵。
                             </p>
                         </div>
 
                     </div>
+
+                    {/* 📝 新增：把位與八度知識補帖 */}
+                    <ExpandableGlossary
+                        title="專有名詞小補帖：把位與八度的物理魔法"
+                        icon="🎛️"
+                        terms={[
+                            { name: "把位 (Position / Voicing)", desc: "原本指吉他、貝斯等弦樂器左手在指板上的按弦區域；在廣義編曲中，泛指和弦在特定音高與排列組合下的發聲位置。即使是同一個 C 和弦，在吉他的第一把位跟第五把位彈奏，其頻率厚度與音色張力會完全不同。" },
+                            { name: "八度 (Octave)", desc: "物理上頻率剛好相差一倍的兩個音（例如 220Hz 與 440Hz 聽起來都是 A，但後者高了一個八度）。在編曲實戰中，將某個樂器「移高或降低一個八度」，是把兩軌糾纏在一起的聲音瞬間拉開、分配到不同頻率樓層最暴力的神技。" }
+                        ]}
+                    />
                 </section>
 
                 {/* --- 4. CTA 按鈕 (核彈級轉換) --- */}
-                <section style={{ textAlign: 'center', marginTop: isMobile ? '4rem' : '6rem', paddingBottom: '3rem' }}>
+                <section style={{ textAlign: 'center', marginTop: isMobile ? '2rem' : '4rem', paddingBottom: '3rem' }}>
 
                     <p style={{ color: '#f8fafc', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '2rem' }}>
                         讓你的音樂，<br />第一次開始<strong style={{ color: '#fca311', fontSize: '1.8rem' }}>「會動」</strong>。
@@ -262,6 +310,11 @@ export default function ArrangementIntro() {
                 </section>
 
             </div>
+
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+            ` }} />
         </div>
     );
 }
