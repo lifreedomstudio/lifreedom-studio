@@ -146,6 +146,9 @@ export default function EarOpeningPlayPage() {
     };
 
     const handleNext = () => {
+        // 💡 加入這行：點擊下一題時，平滑捲動回到頁面最上方
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
         // @ts-ignore
         if (q.interstitial && !showInterstitial) {
             setShowInterstitial(true);
@@ -222,7 +225,11 @@ export default function EarOpeningPlayPage() {
                         <button onClick={() => router.push('/courses/ear-opening/bridge')} style={{ width: '100%', padding: '1.2rem', background: 'linear-gradient(135deg, #10b981, #38bdf8)', color: '#020617', border: 'none', borderRadius: '50px', fontSize: '1.1rem', fontWeight: '900', cursor: 'pointer' }}>
                             🎧 我想知道這些聲音怎麼做
                         </button>
-                        <button onClick={() => { setCurrentPhase('advanced'); setCurrentIndex(0); }} style={{ width: '100%', padding: '1rem', background: 'transparent', color: '#94a3b8', border: '1px solid #475569', borderRadius: '50px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer' }}>
+                        <button onClick={() => {
+                            setCurrentPhase('advanced');
+                            setCurrentIndex(0);
+                            window.scrollTo({ top: 0, behavior: 'smooth' }); // 確保切換階段時也置頂
+                        }} style={{ width: '100%', padding: '1rem', background: 'transparent', color: '#94a3b8', border: '1px solid #475569', borderRadius: '50px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer' }}>
                             🎮 再玩幾個聽音挑戰
                         </button>
                     </div>
