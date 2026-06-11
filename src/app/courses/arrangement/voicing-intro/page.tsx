@@ -2,6 +2,36 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
+// --- 💡 專有名詞小補帖元件 ---
+const ExpandableGlossary = ({ title, icon, terms }: { title: string, icon: string, terms: { name: string, desc: string }[] }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    return (
+        <div style={{ background: 'rgba(56, 189, 248, 0.05)', border: '1px solid rgba(56, 189, 248, 0.2)', borderRadius: '16px', overflow: 'hidden', marginTop: '2rem', transition: 'all 0.3s ease', textAlign: 'left' }}>
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                style={{ width: '100%', padding: '1.2rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: isOpen ? 'rgba(56, 189, 248, 0.1)' : 'transparent', border: 'none', color: '#38bdf8', fontSize: '1.05rem', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.2s' }}
+            >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '1.2rem' }}>{icon}</span> {title}
+                </span>
+                <span>{isOpen ? '▲' : '▼'}</span>
+            </button>
+            {isOpen && (
+                <div style={{ padding: '0 1.5rem 1.5rem 1.5rem', animation: 'fadeIn 0.3s ease-out' }}>
+                    <div style={{ height: '1px', background: 'rgba(56, 189, 248, 0.2)', marginBottom: '1rem' }}></div>
+                    <ul style={{ color: '#cbd5e1', lineHeight: '1.8', fontSize: '0.95rem', paddingLeft: '1.2rem', margin: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {terms.map(t => (
+                            <li key={t.name}>
+                                <strong style={{ color: '#fff', fontSize: '1rem' }}>{t.name}：</strong>{t.desc}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+        </div>
+    );
+};
+
 export default function VoicingIntroPage() {
     const router = useRouter();
     const [isMobile, setIsMobile] = useState(false);
@@ -121,6 +151,16 @@ export default function VoicingIntroPage() {
                                 <div style={{ color: '#cbd5e1' }}>吉他與鋼琴站在哪裡<br />(Voicing 思維)</div>
                             </div>
                         </div>
+
+                        {/* 💡 插入專有名詞小補帖 */}
+                        <ExpandableGlossary
+                            title="專有名詞小補帖：什麼是 Voicing？"
+                            icon="💡"
+                            terms={[
+                                { name: "Voicing (把位與音區分配)", desc: "字面上的意思是「發聲法」。在電腦編曲中，它指的是決定樂器要在哪一個「高低音區（頻率樓層）」演奏。即使和弦完全一樣，只要把樂器錯開分配到不同樓層（例如吉他彈低音、鋼琴彈高音），聲音就不會打架，進而產生清澈的 3D 立體空間感。" }
+                            ]}
+                        />
+
                     </div>
                 </section>
 

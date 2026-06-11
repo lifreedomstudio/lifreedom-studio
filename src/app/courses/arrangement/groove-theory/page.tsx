@@ -120,6 +120,36 @@ const DrumPad = ({ name, engName, desc, imgSrc, color, isPlaying, onToggle }: { 
     );
 };
 
+// --- 💡 專有名詞小補帖 (可收折元件) ---
+const ExpandableGlossary = ({ title, icon, terms }: { title: string, icon: string, terms: { name: string, desc: string }[] }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    return (
+        <div style={{ background: 'rgba(56, 189, 248, 0.05)', border: '1px solid rgba(56, 189, 248, 0.2)', borderRadius: '16px', overflow: 'hidden', marginBottom: '2rem', transition: 'all 0.3s ease' }}>
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                style={{ width: '100%', padding: '1.2rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: isOpen ? 'rgba(56, 189, 248, 0.1)' : 'transparent', border: 'none', color: '#38bdf8', fontSize: '1.05rem', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.2s' }}
+            >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '1.2rem' }}>{icon}</span> {title}
+                </span>
+                <span>{isOpen ? '▲' : '▼'}</span>
+            </button>
+            {isOpen && (
+                <div style={{ padding: '0 1.5rem 1.5rem 1.5rem', animation: 'fadeIn 0.3s ease-out' }}>
+                    <div style={{ height: '1px', background: 'rgba(56, 189, 248, 0.2)', marginBottom: '1rem' }}></div>
+                    <ul style={{ color: '#cbd5e1', lineHeight: '1.8', fontSize: '0.95rem', paddingLeft: '1.2rem', margin: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {terms.map(t => (
+                            <li key={t.name}>
+                                <strong style={{ color: '#fff', fontSize: '1rem' }}>{t.name}：</strong>{t.desc}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+        </div>
+    );
+}
+
 // --- 📖 課程主頁面 ---
 export default function GrooveTraining() {
     const router = useRouter();
@@ -232,7 +262,6 @@ export default function GrooveTraining() {
                     <p style={{ color: '#cbd5e1', fontSize: '1.1rem', marginBottom: '2rem', lineHeight: '1.6' }}>
                         很多新手聽歌時只注意到主唱跟吉他，卻忽略了撐起整首歌靈魂的「鼓組」。戴上耳機，依序點擊下面每個聲音，試著回答：
 
-
                         👉 「哪一個在負責節奏？哪一個在製造能量？」
                     </p>
 
@@ -268,7 +297,7 @@ export default function GrooveTraining() {
                 </section>
 
                 {/* 2. 注入靈魂：MIDI 的「人味」 */}
-                <div style={{ marginBottom: '4rem' }}>
+                <div style={{ marginBottom: '3rem' }}>
                     <h3 style={{ fontSize: '1.8rem', color: '#ea580c', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <span style={{ background: '#ea580c', width: '6px', height: '30px', borderRadius: '4px' }}></span>
                         2. 注入靈魂：MIDI 的「人味」
@@ -277,7 +306,7 @@ export default function GrooveTraining() {
                         在軟體中編輯鼓組 MIDI 時，最忌諱的就是將所有音符 100% 貼齊在網格線上。真實世界的樂手是不完美的，正是這些微小的瑕疵創造了律動。👉 這就是為什麼你做的鼓「永遠像 demo」。
                     </p>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
                         {/* NG 示範 */}
                         <div style={{ background: 'rgba(15, 23, 42, 0.6)', borderRadius: '16px', padding: '1.5rem', border: '1px solid rgba(255,255,255,0.05)' }}>
                             <div style={{ textAlign: 'center', color: '#ef4444', fontWeight: 'bold', marginBottom: '1.5rem' }}>死板的機器人 (100% 對齊)</div>
@@ -344,8 +373,19 @@ export default function GrooveTraining() {
                     </div>
                 </div>
 
+                {/* 📝 新增：段落二知識補帖 */}
+                <ExpandableGlossary
+                    title="專有名詞小補帖：MIDI、Beat 與 Ticks"
+                    icon="💡"
+                    terms={[
+                        { name: "MIDI", desc: "數位樂器介面。簡單來說，就是你在電腦軟體裡畫的「音符磚塊」，它只記錄音高、力度和時間，本身沒有聲音，必須配上軟體音源（如虛擬鼓組）才會發聲。" },
+                        { name: "Beat (拍子)", desc: "音樂的時間骨架。常聽到的 8-Beat，就是把一個小節的基礎節奏切成 8 個等份來敲擊。" },
+                        { name: "Ticks", desc: "MIDI 編輯器裡的「微小時間單位」。通常一拍會被細分成 960 個 Ticks。偏移幾個 Ticks 在現實中不到十分之一秒，但足以改變音樂聽起來是「急促往前衝」還是「慵懶往後拖」。" }
+                    ]}
+                />
+
                 {/* 3. 為什麼大鼓和貝斯會打架？ */}
-                <section style={{ marginBottom: '6rem' }}>
+                <section style={{ marginBottom: '6rem', marginTop: '4rem' }}>
                     <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.5rem', color: '#f97316', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '10px', marginBottom: '1.5rem' }}>
                         3. 為什麼大鼓和貝斯會打架？
                     </h2>
@@ -387,7 +427,7 @@ export default function GrooveTraining() {
                 </section>
 
                 {/* 5. Bass 的雙重人格 */}
-                <section style={{ marginBottom: '6rem' }}>
+                <section style={{ marginBottom: '3rem' }}>
                     <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.5rem', color: '#ea580c', marginBottom: '1rem', borderLeft: '8px solid #c2410c', paddingLeft: '20px' }}>
                         5. Bass 的雙重人格：節奏與和聲的橋樑
                     </h2>
@@ -444,8 +484,20 @@ export default function GrooveTraining() {
                     </div>
                 </section>
 
+                {/* 📝 新增：段落五知識補帖 */}
+                <ExpandableGlossary
+                    title="專有名詞小補帖：和弦與根音的魔法"
+                    icon="🪄"
+                    terms={[
+                        { name: "和弦 (Chord)", desc: "三個或三個以上不同音高的音符同時發聲。就像料理的複合調味，決定了這首歌聽起來是開心（大調）、悲傷（小調）還是懸疑。" },
+                        { name: "根音 (Root Note)", desc: "和弦的「地基」。例如 C 和弦 (C-E-G) 的根音就是 C。Bass 手最常彈奏的就是根音，用來穩住整首歌的調性與重量。" },
+                        { name: "和弦轉位 (Chord Inversion)", desc: "改變和弦音符的上下排列順序，但不改變組成音。例如原本是 C-E-G (C和弦)，把最低音的 C 移到上面變成 E-G-C，聽起來就會有一種「懸浮、未完待續」的感覺。" },
+                        { name: "根音下行 (Descending Bassline)", desc: "Bass 彈奏的音階像下樓梯一樣，一步步往下走（如 C ➔ B ➔ A ➔ G）。這能創造出一種非常滑順、充滿情感推動力的聽覺效果。" }
+                    ]}
+                />
+
                 {/* 💡 混音助理提示 */}
-                <div style={{ background: 'rgba(56, 189, 248, 0.05)', border: '1px dashed #38bdf8', padding: '1.5rem', borderRadius: '16px', textAlign: 'center', marginBottom: '5rem' }}>
+                <div style={{ background: 'rgba(56, 189, 248, 0.05)', border: '1px dashed #38bdf8', padding: '1.5rem', borderRadius: '16px', textAlign: 'center', marginBottom: '5rem', marginTop: '4rem' }}>
                     <h4 style={{ color: '#38bdf8', margin: '0 0 0.5rem 0', fontSize: '1.1rem' }}>🤖 來自混音助理的進階提示</h4>
                     <p style={{ color: '#94a3b8', fontSize: '0.95rem', margin: 0, lineHeight: '1.6' }}>
                         如果編曲上因為某些原因無法完全對齊，混音師會使用一種叫做 <strong>「Sidechain Compression (側鏈壓縮)」</strong> 的技巧：設定成當大鼓發聲時，貝斯音量瞬間自動變小讓路。想學這招嗎？之後在《高階混音學》我們會詳細教你！
@@ -462,7 +514,6 @@ export default function GrooveTraining() {
                         現在，是時候動手<strong style={{ color: '#fca311' }}>修好一段崩壞的 Groove</strong> 了。
                     </p>
 
-                    {/* 🚨 這裡已經修正導向 Groove Chapter (實驗室) */}
                     <button
                         onClick={() => { window.scrollTo(0, 0); router.push('/courses/arrangement/groove-lab'); }}
                         style={{
@@ -479,6 +530,10 @@ export default function GrooveTraining() {
                 </section>
 
             </div>
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+            ` }} />
         </div>
     );
 }

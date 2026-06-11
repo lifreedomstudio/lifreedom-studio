@@ -2,6 +2,36 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
+// --- 💡 可收折專有名詞小補帖元件 ---
+const ExpandableGlossary = ({ title, icon, terms }: { title: string, icon: string, terms: { name: string, desc: string }[] }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    return (
+        <div style={{ background: 'rgba(56, 189, 248, 0.05)', border: '1px solid rgba(56, 189, 248, 0.2)', borderRadius: '16px', overflow: 'hidden', marginBottom: '2rem', marginTop: '2rem', transition: 'all 0.3s ease', textAlign: 'left' }}>
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                style={{ width: '100%', padding: '1.2rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: isOpen ? 'rgba(56, 189, 248, 0.1)' : 'transparent', border: 'none', color: '#38bdf8', fontSize: '1.05rem', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.2s' }}
+            >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '1.2rem' }}>{icon}</span> {title}
+                </span>
+                <span>{isOpen ? '▲' : '▼'}</span>
+            </button>
+            {isOpen && (
+                <div style={{ padding: '0 1.5rem 1.5rem 1.5rem', animation: 'fadeIn 0.3s ease-out' }}>
+                    <div style={{ height: '1px', background: 'rgba(56, 189, 248, 0.2)', marginBottom: '1rem' }}></div>
+                    <ul style={{ color: '#cbd5e1', lineHeight: '1.8', fontSize: '0.95rem', paddingLeft: '1.2rem', margin: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {terms.map(t => (
+                            <li key={t.name}>
+                                <strong style={{ color: '#fff', fontSize: '1rem' }}>{t.name}：</strong>{t.desc}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+        </div>
+    );
+};
+
 export default function FrequencyClashGamePage() {
     const router = useRouter();
     const [isMobile, setIsMobile] = useState(false);
@@ -348,9 +378,9 @@ export default function FrequencyClashGamePage() {
                         </div>
 
                         {/* 🎧 A/B 對照面板 */}
-                        <div style={{ background: "rgba(16, 185, 129, 0.05)", padding: "2rem", borderRadius: "24px", border: "1px solid rgba(16, 185, 129, 0.2)", maxWidth: "600px", margin: "0 auto 3rem auto" }}>
+                        <div style={{ background: "rgba(16, 185, 129, 0.05)", padding: "2rem", borderRadius: "24px", border: "1px solid rgba(16, 185, 129, 0.2)", maxWidth: "600px", margin: "0 auto 1.5rem auto" }}>
                             <h3 style={{ color: "#10b981", margin: "0 0 1.5rem 0", fontSize: "1.2rem" }}>✨ 親耳驗證：空間分配的力量</h3>
-                            <p style={{ color: "#94a3b8", fontSize: "0.95rem", marginBottom: "1.5rem" }}>我們把原本的樂器分別移動到高低八度 (Octave) 與不同的節奏空隙，<strong style={{ color: "#fff" }}>音量完全沒變</strong>，聽聽看差異：</p>
+                            <p style={{ color: "#94a3b8", fontSize: "0.95rem", marginBottom: "1.5rem" }}>我們把原本的樂器分別移動到高低八度與不同的節奏空隙，<strong style={{ color: "#fff" }}>音量完全沒變</strong>，聽聽看差異：</p>
 
                             <div style={{ display: "flex", background: "#020617", borderRadius: "50px", padding: "6px", border: "1px solid #334155", marginBottom: "1rem" }}>
                                 <button
@@ -360,7 +390,7 @@ export default function FrequencyClashGamePage() {
                                         background: activeTrack === 'clash' && isPlaying ? '#ef4444' : 'transparent', color: activeTrack === 'clash' && isPlaying ? '#fff' : '#64748b'
                                     }}
                                 >
-                                    👈 聽撞車版 (Chaos)
+                                    👈 聽撞車版
                                 </button>
                                 <button
                                     onClick={() => switchTrack('fixed')}
@@ -369,11 +399,11 @@ export default function FrequencyClashGamePage() {
                                         background: activeTrack === 'fixed' && isPlaying ? '#10b981' : 'transparent', color: activeTrack === 'fixed' && isPlaying ? '#fff' : '#64748b'
                                     }}
                                 >
-                                    聽修正版 (Voiced) 👉
+                                    聽修正版 👉
                                 </button>
                             </div>
 
-                            {/* 🛠️ 修正 3：加入結算頁面專屬的「手動停止播放」控制鈕 */}
+                            {/* 🛠️ 手動停止播放控制鈕 */}
                             <div style={{ minHeight: "24px", display: "flex", justifyContent: "center", alignItems: "center" }}>
                                 {isPlaying ? (
                                     <button
@@ -389,6 +419,17 @@ export default function FrequencyClashGamePage() {
                                 )}
                             </div>
                         </div>
+
+                        {/* 📝 新增：段落三知識補帖 */}
+                        <ExpandableGlossary
+                            title="專有名詞小補帖：頻率、混音與 EQ"
+                            icon="💡"
+                            terms={[
+                                { name: "頻率 (Frequency)", desc: "聲音的高低。數字越小（如 40Hz）聽起來越低沉像大鼓，數字越大（如 10000Hz）聽起來越刺耳像金屬敲擊聲。" },
+                                { name: "混音 (Mixing)", desc: "把錄好的所有樂器軌道（人聲、吉他、鼓），透過調整音量、空間跟頻率，把它們「融合」成一首好聽歌曲的工程步驟。" },
+                                { name: "EQ (等化器/Equalizer)", desc: "混音師最常拿來「修怪聲音」的工具。你可以把它想像成一把手術刀，可以針對某個樂器特定的「高低音」切掉或放大。但記住，如果在編曲階段樂器就已經全擠在一起，EQ 再強也救不回來。" }
+                            ]}
+                        />
 
                         <button
                             onClick={() => {
