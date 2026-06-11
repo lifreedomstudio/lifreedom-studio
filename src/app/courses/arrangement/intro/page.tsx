@@ -66,11 +66,13 @@ export default function ArrangementIntro() {
                         從 0 到 1 的劇本設計
                     </h1>
 
-                    {/* 重新定義編曲 */}
+                    {/* 重新定義編曲與旋律 */}
                     <div style={{ background: 'rgba(15, 23, 42, 0.9)', border: '1px solid rgba(249, 115, 22, 0.4)', padding: '22px', borderRadius: '14px', width: '100%', maxWidth: '850px', margin: '0 auto 2rem auto', textAlign: 'left' }}>
                         <p style={{ color: '#f8fafc', marginBottom: 0, fontSize: isMobile ? '1.05rem' : '1.15rem', lineHeight: '1.7' }}>
-                            <strong style={{ color: '#f97316' }}>📖 編曲 (Arrangement) 不是單純把樂器加上去。</strong><br />
-                            而是決定：👉 什麼時候出現｜👉 誰該站前面｜👉 誰該退後｜👉 哪裡該讓開。<br /><br />
+                            <strong style={{ color: '#38bdf8' }}>🎵 旋律 (Melody)</strong> 是這首歌的主角在「說什麼話」。<br />
+                            <strong style={{ color: '#f97316' }}>📖 編曲 (Arrangement)</strong> 則是為這段對話設計出完美的場景、燈光與配角。<br /><br />
+                            編曲不是單純把一堆樂器全加上去，而是決定：<br />
+                            👉 什麼時候出現｜👉 誰該站前面｜👉 誰該退後｜👉 哪裡該讓開。<br /><br />
                             這是把一段凌亂的「想法」，變成一個<strong style={{ color: '#fff' }}>「可以被記住的聲音」</strong>的過程。
                         </p>
                     </div>
@@ -151,7 +153,7 @@ export default function ArrangementIntro() {
                         alignItems: 'center', gap: '2.5rem', boxShadow: '0 15px 35px rgba(0,0,0,0.4)'
                     }}>
                         <div style={{ flex: 1 }}>
-                            <span style={{ fontSize: '0.85rem', color: '#fca311', fontWeight: 'bold', letterSpacing: '3px' }}>INTERACTIVE STAGE DESIGN</span>
+                            <span style={{ fontSize: '0.85rem', color: '#fca311', fontWeight: 'bold', letterSpacing: '3px' }}>互動式聲場舞台設計 (INTERACTIVE STAGE DESIGN)</span>
                             <h3 style={{ color: '#fff', fontSize: '1.6rem', margin: '0.5rem 0 1rem 0', fontWeight: 'bold' }}>
                                 在編寫音符之前，先學會一件更關鍵的事：<br />👉「聲音要站在哪裡」
                             </h3>
@@ -175,7 +177,7 @@ export default function ArrangementIntro() {
                     </div>
                 </section>
 
-                {/* --- 3. 四大里程碑 (加入 LEVEL 標籤) --- */}
+                {/* --- 3. 四大里程碑 (加入 LEVEL 標籤與名詞解釋) --- */}
                 <section style={{ marginBottom: isMobile ? '3rem' : '4rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem', marginBottom: '2rem' }}>
                         <h2 style={{ fontSize: isMobile ? '1.5rem' : '2.2rem', color: '#fff', margin: 0, wordBreak: 'keep-all' }}>🗺️ 編曲破關路線圖</h2>
@@ -192,8 +194,9 @@ export default function ArrangementIntro() {
                             <div style={levelBadgeStyle}>LEVEL 1 / 4</div>
                             <div style={{ fontSize: isMobile ? '2.5rem' : '3.5rem', marginBottom: '1rem' }}>🥁</div>
                             <h3 style={{ color: '#fff', fontSize: '1.2rem', margin: '0 0 0.8rem 0' }}>Groove (節奏骨架)</h3>
-                            <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>不是節奏而已，是「會讓人動的節奏」。
-                                當 Kick 跟 Bass 開始鎖在一起，你的音樂才會開始有生命。</p>
+                            <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>
+                                不是節奏而已，是「會讓人動的節奏」。當 Kick 跟 Bass 開始鎖在一起，你的音樂才會開始有生命。
+                            </p>
                         </div>
 
                         {/* 關卡 2 */}
@@ -201,9 +204,9 @@ export default function ArrangementIntro() {
                             <div style={levelBadgeStyle}>LEVEL 2 / 4</div>
                             <div style={{ fontSize: isMobile ? '2.5rem' : '3.5rem', marginBottom: '1rem' }}>🎹</div>
                             <h3 style={{ color: '#fff', fontSize: '1.2rem', margin: '0 0 0.8rem 0' }}>Voicing (把位與音區)</h3>
-                            <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>中頻戰場。
-                                學會錯開，而不是硬擠，
-                                你會第一次聽到「空間」。</p>
+                            <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>
+                                決定每個樂器要在哪一個「八度」或「指板位置」發聲。學會把樂器錯開在不同頻率樓層，而不是全擠在一樓，你會第一次聽到清澈的「空間感」。
+                            </p>
                         </div>
 
                         {/* 關卡 3 */}
@@ -211,8 +214,9 @@ export default function ArrangementIntro() {
                             <div style={levelBadgeStyle}>LEVEL 3 / 4</div>
                             <div style={{ fontSize: isMobile ? '2.5rem' : '3.5rem', marginBottom: '1rem' }}>🛡️</div>
                             <h3 style={{ color: '#fff', fontSize: '1.2rem', margin: '0 0 0.8rem 0' }}>Masking (頻率遮蔽預防)</h3>
-                            <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>問題不是 EQ 不夠強，而是你一開始就寫錯了。
-                                👉 這關會讓你少走 80% 混音彎路。</p>
+                            <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>
+                                當兩個聲音頻率重疊，強勢的聲音會把弱勢的聲音「吃掉」或變糊。問題不是 EQ 不夠強，而是你一開始就寫錯了。這關教你在編曲階段就避開頻率車禍。
+                            </p>
                         </div>
 
                         {/* 關卡 4 */}
@@ -220,8 +224,9 @@ export default function ArrangementIntro() {
                             <div style={levelBadgeStyle}>LEVEL 4 / 4</div>
                             <div style={{ fontSize: isMobile ? '2.5rem' : '3.5rem', marginBottom: '1rem' }}>🎢</div>
                             <h3 style={{ color: '#fff', fontSize: '1.2rem', margin: '0 0 0.8rem 0' }}>Dynamics (動態與曲式)</h3>
-                            <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>讓人起雞皮疙瘩的關鍵。
-                                不是更大聲，而是「何時釋放」。</p>
+                            <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>
+                                音樂的呼吸與劇情張力。不是從頭到尾把音軌塞滿、弄得很大聲，而是精心設計「收與放、起與伏」。何時該安靜、何時該爆發，這才是讓人起雞皮疙瘩的關鍵。
+                            </p>
                         </div>
 
                     </div>
