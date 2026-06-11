@@ -244,7 +244,7 @@ export default function FrequencyClashGamePage() {
                 {stage === "play" && (
                     <section style={{ textAlign: "center", animation: "fadeIn 0.3s ease" }}>
                         <h2 style={{ color: "#ef4444", fontWeight: 900, fontSize: "2.5rem", letterSpacing: "2px", animation: "pulseText 0.5s infinite alternate" }}>
-                            ⚠️ MID RANGE OVERLOAD
+                            ⚠️ 中頻超載
                         </h2>
 
                         <p style={{ color: "#cbd5e1", marginTop: "1rem", fontSize: "1.2rem" }}>
@@ -380,7 +380,7 @@ export default function FrequencyClashGamePage() {
                         {/* 🎧 A/B 對照面板 */}
                         <div style={{ background: "rgba(16, 185, 129, 0.05)", padding: "2rem", borderRadius: "24px", border: "1px solid rgba(16, 185, 129, 0.2)", maxWidth: "600px", margin: "0 auto 1.5rem auto" }}>
                             <h3 style={{ color: "#10b981", margin: "0 0 1.5rem 0", fontSize: "1.2rem" }}>✨ 親耳驗證：空間分配的力量</h3>
-                            <p style={{ color: "#94a3b8", fontSize: "0.95rem", marginBottom: "1.5rem" }}>我們把原本的樂器分別移動到高低八度與不同的節奏空隙，<strong style={{ color: "#fff" }}>音量完全沒變</strong>，聽聽看差異：</p>
+                            <p style={{ color: "#94a3b8", fontSize: "0.95rem", marginBottom: "1.5rem" }}>我們把原本的樂器分別移動到高低八度與不同的節奏空隙，<strong style={{ color: "#fff" }}></strong>，聽聽看差異：</p>
 
                             <div style={{ display: "flex", background: "#020617", borderRadius: "50px", padding: "6px", border: "1px solid #334155", marginBottom: "1rem" }}>
                                 <button
