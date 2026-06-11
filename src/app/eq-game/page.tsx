@@ -116,14 +116,23 @@ function EQGameContent() {
         } catch (e) { console.log(e); }
     };
 
+    // 💡 確保組件卸載時，音檔會被強制關閉
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
         checkMobile();
         window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
+        return () => {
+            window.removeEventListener('resize', checkMobile);
+            if (sourceRef.current) {
+                try { sourceRef.current.stop(); } catch (e) { }
+            }
+            if (audioCtxRef.current) {
+                audioCtxRef.current.close();
+            }
+        };
     }, []);
 
-    // 💡 新增：自動跟隨題目切換音軌
+    // 💡 自動跟隨題目切換音軌
     useEffect(() => {
         if (mode === 'challenge' && currentMission) {
             setActiveTrack(currentMission.track as 'guitar' | 'drum' | 'vocal');
@@ -165,7 +174,7 @@ function EQGameContent() {
             const arrayBuffer = await response.arrayBuffer();
             bufferRef.current = await audioCtxRef.current.decodeAudioData(arrayBuffer);
 
-            // 💡 如果在播放狀態下切換音檔，讓它自動繼續播
+            // 如果在播放狀態下切換音檔，讓它自動繼續播
             if (isPlayingManual) {
                 const ctx = audioCtxRef.current;
                 sourceRef.current = ctx.createBufferSource();
@@ -258,7 +267,14 @@ function EQGameContent() {
         <div className={`game-container ${isFlash ? 'correct-flash' : ''}`} style={{ minHeight: '100vh', background: '#020617', color: '#f8fafc', padding: isMobile ? '1.5rem 1rem' : '4rem 2rem', fontFamily: 'sans-serif', transition: 'background-color 0.1s ease' }}>
             <div style={{ maxWidth: '900px', margin: '0 auto' }}>
 
-                <button onClick={() => router.push('/')} style={{ background: 'transparent', color: '#94a3b8', border: '1px solid #334155', padding: '0.6rem 1.4rem', borderRadius: '50px', cursor: 'pointer', marginBottom: '2rem', fontSize: '0.9rem', fontWeight: 'bold' }}>
+                <button onClick={() => {
+                    // 💡 返回時強制關閉聲音
+                    if (isPlayingManual && sourceRef.current) {
+                        try { sourceRef.current.stop(); } catch (e) { }
+                        setIsPlayingManual(false);
+                    }
+                    router.push('/');
+                }} style={{ background: 'transparent', color: '#94a3b8', border: '1px solid #334155', padding: '0.6rem 1.4rem', borderRadius: '50px', cursor: 'pointer', marginBottom: '2rem', fontSize: '0.9rem', fontWeight: 'bold' }}>
                     ← 返回首頁
                 </button>
 
@@ -269,10 +285,27 @@ function EQGameContent() {
                 </header>
 
                 <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '2.5rem' }}>
-                    <button onClick={() => { setMode("explore"); setIsMissionPassed(false); }} style={{ padding: '10px 24px', borderRadius: '50px', fontWeight: 'bold', cursor: 'pointer', border: 'none', background: mode === 'explore' ? '#10b981' : '#1e293b', color: mode === 'explore' ? '#020617' : '#94a3b8', transition: 'all 0.2s' }}>
+                    <button onClick={() => {
+                        // 💡 切換模式時強制關閉聲音
+                        if (isPlayingManual && sourceRef.current) {
+                            try { sourceRef.current.stop(); } catch (e) { }
+                            setIsPlayingManual(false);
+                        }
+                        setMode("explore");
+                        setIsMissionPassed(false);
+                    }} style={{ padding: '10px 24px', borderRadius: '50px', fontWeight: 'bold', cursor: 'pointer', border: 'none', background: mode === 'explore' ? '#10b981' : '#1e293b', color: mode === 'explore' ? '#020617' : '#94a3b8', transition: 'all 0.2s' }}>
                         🧭 EQ Playground
                     </button>
-                    <button onClick={() => { setMode("challenge"); setFeedback("▶️ 點擊『開始監聽』並切換至正確狀態，拖曳滑桿尋找..."); setIsMissionPassed(false); }} style={{ padding: '10px 24px', borderRadius: '50px', fontWeight: 'bold', cursor: 'pointer', border: 'none', background: mode === 'challenge' ? '#fbbf24' : '#1e293b', color: mode === 'challenge' ? '#020617' : '#94a3b8', transition: 'all 0.2s', boxShadow: mode === 'challenge' ? '0 0 15px rgba(251, 191, 36, 0.3)' : 'none' }}>
+                    <button onClick={() => {
+                        // 💡 切換模式時強制關閉聲音
+                        if (isPlayingManual && sourceRef.current) {
+                            try { sourceRef.current.stop(); } catch (e) { }
+                            setIsPlayingManual(false);
+                        }
+                        setMode("challenge");
+                        setFeedback("▶️ 點擊『開始監聽』並切換至正確狀態，拖曳滑桿尋找...");
+                        setIsMissionPassed(false);
+                    }} style={{ padding: '10px 24px', borderRadius: '50px', fontWeight: 'bold', cursor: 'pointer', border: 'none', background: mode === 'challenge' ? '#fbbf24' : '#1e293b', color: mode === 'challenge' ? '#020617' : '#94a3b8', transition: 'all 0.2s', boxShadow: mode === 'challenge' ? '0 0 15px rgba(251, 191, 36, 0.3)' : 'none' }}>
                         ⚔️ 聽覺挑戰模式
                     </button>
                 </div>
@@ -443,6 +476,11 @@ function EQGameContent() {
                                         animation: 'bounce 2s infinite'
                                     }}
                                     onClick={() => {
+                                        // 💡 解鎖下一關時強制關閉聲音
+                                        if (isPlayingManual && sourceRef.current) {
+                                            try { sourceRef.current.stop(); } catch (e) { }
+                                            setIsPlayingManual(false);
+                                        }
                                         setCurrentMissionIndex((prev) => prev + 1);
                                         setIsMissionPassed(false);
                                         setFeedback("▶️ 點擊『開始監聽』並切換至正確狀態，拖曳滑桿尋找目標...");

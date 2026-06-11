@@ -32,7 +32,6 @@ export default function PricingPage() {
         setShowWaitlistModal(false);
     };
 
-    // 💡 修正 2：串接真實的後端 API，將早鳥名單存入資料庫
     const handleWaitlistSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!waitlistEmail) return;
@@ -67,31 +66,35 @@ export default function PricingPage() {
                     </button>
                 </div>
 
-                {/* HERO */}
+                {/* 💥 HERO：補上致命一刀 */}
                 <header style={{ textAlign: 'center', marginBottom: '4rem' }}>
-                    <h1 style={{ fontSize: isMobile ? '2.2rem' : '4rem', fontWeight: '900', margin: '0 0 1.5rem 0', color: '#fff', lineHeight: '1.2' }}>
-                        🎧 像製作人一樣<span style={{ color: '#38bdf8' }}>訓練你的耳朵</span>
+                    <h1 style={{ fontSize: isMobile ? '2.2rem' : '3.8rem', fontWeight: '900', margin: '0 0 1.5rem 0', color: '#fff', lineHeight: '1.3' }}>
+                        如果你現在還聽不出差別，<br />
+                        那你做的音樂，別人也<span style={{ color: '#ef4444' }}>聽得出來差在哪</span>。
                     </h1>
-                    <p style={{ color: '#94a3b8', fontSize: '1.2rem', maxWidth: '650px', margin: '0 auto', lineHeight: '1.6' }}>
-                        別再瞎猜了。開始聽出真正的差異。<br />
-                        透過互動式聆聽，真正學會 EQ、空間分配、律動與混音決策。
+                    <p style={{ color: '#94a3b8', fontSize: '1.25rem', maxWidth: '650px', margin: '0 auto', lineHeight: '1.6', fontWeight: 'bold' }}>
+                        🎧 讓你第一次真正聽出差別。<br />
+                        <span style={{ fontSize: '1.1rem', fontWeight: 'normal' }}>不再憑感覺瞎猜，透過互動式特訓，建立有根據的混音決策力。</span>
                     </p>
                 </header>
 
-                {/* 價值主張 */}
+                {/* 🎯 痛點區：更狠、更對號入座 */}
                 <section style={{ marginBottom: '6rem', display: 'flex', justifyContent: 'center' }}>
                     <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '24px', padding: isMobile ? '2rem 1.5rem' : '3rem', maxWidth: '800px', width: '100%' }}>
-                        <h2 style={{ textAlign: 'center', fontSize: '1.5rem', color: '#fff', fontWeight: '900', marginBottom: '2rem' }}>為什麼你總是卡關？</h2>
+                        <h2 style={{ textAlign: 'center', fontSize: '1.5rem', color: '#fff', fontWeight: '900', marginBottom: '2rem' }}>
+                            你不是不會做音樂，<br />
+                            <span style={{ color: '#ef4444', fontSize: '1.8rem' }}>你是「根本聽不出問題在哪」</span>
+                        </h2>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', alignItems: 'center', marginBottom: '2.5rem' }}>
-                            <div className="pain-point-card">🎯 <strong>理論背得滾瓜爛熟</strong>，但實戰時「根本聽不出來」</div>
-                            <div className="pain-point-card">🎧 <strong>你的混音在耳機聽很棒</strong>，換到車上聽就全毀了</div>
-                            <div className="pain-point-card">🤯 <strong>看了一堆 YouTube 教學</strong>，自己做的時候還是憑感覺瞎轉</div>
+                            <div className="pain-point-card">❌ <strong>EQ 一直調</strong>，但越調越糊，完全不知道自己在幹嘛</div>
+                            <div className="pain-point-card">❌ <strong>覺得差不多</strong>，但別人一聽就知道你的作品有業餘味</div>
+                            <div className="pain-point-card">❌ <strong>每次都靠運氣</strong>，套 Preset 祈禱好聽，而不是靠聽覺判斷</div>
                         </div>
 
                         <div style={{ textAlign: 'center' }}>
                             <button className="cta-btn-primary" onClick={() => router.push('/courses/ear-opening/intro')}>
-                                立即開始訓練 (免費)
+                                立即開始打破盲點 (免費)
                             </button>
                         </div>
                     </div>
@@ -132,19 +135,26 @@ export default function PricingPage() {
                             <span style={{ fontSize: '1.2rem', color: '#fff', fontWeight: 'bold', marginBottom: '8px' }}>NT$</span>
                             <span style={{ fontSize: '3rem', fontWeight: '900', color: '#fff', lineHeight: 1 }}>399</span>
                         </div>
-                        <p style={{ color: '#38bdf8', fontSize: '0.9rem', marginBottom: '2rem', fontWeight: 'bold' }}>/ 月 (建立真正的決策力)</p>
+                        <p style={{ color: '#38bdf8', fontSize: '0.9rem', marginBottom: '1.5rem', fontWeight: 'bold' }}>/ 月 (建立真正的決策力)</p>
 
-                        <div style={{ color: '#fff', fontWeight: 'bold', textAlign: 'left', marginBottom: '1rem', fontSize: '1rem' }}>🎧 你將獲得的能力：</div>
+                        <div style={{ color: '#fff', fontWeight: 'bold', textAlign: 'left', marginBottom: '1rem', fontSize: '1.05rem' }}>🎧 你將獲得的能力：</div>
                         <ul className="feature-list core-features">
-                            <li>🔥 瞬間聽出刺耳與混濁的頻率</li>
-                            <li>🔥 掌握讓樂器不打架的空間分配邏輯</li>
-                            <li>✔️ 解鎖全部章節 (包含基礎及高階編曲/混音區以及後續持續更新的卡牌訓練遊戲系統)</li>
-                            <li>✔️ <strong>無限制音檔重複播放</strong></li>
-                            <li>✔️ <strong>每月 30 次 AI 深度分析額度</strong> (Credits)</li>
-                            <li>✔️ 盲測準確率與學習進度追蹤</li>
+                            <li>🔥 <strong style={{ color: '#fff' }}>一聽就知道哪裡刺</strong>（不用再掃頻亂試）</li>
+                            <li>🔥 <strong style={{ color: '#fff' }}>聽出混濁的來源</strong>（不是憑感覺）</li>
+                            <li>🔥 <strong style={{ color: '#fff' }}>知道每個樂器該在哪</strong>（精準空間分配）</li>
+                            <li style={{ marginTop: '10px' }}>✔️ 解鎖全部互動訓練與高階章節</li>
+                            <li>✔️ <strong>無限制音檔重複播放對比</strong></li>
+                            <li>✔️ <strong>每月 30 次 AI 深度分析額度</strong></li>
                         </ul>
+
+                        {/* 💥 迫切性推力：FOMO 限量早鳥區塊 */}
+                        <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px', padding: '12px', marginBottom: '1.5rem', textAlign: 'center', fontSize: '0.9rem', color: '#fca5a5', lineHeight: '1.6' }}>
+                            ⚠️ <strong>完整版即將開放</strong><br />第一批名額：限量 50 人<br />
+                            <span style={{ color: '#fff', fontWeight: 'bold' }}>現在加入名單 = 獲得專屬早鳥價</span>
+                        </div>
+
                         <button className="plan-btn core-btn" onClick={() => openWaitlist('核心訓練系統')}>
-                            開始學習
+                            獲取早鳥優先權
                         </button>
                     </div>
 
@@ -166,14 +176,14 @@ export default function PricingPage() {
                             <li>✔️ 進階母帶動態與多軌實戰拆解</li>
                         </ul>
                         <button className="plan-btn pro-btn" onClick={() => openWaitlist('混音實戰系統')}>
-                            敬請期待
+                            加入早鳥等待名單
                         </button>
                     </div>
 
                 </div>
             </div>
 
-            {/* Waitlist 彈出視窗 (Modal) */}
+            {/* 🔥 升級版 Waitlist 彈出視窗 (Modal) */}
             {showWaitlistModal && (
                 <div className="modal-overlay">
                     <div className="modal-content">
@@ -181,13 +191,26 @@ export default function PricingPage() {
 
                         {!submitSuccess ? (
                             <>
-                                <div style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '1rem' }}>🎟️</div>
-                                <h3 style={{ color: '#fff', fontSize: '1.5rem', textAlign: 'center', marginBottom: '1rem', fontWeight: 'bold' }}>
-                                    {waitlistPlanType} 籌備中！
+                                <div style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '0.5rem' }}>🎟️</div>
+                                <h3 style={{ color: '#fff', fontSize: '1.6rem', textAlign: 'center', marginBottom: '0.5rem', fontWeight: '900' }}>
+                                    {waitlistPlanType} 完整版即將開放
                                 </h3>
-                                <p style={{ color: '#94a3b8', fontSize: '0.95rem', textAlign: 'center', lineHeight: '1.6', marginBottom: '2rem' }}>
-                                    付費解鎖機制與進階訓練系統正在做最後的調校。留下 Email 加入等候名單，上線時我們將發送 <strong style={{ color: '#38bdf8' }}>首月 5 折專屬優惠碼</strong> 給你！
+
+                                <div style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '12px', padding: '1.2rem', marginBottom: '1.5rem' }}>
+                                    <p style={{ color: '#fca311', fontSize: '1.1rem', textAlign: 'center', fontWeight: '900', margin: '0 0 1rem 0' }}>
+                                        🔥 第一批名額：限量 50 人
+                                    </p>
+                                    <ul style={{ color: '#e2e8f0', fontSize: '0.95rem', lineHeight: '1.8', margin: 0, paddingLeft: '1.5rem', textAlign: 'left' }}>
+                                        <li>✔ 享有<strong style={{ color: '#38bdf8' }}>專屬早鳥價格</strong></li>
+                                        <li>✔ 優先通知與開通完整版權限</li>
+                                        <li>✔ 解鎖隱藏訓練模組（內測版）</li>
+                                    </ul>
+                                </div>
+
+                                <p style={{ color: '#94a3b8', fontSize: '0.95rem', textAlign: 'center', marginBottom: '1rem', fontWeight: 'bold' }}>
+                                    👇 留下 email → 我會優先通知你
                                 </p>
+
                                 <form onSubmit={handleWaitlistSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                     <input
                                         type="email"
@@ -198,19 +221,19 @@ export default function PricingPage() {
                                         className="waitlist-input"
                                     />
                                     <button type="submit" disabled={isSubmitting} className={`waitlist-submit ${isSubmitting ? 'submitting' : ''}`}>
-                                        {isSubmitting ? '處理中...' : '加入早鳥名單 🚀'}
+                                        {isSubmitting ? '保留名額中...' : '加入早鳥優先名單 🚀'}
                                     </button>
                                 </form>
                             </>
                         ) : (
                             <div style={{ textAlign: 'center', padding: '1rem 0' }}>
                                 <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎉</div>
-                                <h3 style={{ color: '#10b981', fontSize: '1.5rem', marginBottom: '1rem', fontWeight: 'bold' }}>加入成功！</h3>
+                                <h3 style={{ color: '#10b981', fontSize: '1.5rem', marginBottom: '1rem', fontWeight: 'bold' }}>名額保留成功！</h3>
                                 <p style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.6' }}>
-                                    感謝你的支持！專屬折扣碼已經為你預留。<br />
-                                    當進階訓練系統準備就緒時，我們會第一時間通知你。
+                                    你已經成功進入前 50 名早鳥梯隊。<br />
+                                    當完整版準備就緒時，我們會第一時間將專屬早鳥方案寄到你的信箱。
                                 </p>
-                                <button onClick={closeWaitlist} className="modal-close-success-btn">開始免費體驗</button>
+                                <button onClick={closeWaitlist} className="modal-close-success-btn">繼續免費體驗</button>
                             </div>
                         )}
                     </div>
@@ -226,7 +249,7 @@ export default function PricingPage() {
                 .nav-btn:hover { color: #fff; border-color: #64748b; background: rgba(255,255,255,0.05); }
 
                 .pain-point-card {
-                    background: rgba(239, 68, 68, 0.1); color: #fca5a5; padding: 16px 24px; border-radius: 12px; width: 100%; max-width: 500px; text-align: left; font-size: 1.05rem;
+                    background: rgba(239, 68, 68, 0.1); color: #fca5a5; padding: 18px 24px; border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.2); width: 100%; max-width: 550px; text-align: left; font-size: 1.1rem; line-height: 1.5;
                 }
 
                 .cta-btn-primary {
@@ -276,7 +299,7 @@ export default function PricingPage() {
                 .modal-close-btn:hover { color: #fff; }
                 
                 .waitlist-input {
-                    padding: 1rem; border-radius: 12px; border: 1px solid #334155; background: #020617; color: #fff; font-size: 1rem; outline: none; transition: border-color 0.2s;
+                    padding: 1rem; border-radius: 12px; border: 1px solid #334155; background: #020617; color: #fff; font-size: 1rem; outline: none; transition: border-color 0.2s; text-align: center;
                 }
                 .waitlist-input:focus { border-color: #38bdf8; }
                 
