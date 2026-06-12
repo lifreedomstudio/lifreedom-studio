@@ -401,9 +401,9 @@ export default function EarOpeningPlayPage() {
                             </div>
 
                             {/* 💡 修正：主 CTA 文案直接切中痛點 */}
-                            <h2 style={{ color: '#fff', fontSize: '1.6rem', fontWeight: '900', marginBottom: '1rem', marginTop: '1rem' }}>我想學會怎麼讓聲音變清楚</h2>
+                            <h2 style={{ color: '#fff', fontSize: '1.6rem', fontWeight: '900', marginBottom: '1rem', marginTop: '1rem' }}>我想學會怎麼讓聲音變清楚，不再靠運氣</h2>
                             <p style={{ color: '#a7f3d0', fontSize: '1.05rem', lineHeight: '1.7', marginBottom: '2rem', fontWeight: 'bold' }}>
-                                （不是再靠運氣）
+
                             </p>
 
                             {/* 按鈕文字改為更具行動力的實戰導向 */}
