@@ -122,12 +122,12 @@ const HomeInteractivePlayer = ({ isMobile }: { isMobile: boolean }) => {
           <div style={{ background: 'rgba(56, 189, 248, 0.05)', border: '1px solid #38bdf8', padding: '2rem', borderRadius: '16px', textAlign: 'left', animation: 'fadeIn 0.4s ease-out' }}>
             {userChoice === 'A' && (
               <h4 style={{ color: '#ef4444', fontWeight: '900', fontSize: '1.3rem', margin: '0 0 12px 0' }}>
-                ❌ 選錯 👉「這就是問題」
+                ❌ 選錯了 👉「這就是問題」
               </h4>
             )}
             {userChoice === 'B' && (
               <h4 style={{ color: '#10b981', fontWeight: '900', fontSize: '1.3rem', margin: '0 0 12px 0' }}>
-                🎯 選對 👉「你有潛力，但還不穩」
+                🎯 選對了 👉「你是有潛力的」
               </h4>
             )}
             {userChoice === 'not_heard' && (
