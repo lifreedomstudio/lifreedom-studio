@@ -223,8 +223,8 @@ export default function EarOpeningPlayPage() {
     const getEarLevel = () => {
         if (score === 7) return { name: 'Level 4：混音腦', state: '聽得出差異，且能精準定位問題在哪裡。', color: '#a78bfa' };
         if (score >= 5) return { name: 'Level 3：準確辨識', state: '能抓到大致方向，但對微小的動態變化還會猶豫。', color: '#10b981' };
-        if (score >= 3) return { name: 'Level 2：模糊辨識', state: '聽得出哪個比較好聽，但完全不知道為什麼。', color: '#38bdf8' };
-        return { name: 'Level 1：感覺派', state: '聽得出有一點點差異，但完全說不出來差在哪。', color: '#fca311' };
+        if (score >= 3) return { name: 'Level 2：模糊辨識', state: '聽得出哪個比較好聽，但還不知道為什麼。', color: '#38bdf8' };
+        return { name: 'Level 1：感覺派', state: '聽得出有一點點差異，但說不出來差在哪。', color: '#fca311' };
     };
 
     const getDynamicWeaknesses = () => {
@@ -232,7 +232,7 @@ export default function EarOpeningPlayPage() {
         if (wrongQuestions.includes(1) || wrongQuestions.includes(7)) weaknesses.push('低頻判斷偏弱：你容易忽視大鼓與貝斯的衝突，這會造成作品聽起來鬆散、糊糊的。');
         if (wrongQuestions.includes(3) || wrongQuestions.includes(4)) weaknesses.push('刺耳頻率辨識不穩：你對 2–4kHz 這種人耳最敏感的頻段掌握度較弱，容易讓作品聽起來刺耳或扁平。');
         if (wrongQuestions.includes(2) || wrongQuestions.includes(6)) weaknesses.push('微小動態較難察覺：你還感受不太到聲音的「穩度」與「遠近」（也就是壓縮器與空間效果的運用）。');
-        if (wrongQuestions.includes(5)) weaknesses.push('容易被「音量」欺騙：這是新手最常踩的坑，覺得聲音大就是好聽，導致混音越推越大聲，最後完全失真。');
+        if (wrongQuestions.includes(5)) weaknesses.push('容易被「音量」欺騙：這是新手最常踩的坑，覺得聲音大就是好聽，導致混音越推越大聲，最後容易失真。');
 
         if (weaknesses.length === 0) weaknesses.push('你的聽覺非常精準，幾乎沒有基礎盲點！');
         return weaknesses;
