@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-// 🎯 定義題目的精準型別，徹底解決 TypeScript 紅色毛毛蟲報錯
+// 🎯 定義題目的精準型別
 type QuizQuestion = {
     id: number;
     title: string;
@@ -13,7 +13,7 @@ type QuizQuestion = {
     feedbackCorrect: string;
     feedbackIncorrect: string;
     insight: string;
-    acceptAny?: boolean; // 加上 ? 代表這是選填屬性
+    acceptAny?: boolean;
 };
 
 // 🎯 核心 7 題 (基礎測驗)
@@ -46,7 +46,7 @@ const QUESTIONS: QuizQuestion[] = [
     },
     {
         id: 6, title: '挑戰 01: 隱形的動態控制', question: '哪一個聲音比較「穩」，不會忽大忽小？', fileA: '/audio/step0/q6unstable.mp3', fileB: '/audio/step0/q6stable.mp3', correct: 'B',
-        feedbackCorrect: '你連這種微小的動態都能察覺！', feedbackIncorrect: '這題很難，聽不出差異是正常的。',
+        feedbackCorrect: '你連這種微小的動態都能察決！', feedbackIncorrect: '這题很難，聽不出差異是正常的。',
         insight: '🎧 穩定 = 動態被妥善地壓縮控制 (Compressor)'
     },
     {
@@ -309,7 +309,7 @@ export default function EarOpeningPlayPage() {
                             {!isLevel4 && (
                                 <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '2rem', borderRadius: '20px', marginTop: '2rem', textAlign: 'left' }}>
                                     <h3 style={{ color: '#ef4444', fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <span>⚠️</span> 你的聽覺盲區分析：
+                                        <span>⚠️</span> 你的聽覺盲區 analysis：
                                     </h3>
                                     <ul style={{ color: '#e2e8f0', fontSize: '1.05rem', lineHeight: '1.8', margin: 0, paddingLeft: '1.5rem' }}>
                                         {weaknesses.map((w, i) => <li key={i} style={{ marginBottom: '15px' }}>{w}</li>)}
@@ -319,7 +319,7 @@ export default function EarOpeningPlayPage() {
                         </div>
                     )}
 
-                    {/* 🔥 核心升級：能力橋接層 (引導向痛點與解決方案) */}
+                    {/* 🔥 核心升級：能力橋接層 */}
                     <div style={{ background: 'rgba(56, 189, 248, 0.05)', border: '1px solid rgba(56, 189, 248, 0.2)', padding: '2.5rem', borderRadius: '24px', marginBottom: '3rem', textAlign: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
                         <h3 style={{ color: '#38bdf8', fontSize: '1.3rem', fontWeight: '900', marginBottom: '1.5rem' }}>
                             🧠 {isAdvancedMode ? '現在你已經清楚知道好聲音長怎樣了' : '你的下一個瓶頸'}
@@ -342,30 +342,30 @@ export default function EarOpeningPlayPage() {
                         </p>
                     </div>
 
-                    {/* 🚀 雙路線分流 (A: 輕度玩家 / B: 核心轉換) */}
+                    {/* 🚀 雙路線分流 (免費導向) */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', marginBottom: '4rem' }}>
 
-                        {/* 路線 B (強 Call To Action - 核心轉換) */}
+                        {/* 路線 B (放大主按鈕 - 導向編曲Intro頁面) */}
                         <div style={{ textAlign: 'center', padding: '2.5rem 2rem', background: 'linear-gradient(145deg, #1e1b4b, #0f172a)', borderRadius: '24px', border: '2px solid #a78bfa', boxShadow: '0 20px 40px rgba(167, 139, 250, 0.3)', position: 'relative' }}>
                             <div style={{ position: 'absolute', top: '-15px', left: '50%', transform: 'translateX(-50%)', background: '#a78bfa', color: '#020617', padding: '5px 15px', borderRadius: '20px', fontWeight: '900', fontSize: '0.85rem', letterSpacing: '2px' }}>
-                                HIGHLY RECOMMENDED
+                                NEXT CHAPTER
                             </div>
                             <h2 style={{ color: '#fff', fontSize: '1.6rem', fontWeight: '900', marginBottom: '1rem', marginTop: '1rem' }}>我想學會怎麼做出這種聲音</h2>
                             <p style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.7', marginBottom: '2rem' }}>
-                                停止用猜的。進入系統化訓練，把你的「聽覺直覺」轉化為軟體裡的「實戰參數設定能力」。
+                                停止用猜的。直接前往系統化大師階段，將你的「直覺」轉化為掌控軟體與聲音空間的實戰能力！
                             </p>
 
                             <button
-                                onClick={() => router.push('/pricing')}
-                                style={{ width: '100%', padding: '1.2rem', background: '#a78bfa', color: '#020617', border: 'none', borderRadius: '50px', fontSize: '1.2rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(167, 139, 250, 0.4)', transition: 'transform 0.2s' }}
-                                onMouseOver={e => e.currentTarget.style.transform = 'scale(1.03)'}
+                                onClick={() => router.push('/courses/arrangement/intro')}
+                                style={{ width: '100%', padding: '1.4rem', background: 'linear-gradient(135deg, #a78bfa, #7c3aed)', color: '#fff', border: 'none', borderRadius: '50px', fontSize: '1.3rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 25px rgba(124, 58, 237, 0.4)', transition: 'all 0.2s' }}
+                                onMouseOver={e => e.currentTarget.style.transform = 'scale(1.02)'}
                                 onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
                             >
-                                🔓 解鎖完整訓練系統 ➔
+                                🚀 開始學習製作這種聲音 ➔
                             </button>
                         </div>
 
-                        {/* 路線 A (輕度用戶 - 繼續玩進階挑戰，若已是進階模式則引導回課程地圖) */}
+                        {/* 路線 A (進階挑戰) */}
                         {!isAdvancedMode ? (
                             <div style={{ textAlign: 'center', padding: '2rem', background: 'rgba(255,255,255,0.03)', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)' }}>
                                 <h3 style={{ color: '#94a3b8', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '1rem' }}>我還想再測試一下耳朵</h3>
