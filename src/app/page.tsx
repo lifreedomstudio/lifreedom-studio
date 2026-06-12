@@ -252,7 +252,7 @@ export default function HomePage() {
           </div>
 
           <p style={{ color: '#fca5a5', fontWeight: 'bold', fontSize: '1.2rem', marginTop: '2.5rem', textAlign: 'center', letterSpacing: '1px' }}>
-            👉 問題不是你不會，是你「還聽不到」
+            👉 問題不是你不會，是你「還沒聽出來」
           </p>
         </div>
       </div>
