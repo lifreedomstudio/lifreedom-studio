@@ -80,6 +80,7 @@ const ADVANCED_QUESTIONS: QuizQuestion[] = [
     }
 ];
 
+// 正確的 Phase 定義
 type Phase = 'quiz' | 'calculating' | 'result';
 
 export default function EarOpeningPlayPage() {
@@ -403,8 +404,9 @@ export default function EarOpeningPlayPage() {
                                 停止用猜的。進入系統化訓練，把你的「聽覺直覺」轉化為軟體裡的「實戰參數設定能力」。
                             </p>
 
+                            {/* 💡 修正按鈕路徑與文字 */}
                             <button
-                                onClick={() => router.push('/ear-opening/bridge')}
+                                onClick={() => router.push('/courses/ear-opening/bridge')}
                                 style={{ width: '100%', padding: '1.2rem', background: '#a78bfa', color: '#020617', border: 'none', borderRadius: '50px', fontSize: '1.2rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(167, 139, 250, 0.4)', transition: 'transform 0.2s' }}
                                 onMouseOver={e => e.currentTarget.style.transform = 'scale(1.03)'}
                                 onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
