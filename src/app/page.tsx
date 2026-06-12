@@ -194,7 +194,7 @@ export default function HomePage() {
           lineHeight: 1.3, background: 'linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%)',
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textShadow: '0 10px 30px rgba(0,0,0,0.5)', wordBreak: 'keep-all'
         }}>
-          你真的「聽得到」音樂的差別嗎？
+          你真的「聽得出」音樂的差別嗎？
         </h1>
         <p style={{ color: '#38bdf8', fontSize: isMobile ? '1.1rem' : '1.3rem', fontWeight: 'bold', marginBottom: '3rem', margin: '0 0 3rem 0' }}>
           （不是喜不喜歡，是你能不能分辨）

@@ -399,19 +399,21 @@ export default function EarOpeningPlayPage() {
                             <div style={{ position: 'absolute', top: '-15px', left: '50%', transform: 'translateX(-50%)', background: '#a78bfa', color: '#020617', padding: '5px 15px', borderRadius: '20px', fontWeight: '900', fontSize: '0.85rem', letterSpacing: '2px' }}>
                                 HIGHLY RECOMMENDED
                             </div>
-                            <h2 style={{ color: '#fff', fontSize: '1.6rem', fontWeight: '900', marginBottom: '1rem', marginTop: '1rem' }}>我想學會怎麼做出這種聲音</h2>
-                            <p style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.7', marginBottom: '2rem' }}>
-                                停止用猜的。進入系統化訓練，把你的「聽覺直覺」轉化為軟體裡的「實戰參數設定能力」。
+
+                            {/* 💡 修正：主 CTA 文案直接切中痛點 */}
+                            <h2 style={{ color: '#fff', fontSize: '1.6rem', fontWeight: '900', marginBottom: '1rem', marginTop: '1rem' }}>我想學會怎麼讓聲音變清楚</h2>
+                            <p style={{ color: '#a7f3d0', fontSize: '1.05rem', lineHeight: '1.7', marginBottom: '2rem', fontWeight: 'bold' }}>
+                                （不是再靠運氣）
                             </p>
 
-                            {/* 💡 修正按鈕路徑與文字 */}
+                            {/* 按鈕文字改為更具行動力的實戰導向 */}
                             <button
                                 onClick={() => router.push('/courses/ear-opening/bridge')}
                                 style={{ width: '100%', padding: '1.2rem', background: '#a78bfa', color: '#020617', border: 'none', borderRadius: '50px', fontSize: '1.2rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(167, 139, 250, 0.4)', transition: 'transform 0.2s' }}
                                 onMouseOver={e => e.currentTarget.style.transform = 'scale(1.03)'}
                                 onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
                             >
-                                🚀 探索完整訓練計畫 ➔
+                                🚀 進入實戰訓練 ➔
                             </button>
                         </div>
 
@@ -425,7 +427,7 @@ export default function EarOpeningPlayPage() {
                                     onMouseOver={e => { e.currentTarget.style.background = 'rgba(56, 189, 248, 0.1)'; }}
                                     onMouseOut={e => { e.currentTarget.style.background = 'transparent'; }}
                                 >
-                                    🎮 再玩幾個更難的極限挑戰
+                                    🎮 挑戰進階聽力極限
                                 </button>
                             </div>
                         ) : (
@@ -440,7 +442,7 @@ export default function EarOpeningPlayPage() {
                         )}
                     </div>
 
-                    {/* ⬇️ 重新測驗按鈕 & 問卷框 */}
+                    {/* ⬇️ 重新測驗按鈕 & 極小化的意見回饋 (降低干擾) */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
                         <button
                             onClick={handleRestart}
@@ -451,17 +453,12 @@ export default function EarOpeningPlayPage() {
                             🔄 清除紀錄並重新測驗
                         </button>
 
-                        <div style={{ width: '100%', padding: '1.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.1)', textAlign: 'center' }}>
-                            <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '1rem', lineHeight: '1.6' }}>
-                                💡 對目前的測驗有任何想法？或想獲得上線早鳥優惠？
-                            </p>
+                        <div style={{ marginTop: '1rem', textAlign: 'center' }}>
                             <button
                                 onClick={() => router.push('/feedback')}
-                                style={{ background: 'transparent', color: '#94a3b8', border: '1px solid #475569', padding: '8px 20px', borderRadius: '50px', fontSize: '0.9rem', cursor: 'pointer', transition: 'all 0.2s' }}
-                                onMouseOver={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#fff'; }}
-                                onMouseOut={e => { e.currentTarget.style.color = '#94a3b8'; e.currentTarget.style.borderColor = '#475569'; }}
+                                style={{ background: 'transparent', color: '#475569', border: 'none', fontSize: '0.8rem', cursor: 'pointer', textDecoration: 'underline' }}
                             >
-                                📝 填寫 1 分鐘回饋問卷
+                                💡 有意見或遇到 Bug？點此回報
                             </button>
                         </div>
                     </div>
