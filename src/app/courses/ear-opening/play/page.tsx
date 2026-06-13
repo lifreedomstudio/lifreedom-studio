@@ -389,7 +389,7 @@ export default function EarOpeningPlayPage() {
                                 </div>
                             ) : (
                                 <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid #ef4444', padding: '1.5rem', borderRadius: '16px', color: '#fca5a5', fontWeight: 'bold', fontSize: '1.1rem', lineHeight: '1.6' }}>
-                                    這 4 題是混音作品「聽起來到底貴不貴」的關鍵。聽不出來很正常，因為這需要系統化的訓練，而不是單靠天份。
+                                    這 4 題是混音作品「基本聽感」的關鍵。沒聽出來很正常，因為這需要系統化的訓練，而不是單靠天份。
                                 </div>
                             )}
                         </div>
