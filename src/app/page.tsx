@@ -145,9 +145,9 @@ const HomeInteractivePlayer = ({ isMobile }: { isMobile: boolean }) => {
               大腦很容易被這種錯覺欺騙。這也就是為什麼，很多人調了半天 EQ，聲音卻還是混濁沒有層次。
             </p>
 
-            {/* ✅ CTA 2：收割轉換 (唯一入口) */}
+            {/* ✅ CTA 2：收割轉換 (唯一入口，拔除 window.scrollTo 避免 iOS bug) */}
             <button
-              onClick={() => { window.scrollTo(0, 0); router.push('/courses/ear-opening/intro'); }}
+              onClick={() => router.push('/courses/ear-opening/intro')}
               style={{ marginTop: '2rem', width: '100%', padding: '15px', background: 'linear-gradient(135deg, #38bdf8, #2563eb)', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '1.15rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(56, 189, 248, 0.3)' }}
             >
               👉 測完整等級（7 題） ➔
@@ -184,11 +184,18 @@ export default function HomePage() {
     alert("網址已成功複製！\n請打開您的 Chrome 或 Safari 瀏覽器貼上網址。");
   };
 
-  // 平滑滾動到測驗區塊
+  // 平滑滾動到測驗區塊（增強 iOS 相容性）
   const scrollToShockMoment = () => {
     const element = document.getElementById('shock-moment');
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      if (isIOS) {
+        // iOS 使用絕對座標計算，避免 scrollIntoView 的單線程衝突
+        const topY = element.getBoundingClientRect().top + window.pageYOffset;
+        window.scrollTo({ top: topY, behavior: 'smooth' });
+      } else {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   };
 
@@ -358,7 +365,7 @@ export default function HomePage() {
               ⚠️ 請先戴上耳機，否則你幾乎無法完成測試
             </p>
             <button
-              onClick={() => { window.scrollTo(0, 0); router.push('/courses/ear-opening/intro'); }}
+              onClick={() => router.push('/courses/ear-opening/intro')} // 拔掉 window.scrollTo(0,0)，讓 Next.js 自行處理
               style={{
                 padding: '1.2rem 4rem', background: 'transparent', color: '#38bdf8',
                 border: '2px solid #38bdf8', borderRadius: '50px', fontSize: '1.2rem',
