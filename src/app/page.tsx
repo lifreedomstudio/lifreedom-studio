@@ -113,39 +113,44 @@ const HomeInteractivePlayer = ({ isMobile }: { isMobile: boolean }) => {
                 我聽不出來
               </button>
             </div>
+            {/* 增加信任感的小字 */}
             <p style={{ color: '#64748b', fontSize: '0.95rem', margin: 0, fontWeight: 'bold', lineHeight: '1.6' }}>
-              💡 這是一個還在測試中的聽覺訓練系統。<br />
-              如果你覺得這種訓練方式對你有幫助，歡迎在後續留下 Email，我會優先通知你完整版上線。
+              💡 這是目前少量開放的 Beta 測試版體驗。<br />
+              如果你覺得這種訓練對你有幫助，歡迎在後續留下 Email，獲得正式版的優先通知。
             </p>
           </div>
         ) : (
           <div style={{ background: 'rgba(56, 189, 248, 0.05)', border: '1px solid #38bdf8', padding: '2rem', borderRadius: '16px', textAlign: 'left', animation: 'fadeIn 0.4s ease-out' }}>
+
+            {/* 優化說教感：讓他自己覺得「我真的被騙了」 */}
             {userChoice === 'A' && (
-              <h4 style={{ color: '#ef4444', fontWeight: '900', fontSize: '1.3rem', margin: '0 0 12px 0' }}>
-                ❌ 選錯了 👉「這就是問題」
+              <h4 style={{ color: '#ef4444', fontWeight: '900', fontSize: '1.25rem', margin: '0 0 12px 0', lineHeight: 1.4 }}>
+                ❌ 如果你剛剛有點猶豫，其實已經說明了一件事...
               </h4>
             )}
             {userChoice === 'B' && (
-              <h4 style={{ color: '#10b981', fontWeight: '900', fontSize: '1.3rem', margin: '0 0 12px 0' }}>
-                🎯 選對了 👉「你是有潛力的」
+              <h4 style={{ color: '#10b981', fontWeight: '900', fontSize: '1.25rem', margin: '0 0 12px 0', lineHeight: 1.4 }}>
+                🎯 能聽出差異，代表你的耳朵已經具備了很好的潛力！
               </h4>
             )}
             {userChoice === 'not_heard' && (
-              <h4 style={{ color: '#fbbf24', fontWeight: '900', fontSize: '1.3rem', margin: '0 0 12px 0' }}>
-                💡 聽不出 👉「這正是你卡關的原因」
+              <h4 style={{ color: '#fbbf24', fontWeight: '900', fontSize: '1.25rem', margin: '0 0 12px 0', lineHeight: 1.4 }}>
+                💡 聽不出來很正常，這也是多數人卡關的原因...
               </h4>
             )}
 
-            <p style={{ color: '#cbd5e1', fontSize: '1rem', lineHeight: '1.8', margin: 0 }}>
+            <p style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.8', margin: 0 }}>
               這兩段音樂的軌道結構完全一樣。在<strong>版本 A</strong> 中，所有樂器都擠在正中央，造成了聲學上的「頻率遮蔽」，導致主唱的聲音被吉他死死悶住。<br /><br />
-              而在<strong>版本 B</strong> 中，我們僅僅把兩把吉他往左右兩側拉開（LCR 空間佈局）。中間通道一清空，主唱瞬間釋放。聽不出差別或選錯，代表你的大腦目前正被遮蔽效應欺騙，這正是你做出來的作品總是混濁、沒層次的元兇！
+              而在<strong>版本 B</strong> 中，我們僅僅把兩把吉他往左右兩側拉開（LCR 空間佈局）。中間通道一清空，主唱瞬間釋放。<br /><br />
+              大腦很容易被這種錯覺欺騙。這也就是為什麼，很多人調了半天 EQ，聲音卻還是混濁沒有層次。
             </p>
 
+            {/* ✅ CTA 2：收割轉換 (唯一入口) */}
             <button
               onClick={() => { window.scrollTo(0, 0); router.push('/courses/ear-opening/intro'); }}
-              style={{ marginTop: '2rem', width: '100%', padding: '15px', background: 'linear-gradient(135deg, #38bdf8, #2563eb)', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '1.1rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(56, 189, 248, 0.3)' }}
+              style={{ marginTop: '2rem', width: '100%', padding: '15px', background: 'linear-gradient(135deg, #38bdf8, #2563eb)', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '1.15rem', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(56, 189, 248, 0.3)' }}
             >
-              立刻開啟免費耳朵洗禮 ➔
+              👉 測完整等級（7 題） ➔
             </button>
           </div>
         )}
@@ -156,9 +161,16 @@ const HomeInteractivePlayer = ({ isMobile }: { isMobile: boolean }) => {
 
 export default function HomePage() {
   const [isMobile, setIsMobile] = useState(false);
+  const [showInAppWarning, setShowInAppWarning] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
+    // 軟性阻擋：偵測是否為 FB/IG 內建瀏覽器
+    const inAppBrowser = /FBAN|FBAV|Instagram/i.test(navigator.userAgent);
+    if (inAppBrowser) {
+      setShowInAppWarning(true);
+    }
+
     let timeoutId: NodeJS.Timeout;
     const checkMobile = () => { clearTimeout(timeoutId); timeoutId = setTimeout(() => setIsMobile(window.innerWidth < 768), 150); };
     setIsMobile(window.innerWidth < 768);
@@ -167,8 +179,45 @@ export default function HomePage() {
     return () => { window.removeEventListener('resize', checkMobile); clearTimeout(timeoutId); };
   }, []);
 
+  const handleCopyUrl = () => {
+    navigator.clipboard.writeText(window.location.href);
+    alert("網址已成功複製！\n請打開您的 Chrome 或 Safari 瀏覽器貼上網址。");
+  };
+
+  // 平滑滾動到測驗區塊
+  const scrollToShockMoment = () => {
+    const element = document.getElementById('shock-moment');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
-    <div style={{ minHeight: '100vh', background: '#020617', color: '#f8fafc', fontFamily: 'sans-serif', overflowX: 'hidden' }}>
+    <div style={{ minHeight: '100vh', background: '#020617', color: '#f8fafc', fontFamily: 'sans-serif', overflowX: 'hidden', paddingBottom: showInAppWarning ? '80px' : '0' }}>
+
+      {/* ================= 🎛 軟性 In-App 瀏覽器警告 ================= */}
+      {showInAppWarning && (
+        <div style={{ position: 'fixed', bottom: 0, left: 0, width: '100%', background: 'rgba(15, 23, 42, 0.95)', borderTop: '1px solid #334155', zIndex: 9999, padding: '1.5rem', textAlign: 'center', backdropFilter: 'blur(10px)', animation: 'fadeInUp 0.3s ease' }}>
+          <h4 style={{ color: '#fca5a5', margin: '0 0 8px 0', fontSize: '1.1rem', fontWeight: 'bold' }}>⚠️ 提醒：音質可能受影響</h4>
+          <p style={{ color: '#cbd5e1', fontSize: '0.95rem', marginBottom: '1rem', lineHeight: '1.5' }}>
+            FB / IG 內建瀏覽器會壓縮音訊細節。強烈建議使用 <strong>Safari</strong> 或 <strong>Chrome</strong> 開啟以獲得準確體驗。
+          </p>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+            <button
+              onClick={handleCopyUrl}
+              style={{ background: '#38bdf8', color: '#020617', border: 'none', padding: '10px 24px', borderRadius: '50px', fontWeight: 'bold', cursor: 'pointer' }}
+            >
+              🔗 複製網址
+            </button>
+            <button
+              onClick={() => setShowInAppWarning(false)}
+              style={{ background: 'transparent', color: '#94a3b8', border: '1px solid #475569', padding: '10px 24px', borderRadius: '50px', cursor: 'pointer' }}
+            >
+              繼續使用
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ================= ❶ HERO 核心開場 ================= */}
       <div style={{
@@ -184,8 +233,9 @@ export default function HomePage() {
           style={{ height: isMobile ? '100px' : '130px', objectFit: 'contain', marginBottom: '1.5rem', filter: 'drop-shadow(0 0 20px rgba(56, 189, 248, 0.4))' }}
         />
 
-        <div style={{ color: '#38bdf8', letterSpacing: '4px', fontWeight: 'bold', marginBottom: '1.5rem', fontSize: isMobile ? '0.75rem' : '0.85rem', opacity: 0.9 }}>
-          LIFREEDOM | AUDIO PERCEPTION LAB
+        {/* 真實信任感 Badge */}
+        <div style={{ display: 'inline-block', background: 'rgba(56, 189, 248, 0.1)', border: '1px solid rgba(56, 189, 248, 0.2)', color: '#38bdf8', padding: '6px 16px', borderRadius: '50px', fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '1.5rem', letterSpacing: '1px' }}>
+          🚀 BETA 測試版・目前小規模限量體驗中
         </div>
 
         {/* 【主標題】 */}
@@ -211,29 +261,30 @@ export default function HomePage() {
             <li style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}><span style={{ color: '#ef4444' }}>•</span> 為什麼調了 EQ 還是沒變好</li>
           </ul>
           <div style={{ color: '#fca311', fontWeight: 'bold', fontSize: '1.05rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1.2rem', textAlign: 'center' }}>
-            💡 這不是設備問題，是耳朵還沒被訓練
+            💡 這不是天份問題，是耳朵還沒被訓練
           </div>
         </div>
 
-        {/* 【CTA 主按鈕】 */}
-        <div style={{ width: '100%', maxWidth: '500px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        {/* ✅ CTA 1：主入口改為滑動錨點 */}
+        <div style={{ width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <button
-            onClick={() => { window.scrollTo(0, 0); router.push('/courses/ear-opening/intro'); }}
-            style={{ width: '100%', padding: isMobile ? '1.2rem' : '1.4rem', background: 'linear-gradient(135deg, #38bdf8, #2563eb)', color: '#fff', fontSize: '1.2rem', fontWeight: '900', borderRadius: '50px', border: 'none', cursor: 'pointer', boxShadow: '0 10px 30px rgba(56, 189, 248, 0.4)', transition: 'transform 0.2s' }}
+            onClick={scrollToShockMoment}
+            style={{ width: '100%', padding: isMobile ? '1.2rem' : '1.4rem', background: 'linear-gradient(135deg, #38bdf8, #2563eb)', color: '#fff', fontSize: '1.3rem', fontWeight: '900', borderRadius: '50px', border: 'none', cursor: 'pointer', boxShadow: '0 10px 30px rgba(56, 189, 248, 0.4)', transition: 'transform 0.2s' }}
             onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.02)"}
             onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
           >
-            👉 7 題測試，看看你能不能聽出差異
+            👉 先試一題（30 秒）
           </button>
-          {/* 【降低壓力補一句】 */}
-          <p style={{ color: '#475569', fontSize: '0.95rem', marginTop: '12px', fontWeight: 'bold', letterSpacing: '1px' }}>
-            不用樂理、不用設備，只用耳朵
+
+          <p style={{ color: '#475569', fontSize: '0.95rem', marginTop: '15px', fontWeight: 'bold', letterSpacing: '1px' }}>
+            不用懂樂理、不用會樂器，只用耳朵聽
           </p>
         </div>
       </div>
 
       {/* ================= ❷ 🎧 互動試聽模組 ================= */}
-      <div style={{ padding: '2rem 1rem 5rem 1rem', background: '#020617', boxSizing: 'border-box' }}>
+      {/* 加入錨點 id="shock-moment" */}
+      <div id="shock-moment" style={{ padding: '2rem 1rem 5rem 1rem', background: '#020617', boxSizing: 'border-box' }}>
         <HomeInteractivePlayer isMobile={isMobile} />
       </div>
 
@@ -257,7 +308,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ================= ❹ AI 時代痛點 (完美回歸) ================= */}
+      {/* ================= ❹ AI 時代痛點 ================= */}
       <div style={{ padding: isMobile ? '4rem 1.5rem' : '6rem 2rem', background: 'linear-gradient(135deg, #0f172a, #020617)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
         <div style={{ maxWidth: '950px', margin: '0 auto', display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '3rem', alignItems: 'center' }}>
           <div style={{ flex: 1.2 }}>
@@ -301,19 +352,24 @@ export default function HomePage() {
             你才有辦法做出選擇
           </h2>
 
-          {/* CTA 第二次按鈕 */}
-          <button
-            onClick={() => { window.scrollTo(0, 0); router.push('/courses/ear-opening/intro'); }}
-            style={{
-              padding: '1.2rem 4rem', background: 'transparent', color: '#38bdf8',
-              border: '2px solid #38bdf8', borderRadius: '50px', fontSize: '1.2rem',
-              fontWeight: '900', cursor: 'pointer', transition: 'all 0.2s', width: isMobile ? '100%' : 'auto', maxWidth: '400px'
-            }}
-            onMouseOver={e => e.currentTarget.style.background = 'rgba(56, 189, 248, 0.08)'}
-            onMouseOut={e => e.currentTarget.style.background = 'transparent'}
-          >
-            👉 開始測試（免費）
-          </button>
+          {/* 統一收割 CTA */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <p style={{ color: '#ef4444', fontWeight: 'bold', fontSize: '1.05rem', marginBottom: '1rem', letterSpacing: '1px' }}>
+              ⚠️ 請先戴上耳機，否則你幾乎無法完成測試
+            </p>
+            <button
+              onClick={() => { window.scrollTo(0, 0); router.push('/courses/ear-opening/intro'); }}
+              style={{
+                padding: '1.2rem 4rem', background: 'transparent', color: '#38bdf8',
+                border: '2px solid #38bdf8', borderRadius: '50px', fontSize: '1.2rem',
+                fontWeight: '900', cursor: 'pointer', transition: 'all 0.2s', width: isMobile ? '100%' : 'auto', maxWidth: '400px'
+              }}
+              onMouseOver={e => e.currentTarget.style.background = 'rgba(56, 189, 248, 0.08)'}
+              onMouseOut={e => e.currentTarget.style.background = 'transparent'}
+            >
+              👉 測完整等級（7 題）
+            </button>
+          </div>
         </div>
       </div>
 
@@ -351,6 +407,7 @@ export default function HomePage() {
 
       <style jsx global>{`
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
       `}</style>
     </div>
   );
